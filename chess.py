@@ -13,6 +13,8 @@ class IllegalMove(Exception):
 class ChessPiece():
     """Chess piece manipulation."""
 
+    all_natures = ["K", "Q", "R", "B", "N", "P"]
+
     def __init__(self, c=None, i=None, n=None, b=None, x=None, y=None):
         """Initialize color, number, nature, position."""
         self.color = c
@@ -31,6 +33,7 @@ class ChessPiece():
         self.x = x
         self.y = y
         self.has_moved = False
+        self.is_dead = False
 
     def __str__(self):
         """Display color and number."""
@@ -45,9 +48,8 @@ class ChessBoard():
     """Chess board manipulation."""
 
     def __init__(self):
-        """Initialize the grid with pieces."""
-        self.time = 0
-        self.moves = []
+        """Initialize the board."""
+        # Grid with pieces
         self.grid = [[None for y in range(8)] for x in range(8)]
         for x in range(8):
             self.grid[x][0] = ChessPiece(
@@ -67,6 +69,53 @@ class ChessBoard():
                 b=self, x=x, y=7
             )
 
+        # Colorized lists of pieces
+        white_pieces = [
+            self.grid[x][0] for x in range(8)
+        ] + [
+            self.grid[x][1] for x in range(8)
+        ]
+        black_pieces = [
+            self.grid[x][7] for x in range(8)
+        ] + [
+            self.grid[x][6] for x in range(8)
+        ]
+        self.pieces = [white_pieces, black_pieces]
+
+        # Game history
+        self.time = 0
+        self.moves = []
+        self.positions = [self.compute_position()]
+        self.attacks = [self.compute_attack()]
+
+    def compute_position(self):
+        """Encode position as a binary table."""
+        position = np.zeros((64, 2, 16))
+        for s in range(64):
+            for c in range(2):
+                for i in range(16):
+                    piece = self.pieces[c][i]
+                    if s == self.get_square(piece.x, piece.y):
+                        position[s, c, i] = 1
+        return position
+
+    def compute_attack(self):
+        """Encode attack as a binary table."""
+        attack = np.zeros((64, 2, 16, 6))
+        for s in range(64):
+            xs, ys = self.get_coord(s)
+            for c in range(2):
+                for i in range(16):
+                    piece = self.pieces[c][i]
+                    for n in piece.all_natures:
+                        n_ind = piece.all_natures.index(n)
+                        if (
+                            self.feasible_move(piece.x, piece.y, xs, ys, n) and
+                            self.free_trajectory(piece.x, piece.y, xs, ys)
+                        ):
+                            attack[s, c, i, n_ind] = 1
+        return attack
+
     def __str__(self):
         """Display the board in ASCII art."""
         s = ""
@@ -85,7 +134,15 @@ class ChessBoard():
         """Check if a square is part of the board."""
         return x1 >= 0 and x1 < 8 and y1 >= 0 and y1 < 8
 
-    def triable_move(b, x1, y1, x2, y2, n):
+    def get_square(self, x, y):
+        """Get square number from coordinates."""
+        return 8 * x + y
+
+    def get_coord(self, s):
+        """Get coordinates from square number."""
+        return (s // 8, s % 8)
+
+    def feasible_move(self, x1, y1, x2, y2, n):
         """
         Decide if a move belongs to the abilities of a piece nature.
 
@@ -95,29 +152,29 @@ class ChessBoard():
         h = x2 - x1
         v = y2 - y1
         if n == "K":
-            return abs(h) <= 1 and abs(v) <= 1
+            return abs(h) == 1 and abs(v) == 1
         elif n == "Q":
             return (
-                abs(h) == 0 or
-                abs(v) == 0 or
-                abs(h) == abs(v)
+                (abs(h) == 0 and abs(h) >= 1) or
+                (abs(v) == 0 and abs(h) >= 1) or
+                (abs(h) == abs(v) and abs(h) >= 1)
             )
         elif n == "R":
             return (
-                abs(h) == 0 or
-                abs(v) == 0
+                (abs(h) == 0 and abs(h) >= 1) or
+                (abs(v) == 0 and abs(h) >= 1)
             )
         elif n == "B":
-            return abs(h) == abs(v)
+            return (abs(h) == abs(v) and abs(h) >= 1)
         elif n == "N":
             return (
                 (abs(h) == 2 and abs(v) == 1) or
                 (abs(h) == 1 and abs(v) == 2)
             )
         elif n == "P":
-            pawn = b.grid[x1][y1]
+            pawn = self.grid[x1][y1]
             pawn_dir = +1 if pawn.color == 0 else -1
-            target_piece = b.grid[x2][y2]
+            target_piece = self.grid[x2][y2]
             if target_piece is None:
                 return (
                     (h == 0 and v == pawn_dir) or
@@ -162,7 +219,7 @@ class ChessBoard():
         """Update nature of the piece that just moved."""
         new_natures = []
         for n in piece.natures:
-            if self.triable_move(x1, y1, x2, y2, n):
+            if self.feasible_move(x1, y1, x2, y2, n):
                 new_natures.append(n)
         piece.natures = new_natures
 
@@ -188,7 +245,7 @@ class ChessBoard():
         if not self.free_trajectory(x1, y1, x2, y2):
             raise IllegalMove("Trying to jump when you shouldn't")
         if not np.any([
-                self.triable_move(x1, y1, x2, y2, n) for n in piece.natures]):
+                self.feasible_move(x1, y1, x2, y2, n) for n in piece.natures]):
             raise IllegalMove(
                 "Trying to move a piece in ways " +
                 "inconsistent with its nature"
@@ -201,10 +258,14 @@ class ChessBoard():
         piece.x = x2
         piece.y = y2
         piece.has_moved = True
+        if target_piece is not None:
+            target_piece.is_dead = True
         self.update_nature(piece, x1, y1, x2, y2)
-        # Update other stuff
+        # Update history
         self.time += 1
         self.moves.append((x1, y1, x2, y2))
+        self.positions.append(self.compute_position())
+        self.attacks.append(self.compute_attack())
 
 
 cb = ChessBoard()
