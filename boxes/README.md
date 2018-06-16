@@ -1,6 +1,6 @@
 # Boxes Game
 
-# Rules
+## Rules
 
 See https://www.raywenderlich.com/38732/multiplayer-game-programming-for-teens-with-python
 
@@ -10,8 +10,7 @@ See https://www.raywenderlich.com/38732/multiplayer-game-programming-for-teens-w
 conda create --name heisenberg-chess
 conda install -n heisenberg-chess pip
 conda install -n heisenberg-chess twisted
-conda install -n heisenberg-chess pip
-conda install python.app
+conda install -n heisenberg-chess python.app
 
 source activate heisenberg-chess
 pip install pygame
