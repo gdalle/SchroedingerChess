@@ -150,6 +150,8 @@ class ChessBoard():
             for c in range(2):
                 for i in range(16):
                     piece = self.pieces[c][i]
+                    if piece.is_dead:
+                        continue
                     if s == self.get_square(piece.x, piece.y):
                         position[s, c, i] = 1
         return position
@@ -162,10 +164,12 @@ class ChessBoard():
             for c in range(2):
                 for i in range(16):
                     piece = self.pieces[c][i]
+                    if piece.is_dead:
+                        continue
                     for n in piece.all_natures:
                         n_ind = piece.all_natures.index(n)
                         if (
-                            self.feasible_move(piece.x, piece.y, xs, ys, n) and
+                            self.feasible_move(piece.x, piece.y, xs, ys, n, c) and
                             self.free_trajectory(piece.x, piece.y, xs, ys)
                         ):
                             attack[s, c, i, n_ind] = 1
@@ -175,7 +179,7 @@ class ChessBoard():
         """Display a possible guess."""
         print(self.__str__(guess=True))
 
-    def feasible_move(self, x1, y1, x2, y2, n):
+    def feasible_move(self, x1, y1, x2, y2, n, c):
         """
         Decide if a move belongs to the abilities of a piece nature.
 
@@ -205,16 +209,21 @@ class ChessBoard():
                 (abs(h) == 1 and abs(v) == 2)
             )
         elif n == "P":
-            pawn = self.grid[x1][y1]
-            pawn_dir = +1 if pawn.color == 0 else -1
+            pawn_dir = +1 if c == 0 else -1
+            has_not_moved = (
+                (c == 0 and y1 == 1) or
+                (c == 1 and y1 == 6)
+            )
             target_piece = self.grid[x2][y2]
             if target_piece is None:
                 return (
                     (h == 0 and v == pawn_dir) or
-                    (h == 0 and v == 2 * pawn_dir and not pawn.has_moved)
+                    (h == 0 and v == 2 * pawn_dir and has_not_moved)
                 )
-            else:
+            elif target_piece.color == 1 - c:
                 return (abs(h) == 1 and v == pawn_dir)
+            else:
+                return False
 
     def free_trajectory(self, x1, y1, x2, y2):
         """Decide if a move is prevented by other pieces in the way."""
@@ -252,7 +261,7 @@ class ChessBoard():
         """Update nature of the piece that just moved."""
         new_forbidden_natures = []
         for n in piece.possible_natures:
-            if not self.feasible_move(x1, y1, x2, y2, n):
+            if not self.feasible_move(x1, y1, x2, y2, n, piece.color):
                 new_forbidden_natures.append(n)
         return (piece.color, piece.number, new_forbidden_natures)
 
@@ -333,7 +342,7 @@ class ChessBoard():
                     "Impossible nature " + str((t, c, i, n))
                 )
 
-        for t in range(1, T+1):
+        for t in range(1, T + 1):
             for s in range(64):
                 cur_c = t % 2
                 prev_c = 1 - cur_c
@@ -347,7 +356,7 @@ class ChessBoard():
                     for i in piece_numbers
                 ])
                 problem += (
-                    dangers <= 16 * (1-king),
+                    dangers <= 16 * (1 - king),
                     "No king left in check " + str((t, c, s))
                 )
 
@@ -389,7 +398,7 @@ class ChessBoard():
             raise IllegalMove("Trying to eat a friend")
         # Check semi-obvious failures
         if not np.any([
-                self.feasible_move(x1, y1, x2, y2, n)
+                self.feasible_move(x1, y1, x2, y2, n, piece.color)
                 for n in piece.possible_natures
         ]):
             raise IllegalMove(
@@ -455,9 +464,9 @@ class ChessBoard():
 
 
 if __name__ == "__main__":
-    cb = ChessBoard()
+    cb = ChessBoard.create_standard_board()
     cb.display_guess()
-    cb.move(0, 0, 1, 2)
+    cb.move(0, 1, 0, 3)
     cb.display_guess()
-    cb.move(2, 6, 2, 4)
+    cb.move(0, 6, 0, 4)
     cb.display_guess()
