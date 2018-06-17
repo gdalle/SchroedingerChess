@@ -198,7 +198,7 @@ class ChessBoard():
             )
         elif n == "R":
             return (
-                (abs(h) == 0 and abs(h) >= 1) or
+                (abs(h) == 0 and abs(v) >= 1) or
                 (abs(v) == 0 and abs(h) >= 1)
             )
         elif n == "B":
