@@ -63,10 +63,20 @@ $$ k_t(c, s) = \sum_i p_t (s, c, i) \cdot x(c, i, K)$$
 1. Variable domain
 $$\forall (c, i, n), ~x(c, i, n) \in \{0, 1\}$$
 2. Variable interpretation: exactly one nature per piece
-$$\forall (c, i), ~\sum_{n \in \mathcal{N}} x(c, i, n) = 1$$
+$$\forall (c, i), ~\sum_{n} x(c, i, n) = 1$$
 3. Right number of pieces of each nature
 $$ \forall (c, n), ~\sum_i x(c, i, n) \leq x_{max} (n)$$
 4. Feasible moves: no piece can perform forbidden moves
 $$\forall (c, i, n), ~x(c, i, n) \leq 1 - f_T(c, i, n)$$
 5. Check rules: no player can leave its king in check
 $$ \forall t, ~ \forall s, ~ d_t(c_t, s) \leq 16 (1 - k_t(c_{t-1}, s))$$
+
+## Implementation
+
+### Python libraries
+
+- <http://labix.org/python-constraint>
+- <http://simpleai.readthedocs.io/en/latest/constraint_satisfaction_problems.html>
+- <http://www.cvxpy.org/tutorial/advanced/index.html#mixed-integer-programs>
+- <http://mpy.github.io/CyLPdoc/>
+- <https://pythonhosted.org/PuLP/>

@@ -2,6 +2,7 @@
 
 
 import numpy as np
+import pulp
 
 
 class IllegalMove(Exception):
@@ -26,22 +27,44 @@ class ChessPiece():
             self.color_name = self.color_name.lower()
         self.number = i
         if n is None:
-            self.natures = ["K", "Q", "R", "B", "N"]
+            self.possible_natures = ["K", "Q", "R", "B", "N"]
         else:
-            self.natures = [n]
+            self.possible_natures = [n]
+        self.nature_guess = self.initial_nature_guess()
         self.board = b
         self.x = x
         self.y = y
         self.has_moved = False
         self.is_dead = False
 
-    def __str__(self):
-        """Display color and number."""
-        return (
-            self.color_name +
-            str(self.number) +
-            " " * (2 - len(str(self.number)))
-        )
+    def __str__(self, guess=False):
+        """Display color and number or nature guess."""
+        if not guess:
+            return (
+                self.color_name +
+                str(self.number) +
+                " " * (2 - len(str(self.number)))
+            )
+        elif guess:
+            return (
+                self.color_name.lower() +
+                self.nature_guess + " "
+            )
+
+    def initial_nature_guess(self):
+        """Define standard initial configuration."""
+        if self.number >= 8:
+            return "P"
+        elif self.number in [0, 7]:
+            return "R"
+        elif self.number in [1, 6]:
+            return "N"
+        elif self.number in [2, 5]:
+            return "B"
+        elif self.number == 3:
+            return "Q"
+        elif self.number == 4:
+            return "K"
 
 
 class ChessBoard():
@@ -85,8 +108,40 @@ class ChessBoard():
         # Game history
         self.time = 0
         self.moves = []
+        self.nature_eliminations = []
         self.positions = [self.compute_position()]
         self.attacks = [self.compute_attack()]
+
+    def __str__(self, guess=False):
+        """Display the board in ASCII art."""
+        s = "\n"
+        for y in reversed(range(8)):
+            s += str(y) + "  "
+            for x in range(8):
+                piece = self.grid[x][y]
+                if piece is not None:
+                    s += piece.__str__(guess=guess)
+                else:
+                    s += "-- "
+                s += " "
+            s += "\n"
+        s += "   "
+        for x in range(8):
+            s += str(x) + "   "
+        s += "\n"
+        return s
+
+    def on_board(self, x1, y1):
+        """Check if a square is part of the board."""
+        return x1 >= 0 and x1 < 8 and y1 >= 0 and y1 < 8
+
+    def get_square(self, x, y):
+        """Get square number from coordinates."""
+        return 8 * x + y
+
+    def get_coord(self, s):
+        """Get coordinates from square number."""
+        return (s // 8, s % 8)
 
     def compute_position(self):
         """Encode position as a binary table."""
@@ -116,31 +171,9 @@ class ChessBoard():
                             attack[s, c, i, n_ind] = 1
         return attack
 
-    def __str__(self):
-        """Display the board in ASCII art."""
-        s = ""
-        for y in reversed(range(8)):
-            for x in range(8):
-                piece = self.grid[x][y]
-                if piece is not None:
-                    s += piece.__str__()
-                else:
-                    s += "-- "
-                s += " "
-            s += "\n"
-        return s
-
-    def on_board(self, x1, y1):
-        """Check if a square is part of the board."""
-        return x1 >= 0 and x1 < 8 and y1 >= 0 and y1 < 8
-
-    def get_square(self, x, y):
-        """Get square number from coordinates."""
-        return 8 * x + y
-
-    def get_coord(self, s):
-        """Get coordinates from square number."""
-        return (s // 8, s % 8)
+    def display_guess(self):
+        """Display a possible guess."""
+        print(self.__str__(guess=True))
 
     def feasible_move(self, x1, y1, x2, y2, n):
         """
@@ -215,13 +248,126 @@ class ChessBoard():
 
         return True
 
-    def update_nature(self, piece, x1, y1, x2, y2):
+    def forbidden_natures(self, piece, x1, y1, x2, y2):
         """Update nature of the piece that just moved."""
-        new_natures = []
-        for n in piece.natures:
-            if self.feasible_move(x1, y1, x2, y2, n):
-                new_natures.append(n)
-        piece.natures = new_natures
+        new_forbidden_natures = []
+        for n in piece.possible_natures:
+            if not self.feasible_move(x1, y1, x2, y2, n):
+                new_forbidden_natures.append(n)
+        return (piece.color, piece.number, new_forbidden_natures)
+
+    def quantum_check(self):
+        """Perform consistency check with MIP."""
+        colors = list(range(2))
+        piece_numbers = list(range(16))
+        major_numbers = list(range(8))
+        pawn_numbers = list(range(8, 16))
+        natures = ["K", "Q", "R", "B", "N", "P"]
+        max_quant = {
+            "K": 1,
+            "Q": 1,
+            "R": 2,
+            "B": 2,
+            "N": 2,
+            "P": 8
+        }
+
+        variables = [
+            (c, i, n)
+            for c in colors
+            for i in piece_numbers
+            for n in natures
+        ]
+
+        x = pulp.LpVariable.dicts(
+            name="x",
+            indexs=variables,
+            lowBound=0,
+            upBound=1,
+            cat="Integer"
+        )
+
+        problem = pulp.LpProblem("chess", 1)
+
+        problem += 1
+
+        for c in colors:
+            for i in piece_numbers:
+                problem += (
+                    sum([x[(c, i, n)] for n in natures]) == 1,
+                    "One nature " + str((c, i))
+                )
+
+        for c in colors:
+            for i in major_numbers:
+                problem += (
+                    x[(c, i, "P")] == 0,
+                    "Not pawn " + str((c, i))
+                )
+            for i in pawn_numbers:
+                problem += (
+                    x[(c, i, "P")] == 1,
+                    "Pawn " + str((c, i))
+                )
+
+        for c in colors:
+            problem += (
+                sum([x[(c, i, "K")] for i in piece_numbers]) >= 1,
+                "Always one king " + str(c)
+            )
+            for n in natures:
+                problem += (
+                    sum([x[(c, i, n)] for i in piece_numbers]) <= max_quant[n],
+                    "Right quantity " + str((c, n))
+                )
+
+        T = self.time
+
+        for t in range(T):
+            nature_elimination = self.nature_eliminations[t]
+            c, i = nature_elimination[0], nature_elimination[1]
+            new_impossible_natures = nature_elimination[2]
+            for n in new_impossible_natures:
+                problem += (
+                    x[(c, i, n)] == 0,
+                    "Impossible nature " + str((t, c, i, n))
+                )
+
+        for t in range(1, T+1):
+            for s in range(64):
+                cur_c = t % 2
+                prev_c = 1 - cur_c
+                dangers = sum([
+                    self.attacks[t][s][cur_c][i][n_ind] * x[(cur_c, i, n)]
+                    for i in piece_numbers
+                    for n_ind, n in enumerate(natures)
+                ])
+                king = sum([
+                    self.positions[t][s][prev_c][i] * x[(prev_c, i, "K")]
+                    for i in piece_numbers
+                ])
+                problem += (
+                    dangers <= 16 * (1-king),
+                    "No king left in check " + str((t, c, s))
+                )
+
+        status = problem.solve()
+        return problem, status
+
+    def parse_variable(self, var):
+        """Parse pulp variable name."""
+        s = var.name.split("_")
+        c = int(s[1][1])
+        i = int(s[2][0]) if len(s[2]) == 2 else int(s[2][:2])
+        n = s[3][1]
+        return c, i, n
+
+    def update_guess(self, problem):
+        """Update guess with MIP solution."""
+        for v in problem.variables():
+            if v.varValue is not None and v.varValue == 1:
+                c, i, n = self.parse_variable(v)
+                self.pieces[c][i].nature_guess = n
 
     def move(self, x1, y1, x2, y2):
         """Perform a move."""
@@ -242,34 +388,51 @@ class ChessBoard():
         ):
             raise IllegalMove("Trying to eat a friend")
         # Check semi-obvious failures
-        if not self.free_trajectory(x1, y1, x2, y2):
-            raise IllegalMove("Trying to jump when you shouldn't")
         if not np.any([
-                self.feasible_move(x1, y1, x2, y2, n) for n in piece.natures]):
+                self.feasible_move(x1, y1, x2, y2, n)
+                for n in piece.possible_natures
+        ]):
             raise IllegalMove(
                 "Trying to move a piece in ways " +
-                "inconsistent with its nature"
+                "inconsistent with its nature(s)"
             )
-        # Check quantum failures
-        # ...
-        # Perform move
-        self.grid[x2][y2] = piece
-        self.grid[x1][y1] = None
-        piece.x = x2
-        piece.y = y2
-        piece.has_moved = True
-        if target_piece is not None:
-            target_piece.is_dead = True
-        self.update_nature(piece, x1, y1, x2, y2)
-        # Update history
+        if not self.free_trajectory(x1, y1, x2, y2):
+            raise IllegalMove("Trying to jump when you shouldn't")
+        # Augment history
         self.time += 1
         self.moves.append((x1, y1, x2, y2))
+        new_forbidden_natures = self.forbidden_natures(piece, x1, y1, x2, y2)
+        self.nature_eliminations.append(new_forbidden_natures)
         self.positions.append(self.compute_position())
         self.attacks.append(self.compute_attack())
+        # Check quantum failures (requires history with last move)
+        problem, status = self.quantum_check()
+        if status != 1:
+            # Reverse last move
+            self.time -= 1
+            self.moves.pop()
+            self.nature_eliminations.pop()
+            self.positions.pop()
+            self.attacks.pop()
+        else:
+            # Perform move
+            self.grid[x2][y2] = piece
+            self.grid[x1][y1] = None
+            piece.x = x2
+            piece.y = y2
+            piece.has_moved = True
+            piece.possible_natures = [
+                n for n in piece.possible_natures
+                if n not in new_forbidden_natures
+            ]
+            if target_piece is not None:
+                target_piece.is_dead = True
+            self.update_guess(problem)
 
 
 cb = ChessBoard()
-print(cb)
+cb.display_guess()
 cb.move(0, 0, 1, 2)
-print(cb)
-cb.grid[1][2].natures
+cb.display_guess()
+cb.move(2, 6, 2, 4)
+cb.display_guess()
