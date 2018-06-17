@@ -48,8 +48,9 @@ class ChessDisplay():
                             cb.move(self.selectedBox[0], 7 -
                                     self.selectedBox[1], box[0], 7 - box[1])
                             self.selectedBox = None
-                        except IllegalMove:
+                        except IllegalMove as e:
                             # TODO: Make IllegalMove appear visually
+                            print(e)
                             self.selectedBox = None
                 else:
                     self.selectedBox = None
