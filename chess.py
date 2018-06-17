@@ -131,6 +131,33 @@ class ChessBoard():
         s += "\n"
         return s
 
+    def display_guess(self):
+        """Display a possible guess."""
+        print(self.__str__(guess=True))
+
+    def create_standard_board():
+        """Define standard board for test purposes."""
+        cb = ChessBoard()
+        cols = ["R", "N", "B", "Q", "K", "B", "N", "R"]
+        for x in range(8):
+            cb.grid[x][0] = ChessPiece(
+                c=0, i=x, n=cols[x],
+                b=cb, x=x, y=0
+            )
+            cb.grid[x][1] = ChessPiece(
+                c=0, i=8 + x, n="P",
+                b=cb, x=x, y=1
+            )
+            cb.grid[x][6] = ChessPiece(
+                c=1, i=8 + x, n="P",
+                b=cb, x=x, y=6
+            )
+            cb.grid[x][7] = ChessPiece(
+                c=1, i=x, n=cols[x],
+                b=cb, x=x, y=7
+            )
+        return cb
+
     def on_board(self, x1, y1):
         """Check if a square is part of the board."""
         return x1 >= 0 and x1 < 8 and y1 >= 0 and y1 < 8
@@ -143,49 +170,50 @@ class ChessBoard():
         """Get coordinates from square number."""
         return (s // 8, s % 8)
 
-    def compute_position(self):
-        """Encode position as a binary table."""
-        position = np.zeros((64, 2, 16))
-        for s in range(64):
-            for c in range(2):
-                for i in range(16):
-                    piece = self.pieces[c][i]
-                    if piece.is_dead:
-                        continue
-                    if s == self.get_square(piece.x, piece.y):
-                        position[s, c, i] = 1
-        return position
+    def pawn_could_reach(self, x1, y1, x2, y2, c):
+        """Check whether a pawn on (x1, y1) can go to (x2, y2)."""
+        h = x2 - x1
+        v = y2 - y1
+        pawn_dir = 1 if c == 0 else -1
+        has_not_moved = (
+            (c == 0 and y1 == 1) or
+            (c == 1 and y1 == 6)
+        )
+        return (
+            (h == 0 and v == pawn_dir) or
+            (h == 0 and v == 2 * pawn_dir and has_not_moved)
+        )
 
-    def compute_attack(self):
-        """Encode attack as a binary table."""
-        attack = np.zeros((64, 2, 16, 6))
-        for s in range(64):
-            xs, ys = self.get_coord(s)
-            for c in range(2):
-                for i in range(16):
-                    piece = self.pieces[c][i]
-                    if piece.is_dead:
-                        continue
-                    for n in piece.all_natures:
-                        n_ind = piece.all_natures.index(n)
-                        if (
-                            self.feasible_move(piece.x, piece.y, xs, ys, n, c)
-                            and
-                            self.free_trajectory(piece.x, piece.y, xs, ys)
-                        ):
-                            attack[s, c, i, n_ind] = 1
-        return attack
+    def pawn_could_take(self, x1, y1, x2, y2, c):
+        """Check whether a pawn on (x1, y1) threatens (x2, y2)."""
+        h = x2 - x1
+        v = y2 - y1
+        pawn_dir = 1 if c == 0 else -1
+        return (abs(h) == 1 and v == pawn_dir)
 
-    def display_guess(self):
-        """Display a possible guess."""
-        print(self.__str__(guess=True))
+    def move_exists(self, x1, y1, x2, y2):
+        """Verify that a move exists in chess."""
+        h = x2 - x1
+        v = y2 - y1
+        if (
+            max(abs(h), abs(v)) != 0 and
+            (
+                h == 0 or
+                v == 0 or
+                abs(h) == abs(v) or
+                (max(abs(h), abs(v)), min(abs(h), abs(v))) == (2, 1)
+            )
+        ):
+            return True
+        else:
+            return False
 
     def feasible_move(self, x1, y1, x2, y2, n, c):
         """
         Decide if a move belongs to the abilities of a piece nature.
 
-        Special case for pawns where it depends upon the target and their
-        previous moves.
+        Special case for pawns where it depends upon
+        the color, target and the previous moves.
         """
         h = x2 - x1
         v = y2 - y1
@@ -210,38 +238,13 @@ class ChessBoard():
                 (abs(h) == 1 and abs(v) == 2)
             )
         elif n == "P":
-            pawn_dir = +1 if c == 0 else -1
-            has_not_moved = (
-                (c == 0 and y1 == 1) or
-                (c == 1 and y1 == 6)
-            )
             target_piece = self.grid[x2][y2]
             if target_piece is None:
-                return (
-                    (h == 0 and v == pawn_dir) or
-                    (h == 0 and v == 2 * pawn_dir and has_not_moved)
-                )
+                return self.pawn_could_reach(x1, y1, x2, y2, c)
             elif target_piece.color == 1 - c:
-                return (abs(h) == 1 and v == pawn_dir)
+                return self.pawn_could_take(x1, y1, x2, y2, c)
             else:
                 return False
-
-    def move_exists(self, x1, y1, x2, y2):
-        """Verify that a move exists in chess."""
-        h = x2 - x1
-        v = y2 - y1
-        if (
-            max(abs(h), abs(v)) != 0 and
-            (
-                h == 0 or
-                v == 0 or
-                abs(h) == abs(v) or
-                (max(abs(h), abs(v)), min(abs(h), abs(v))) == (2, 1)
-            )
-        ):
-            return True
-        else:
-            return False
 
     def free_trajectory(self, x1, y1, x2, y2):
         """Decide if a move is prevented by other pieces in the way."""
@@ -283,6 +286,50 @@ class ChessBoard():
                 new_forbidden_natures.append(n)
         return (piece.color, piece.number, new_forbidden_natures)
 
+    def compute_position(self):
+        """Encode position as a binary table."""
+        position = np.zeros((64, 2, 16))
+        for s in range(64):
+            for c in range(2):
+                for i in range(16):
+                    piece = self.pieces[c][i]
+                    if piece.is_dead:
+                        continue
+                    if s == self.get_square(piece.x, piece.y):
+                        position[s, c, i] = 1
+        return position
+
+    def compute_attack(self):
+        """Encode attack as a binary table."""
+        attack = np.zeros((64, 2, 16, 6))
+        for s in range(64):
+            xs, ys = self.get_coord(s)
+            for c in range(2):
+                for i in range(16):
+                    piece = self.pieces[c][i]
+                    x, y = piece.x, piece.y
+                    if piece.is_dead:
+                        continue
+                    for n in piece.all_natures:
+                        n_ind = piece.all_natures.index(n)
+                        if (
+                            n != "P"
+                            and
+                            self.move_exists(x, y, xs, ys)
+                            and
+                            self.free_trajectory(x, y, xs, ys)
+                            and
+                            self.feasible_move(x, y, xs, ys, n, c)
+                        ):
+                            attack[s, c, i, n_ind] = 1
+                        elif (
+                            n == "P"
+                            and
+                            self.pawn_could_take(x, y, xs, ys, c)
+                        ):
+                            attack[s, c, i, n_ind] = 1
+        return attack
+
     def quantum_check(self):
         """
         Perform consistency check with MIP.
@@ -299,6 +346,7 @@ class ChessBoard():
         major_numbers = list(range(8))
         pawn_numbers = list(range(8, 16))
         natures = ["K", "Q", "R", "B", "N", "P"]
+
         max_quant = {
             "K": 1,
             "Q": 1,
@@ -354,15 +402,21 @@ class ChessBoard():
                         )
 
         for c in colors:
-            problem += (
-                sum([z[(c, i, "K")] for i in piece_numbers]) >= 1,
-                "Always one king " + str(c)
-            )
             for n in natures:
-                problem += (
-                    sum([z[(c, i, n)] for i in piece_numbers]) <= max_quant[n],
-                    "Right quantity " + str((c, n))
-                )
+                if n == "K":
+                    problem += (
+                        sum([z[(c, i, "K")] for i in major_numbers]) == 1,
+                        "Always one king " + str(c)
+                    )
+                elif n == "P":
+                    continue
+                else:
+                    problem += (
+                        sum(
+                            [z[(c, i, n)] for i in major_numbers]
+                        ) <= max_quant[n],
+                        "Right quantity " + str((c, n))
+                    )
 
         T = self.time
 
@@ -411,18 +465,6 @@ class ChessBoard():
 
         return problem, (status_1, status_2)
 
-    def could_be(self, piece, n):
-        """Check if, given the current history, piece could have nature n."""
-        if n not in piece.possible_natures:
-            return False
-        else:
-            possible_natures_backup = piece.possible_natures[:]
-            piece.possible_natures = [n]
-        problem, status = self.quantum_check()
-        could_be_n = (status[1] == 1)
-        piece.possible_natures = possible_natures_backup
-        return could_be_n
-
     def parse_variable(self, var):
         """Parse pulp variable name."""
         s = var.name.split("_")
@@ -439,7 +481,11 @@ class ChessBoard():
                 self.pieces[c][i].nature_guess = n
 
     def test_move(self, x1, y1, x2, y2, full_result=False):
-        """Test whether a move is possible."""
+        """
+        Test whether a move is possible.
+
+        Raise IllegalMove exceptions detailing the various move invalidities.
+        """
         # Check obvious failures
         if not self.on_board(x1, y1) or not self.on_board(x2, y2):
             raise IllegalMove("Trying to move outside of the board")
@@ -480,10 +526,21 @@ class ChessBoard():
         self.positions.pop()
         self.attacks.pop()
 
+        if status[0] != 1:
+            raise IllegalMove(
+                "Trying to perform a move that is not possible for any " +
+                "initial piece configuration"
+            )
+        elif status[1] != 1:
+            raise IllegalMove(
+                "Trying to perform a move that is possible for some " +
+                "initial piece configuration but leads to an uncountered check"
+            )
+
         if full_result:
-            return problem, status
+            return problem
         else:
-            return status[1] == 1
+            return True
 
     def perform_move(self, x1, y1, x2, y2, problem):
         """Perform a move, assuming it is valid."""
@@ -515,44 +572,48 @@ class ChessBoard():
         self.update_guess(problem)
 
     def move(self, x1, y1, x2, y2):
-        """Test and perform a move."""
-        problem, status = self.test_move(x1, y1, x2, y2, full_result=True)
-        if status[1] == 1:
-            self.perform_move(x1, y1, x2, y2, problem)
-        elif status[0] != -1:
-            raise IllegalMove(
-                "Trying to perform a move that is not possible for any " +
-                "initial piece configuration"
-            )
-        elif status[1] != 1:
-            raise IllegalMove(
-                "Trying to perform a move that is possible for some " +
-                "initial piece configuration but leads to an uncountered check"
-            )
+        """
+        Test and perform a move.
+
+        Will raise IllegalMove if the move is not valid.
+        """
+        problem = self.test_move(x1, y1, x2, y2, full_result=True)
+        self.perform_move(x1, y1, x2, y2, problem)
         return True
 
-    def create_standard_board():
-        """Define standard board for test purposes."""
-        cb = ChessBoard()
-        cols = ["R", "N", "B", "Q", "K", "B", "N", "R"]
-        for x in range(8):
-            cb.grid[x][0] = ChessPiece(
-                c=0, i=x, n=cols[x],
-                b=cb, x=x, y=0
-            )
-            cb.grid[x][1] = ChessPiece(
-                c=0, i=8 + x, n="P",
-                b=cb, x=x, y=1
-            )
-            cb.grid[x][6] = ChessPiece(
-                c=1, i=8 + x, n="P",
-                b=cb, x=x, y=6
-            )
-            cb.grid[x][7] = ChessPiece(
-                c=1, i=x, n=cols[x],
-                b=cb, x=x, y=7
-            )
-        return cb
+    def legal_moves_from(self, x1, y1):
+        """Search all legal moves starting from a given square."""
+        legal_arrivals = []
+        illegal_arrivals = []
+        for x2 in range(8):
+            for y2 in range(8):
+                print(x2, y2)
+                try:
+                    self.test_move(x1, y1, x2, y2, full_result=False)
+                    legal_arrivals.append((x2, y2))
+                except IllegalMove as e:
+                    illegal_arrivals.append((x2, y2, e))
+        return legal_arrivals
+
+    def could_be(self, piece, n):
+        """Check if, given the current history, piece could have nature n."""
+        if n not in piece.possible_natures:
+            return False
+        else:
+            possible_natures_backup = piece.possible_natures[:]
+            piece.possible_natures = [n]
+        problem, status = self.quantum_check()
+        could_be_n = (status[1] == 1)
+        piece.possible_natures = possible_natures_backup
+        return could_be_n
+
+    def legal_natures_for(self, piece):
+        """Search all legal natures a piece could have."""
+        legal_natures = []
+        for n in piece.all_natures:
+            if self.could_be(piece, n):
+                legal_natures.append(n)
+        return legal_natures
 
 
 if __name__ == "__main__":
@@ -564,7 +625,3 @@ if __name__ == "__main__":
     cb.display_guess()
     cb.move(0, 0, 4, 4)
     cb.display_guess()
-
-    piece = cb.grid[4][4]
-    print(piece.possible_natures)
-    cb.could_be(piece, "P")
