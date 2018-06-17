@@ -106,9 +106,10 @@ class ChessDisplay():
                             self.gameEngine.move(self.selectedBox[0], 7 - self.selectedBox[1], box[0], 7 - box[1])
                             self.undrawSelectedBox()
                             self.selectedBox = None
-                        except IllegalMove:
+                        except IllegalMove as e:
                             # TODO: Make IllegalMove appear visually
                             self.undrawSelectedBox()
+                            print(e)
                             self.selectedBox = None
                 else:
                     self.undrawSelectedBox()

@@ -169,7 +169,8 @@ class ChessBoard():
                     for n in piece.all_natures:
                         n_ind = piece.all_natures.index(n)
                         if (
-                            self.feasible_move(piece.x, piece.y, xs, ys, n, c) and
+                            self.feasible_move(piece.x, piece.y, xs, ys, n, c)
+                            and
                             self.free_trajectory(piece.x, piece.y, xs, ys)
                         ):
                             attack[s, c, i, n_ind] = 1
@@ -192,7 +193,7 @@ class ChessBoard():
             return abs(h) == 1 and abs(v) == 1
         elif n == "Q":
             return (
-                (abs(h) == 0 and abs(h) >= 1) or
+                (abs(h) == 0 and abs(v) >= 1) or
                 (abs(v) == 0 and abs(h) >= 1) or
                 (abs(h) == abs(v) and abs(h) >= 1)
             )
@@ -301,7 +302,7 @@ class ChessBoard():
         problem += 1
 
         for c in colors:
-            for i in piece_numbers:
+            for i in major_numbers:
                 problem += (
                     sum([x[(c, i, n)] for n in natures]) == 1,
                     "One nature " + str((c, i))
@@ -314,10 +315,17 @@ class ChessBoard():
                     "Not pawn " + str((c, i))
                 )
             for i in pawn_numbers:
-                problem += (
-                    x[(c, i, "P")] == 1,
-                    "Pawn " + str((c, i))
-                )
+                for n in natures:
+                    if n == "P":
+                        problem += (
+                            x[(c, i, n)] == 1,
+                            "Pawn " + str((c, i))
+                        )
+                    elif n != "P":
+                        problem += (
+                            x[(c, i, n)] == 0,
+                            "Not major " + str((c, i, n))
+                        )
 
         for c in colors:
             problem += (
@@ -343,17 +351,25 @@ class ChessBoard():
                 )
 
         for t in range(1, T + 1):
+            cur_c = t % 2
+            prev_c = 1 - cur_c
             for s in range(64):
-                cur_c = t % 2
-                prev_c = 1 - cur_c
+
+                # If there is no major piece from cur_c on s at time t
+                # don't bother
+                if not self.positions[t][s][cur_c][major_numbers].sum() > 0.5:
+                    continue
+
                 dangers = sum([
                     self.attacks[t][s][cur_c][i][n_ind] * x[(cur_c, i, n)]
                     for i in piece_numbers
                     for n_ind, n in enumerate(natures)
+                    if self.attacks[t][s][cur_c][i][n_ind] > 0.5
                 ])
                 king = sum([
                     self.positions[t][s][prev_c][i] * x[(prev_c, i, "K")]
                     for i in piece_numbers
+                    if self.positions[t][s][prev_c][i] > 0.5
                 ])
                 problem += (
                     dangers <= 16 * (1 - king),
@@ -362,6 +378,18 @@ class ChessBoard():
 
         status = problem.solve()
         return problem, status
+
+    def could_be(self, piece, n):
+        """Check if, given the current history, piece could have nature n."""
+        if n not in piece.possible_natures:
+            return False
+        else:
+            possible_natures_backup = piece.possible_natures[:]
+            piece.possible_natures = [n]
+        problem, status = self.quantum_check()
+        could_be_n = (status == 1)
+        piece.possible_natures = possible_natures_backup
+        return could_be_n
 
     def parse_variable(self, var):
         """Parse pulp variable name."""
@@ -433,7 +461,7 @@ class ChessBoard():
             piece.has_moved = True
             piece.possible_natures = [
                 n for n in piece.possible_natures
-                if n not in new_forbidden_natures
+                if n not in new_forbidden_natures[2]
             ]
             if target_piece is not None:
                 target_piece.is_dead = True
@@ -464,9 +492,15 @@ class ChessBoard():
 
 
 if __name__ == "__main__":
-    cb = ChessBoard.create_standard_board()
+    cb = ChessBoard()
     cb.display_guess()
-    cb.move(0, 1, 0, 3)
+    cb.move(1, 1, 1, 3)
     cb.display_guess()
     cb.move(0, 6, 0, 4)
     cb.display_guess()
+    cb.move(0, 0, 4, 4)
+    cb.display_guess()
+
+    piece = cb.grid[4][4]
+    print(piece.possible_natures)
+    cb.could_be(piece, "P")
