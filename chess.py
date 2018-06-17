@@ -429,10 +429,34 @@ class ChessBoard():
                 target_piece.is_dead = True
             self.update_guess(problem)
 
+    def create_standard_board():
+        """Define standard board for test purposes."""
+        cb = ChessBoard()
+        cols = ["R", "N", "B", "Q", "K", "B", "N", "R"]
+        for x in range(8):
+            cb.grid[x][0] = ChessPiece(
+                c=0, i=x, n=cols[x],
+                b=cb, x=x, y=0
+            )
+            cb.grid[x][1] = ChessPiece(
+                c=0, i=8 + x, n="P",
+                b=cb, x=x, y=1
+            )
+            cb.grid[x][6] = ChessPiece(
+                c=1, i=8 + x, n="P",
+                b=cb, x=x, y=6
+            )
+            cb.grid[x][7] = ChessPiece(
+                c=1, i=x, n=cols[x],
+                b=cb, x=x, y=7
+            )
+        return cb
 
-cb = ChessBoard()
-cb.display_guess()
-cb.move(0, 0, 1, 2)
-cb.display_guess()
-cb.move(2, 6, 2, 4)
-cb.display_guess()
+
+if __name__ == "__main__":
+    cb = ChessBoard()
+    cb.display_guess()
+    cb.move(0, 0, 1, 2)
+    cb.display_guess()
+    cb.move(2, 6, 2, 4)
+    cb.display_guess()
