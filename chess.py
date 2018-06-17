@@ -414,6 +414,7 @@ class ChessBoard():
             self.nature_eliminations.pop()
             self.positions.pop()
             self.attacks.pop()
+            raise IllegalMove("Trying to make a move that has no projection")
         else:
             # Perform move
             self.grid[x2][y2] = piece
