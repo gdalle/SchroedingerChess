@@ -1,8 +1,4 @@
-from chess import *
-from display import *
+from clients import GameEngine
 
-# cb = ChessBoard.create_standard_board()
-cb = ChessBoard()
-window = ChessDisplay()
-while True:
-    window.update(cb)
+gameEngine = GameEngine()
+gameEngine.start()
