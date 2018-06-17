@@ -302,7 +302,7 @@ class ChessBoard():
         problem += 1
 
         for c in colors:
-            for i in piece_numbers:
+            for i in major_numbers:
                 problem += (
                     sum([x[(c, i, n)] for n in natures]) == 1,
                     "One nature " + str((c, i))
@@ -315,10 +315,17 @@ class ChessBoard():
                     "Not pawn " + str((c, i))
                 )
             for i in pawn_numbers:
-                problem += (
-                    x[(c, i, "P")] == 1,
-                    "Pawn " + str((c, i))
-                )
+                for n in natures:
+                    if n == "P":
+                        problem += (
+                            x[(c, i, n)] == 1,
+                            "Pawn " + str((c, i))
+                        )
+                    elif n != "P":
+                        problem += (
+                            x[(c, i, n)] == 0,
+                            "Not major " + str((c, i, n))
+                        )
 
         for c in colors:
             problem += (
@@ -344,17 +351,25 @@ class ChessBoard():
                 )
 
         for t in range(1, T + 1):
+            cur_c = t % 2
+            prev_c = 1 - cur_c
             for s in range(64):
-                cur_c = t % 2
-                prev_c = 1 - cur_c
+
+                # If there is no major piece from cur_c on s at time t
+                # don't bother
+                if not self.positions[t][s][cur_c][major_numbers].sum() > 0.5:
+                    continue
+
                 dangers = sum([
                     self.attacks[t][s][cur_c][i][n_ind] * x[(cur_c, i, n)]
                     for i in piece_numbers
                     for n_ind, n in enumerate(natures)
+                    if self.attacks[t][s][cur_c][i][n_ind] > 0.5
                 ])
                 king = sum([
                     self.positions[t][s][prev_c][i] * x[(prev_c, i, "K")]
                     for i in piece_numbers
+                    if self.positions[t][s][prev_c][i] > 0.5
                 ])
                 problem += (
                     dangers <= 16 * (1 - king),
@@ -488,4 +503,4 @@ if __name__ == "__main__":
 
     piece = cb.grid[4][4]
     print(piece.possible_natures)
-    cb.could_be(piece, "B")
+    cb.could_be(piece, "P")
