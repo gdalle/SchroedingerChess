@@ -267,9 +267,34 @@ class ChessBoard():
         self.positions.append(self.compute_position())
         self.attacks.append(self.compute_attack())
 
+    def create_standard_board():
+        """
+        In order to make tests, a standard board may be of use.
+        """
+        cb = ChessBoard()
+        cols = ["R", "N", "B", "Q", "K", "B", "N", "R"]
+        for x in range(8):
+            cb.grid[x][0] = ChessPiece(
+                c=0, i=x, n=cols[x],
+                b=cb, x=x, y=0
+            )
+            cb.grid[x][1] = ChessPiece(
+                c=0, i=8 + x, n="P",
+                b=cb, x=x, y=1
+            )
+            cb.grid[x][6] = ChessPiece(
+                c=1, i=8 + x, n="P",
+                b=cb, x=x, y=6
+            )
+            cb.grid[x][7] = ChessPiece(
+                c=1, i=x, n=cols[x],
+                b=cb, x=x, y=7
+            )
+        return cb
 
-cb = ChessBoard()
-print(cb)
-cb.move(0, 0, 1, 2)
-print(cb)
-cb.grid[1][2].natures
+if __name__ == "__main__":
+    cb = ChessBoard()
+    print(cb)
+    cb.move(0, 0, 1, 2)
+    print(cb)
+    cb.grid[1][2].natures
