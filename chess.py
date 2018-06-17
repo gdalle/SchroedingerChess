@@ -226,6 +226,23 @@ class ChessBoard():
             else:
                 return False
 
+    def move_exists(self, x1, y1, x2, y2):
+        """Verify that a move exists in chess."""
+        h = x2 - x1
+        v = y2 - y1
+        if (
+            max(abs(h), abs(v)) != 0 and
+            (
+                h == 0 or
+                v == 0 or
+                abs(h) == abs(v) or
+                (max(abs(h), abs(v)), min(abs(h), abs(v))) == (2, 1)
+            )
+        ):
+            return True
+        else:
+            return False
+
     def free_trajectory(self, x1, y1, x2, y2):
         """Decide if a move is prevented by other pieces in the way."""
         h = x2 - x1
@@ -267,7 +284,16 @@ class ChessBoard():
         return (piece.color, piece.number, new_forbidden_natures)
 
     def quantum_check(self):
-        """Perform consistency check with MIP."""
+        """
+        Perform consistency check with MIP.
+
+        Returns the solved linear problem and:
+        - (1, 1) if the situation is explained by at least one
+        piece configuration without uncountered checks
+        - (1, -1) if all configurations that can explain the situation
+        lead to uncountered checks
+        - (-1, -1) if no configuration can explain the situation
+        """
         colors = list(range(2))
         piece_numbers = list(range(16))
         major_numbers = list(range(8))
@@ -289,8 +315,8 @@ class ChessBoard():
             for n in natures
         ]
 
-        x = pulp.LpVariable.dicts(
-            name="x",
+        z = pulp.LpVariable.dicts(
+            name="z",
             indexs=variables,
             lowBound=0,
             upBound=1,
@@ -304,37 +330,37 @@ class ChessBoard():
         for c in colors:
             for i in major_numbers:
                 problem += (
-                    sum([x[(c, i, n)] for n in natures]) == 1,
+                    sum([z[(c, i, n)] for n in natures]) == 1,
                     "One nature " + str((c, i))
                 )
 
         for c in colors:
             for i in major_numbers:
                 problem += (
-                    x[(c, i, "P")] == 0,
+                    z[(c, i, "P")] == 0,
                     "Not pawn " + str((c, i))
                 )
             for i in pawn_numbers:
                 for n in natures:
                     if n == "P":
                         problem += (
-                            x[(c, i, n)] == 1,
+                            z[(c, i, n)] == 1,
                             "Pawn " + str((c, i))
                         )
-                    elif n != "P":
+                    else:
                         problem += (
-                            x[(c, i, n)] == 0,
-                            "Not major " + str((c, i, n))
+                            z[(c, i, n)] == 0,
+                            "Not major piece " + str((c, i, n))
                         )
 
         for c in colors:
             problem += (
-                sum([x[(c, i, "K")] for i in piece_numbers]) >= 1,
+                sum([z[(c, i, "K")] for i in piece_numbers]) >= 1,
                 "Always one king " + str(c)
             )
             for n in natures:
                 problem += (
-                    sum([x[(c, i, n)] for i in piece_numbers]) <= max_quant[n],
+                    sum([z[(c, i, n)] for i in piece_numbers]) <= max_quant[n],
                     "Right quantity " + str((c, n))
                 )
 
@@ -346,9 +372,14 @@ class ChessBoard():
             new_impossible_natures = nature_elimination[2]
             for n in new_impossible_natures:
                 problem += (
-                    x[(c, i, n)] == 0,
+                    z[(c, i, n)] == 0,
                     "Impossible nature " + str((t, c, i, n))
                 )
+
+        status_1 = problem.solve()
+
+        if status_1 != 1:
+            return problem, (-1, -1)
 
         for t in range(1, T + 1):
             cur_c = t % 2
@@ -361,13 +392,13 @@ class ChessBoard():
                     continue
 
                 dangers = sum([
-                    self.attacks[t][s][cur_c][i][n_ind] * x[(cur_c, i, n)]
+                    self.attacks[t][s][cur_c][i][n_ind] * z[(cur_c, i, n)]
                     for i in piece_numbers
                     for n_ind, n in enumerate(natures)
                     if self.attacks[t][s][cur_c][i][n_ind] > 0.5
                 ])
                 king = sum([
-                    self.positions[t][s][prev_c][i] * x[(prev_c, i, "K")]
+                    self.positions[t][s][prev_c][i] * z[(prev_c, i, "K")]
                     for i in piece_numbers
                     if self.positions[t][s][prev_c][i] > 0.5
                 ])
@@ -376,8 +407,9 @@ class ChessBoard():
                     "No king left in check " + str((t, c, s))
                 )
 
-        status = problem.solve()
-        return problem, status
+        status_2 = problem.solve()
+
+        return problem, (status_1, status_2)
 
     def could_be(self, piece, n):
         """Check if, given the current history, piece could have nature n."""
@@ -387,7 +419,7 @@ class ChessBoard():
             possible_natures_backup = piece.possible_natures[:]
             piece.possible_natures = [n]
         problem, status = self.quantum_check()
-        could_be_n = (status == 1)
+        could_be_n = (status[1] == 1)
         piece.possible_natures = possible_natures_backup
         return could_be_n
 
@@ -406,8 +438,8 @@ class ChessBoard():
                 c, i, n = self.parse_variable(v)
                 self.pieces[c][i].nature_guess = n
 
-    def move(self, x1, y1, x2, y2):
-        """Perform a move."""
+    def test_move(self, x1, y1, x2, y2, full_result=False):
+        """Test whether a move is possible."""
         # Check obvious failures
         if not self.on_board(x1, y1) or not self.on_board(x2, y2):
             raise IllegalMove("Trying to move outside of the board")
@@ -424,48 +456,80 @@ class ChessBoard():
             target_piece.color == piece.color
         ):
             raise IllegalMove("Trying to eat a friend")
-        # Check semi-obvious failures
-        if not np.any([
-                self.feasible_move(x1, y1, x2, y2, n, piece.color)
-                for n in piece.possible_natures
-        ]):
+        if not self.move_exists(x1, y1, x2, y2):
             raise IllegalMove(
-                "Trying to move a piece in ways " +
-                "inconsistent with its nature(s)"
-            )
+                "Trying to perform a move that doesn't exist in chess")
         if not self.free_trajectory(x1, y1, x2, y2):
-            raise IllegalMove("Trying to jump when you shouldn't")
-        # Augment history
+            raise IllegalMove("Trying to move through other pieces")
+
+        # Augment history temporarily
         self.time += 1
         self.moves.append((x1, y1, x2, y2))
         new_forbidden_natures = self.forbidden_natures(piece, x1, y1, x2, y2)
         self.nature_eliminations.append(new_forbidden_natures)
         self.positions.append(self.compute_position())
         self.attacks.append(self.compute_attack())
+
         # Check quantum failures (requires history with last move)
         problem, status = self.quantum_check()
-        if status != 1:
-            # Reverse last move
-            self.time -= 1
-            self.moves.pop()
-            self.nature_eliminations.pop()
-            self.positions.pop()
-            self.attacks.pop()
-            raise IllegalMove("Trying to make a move that has no projection")
+
+        # Reverse last move
+        self.time -= 1
+        self.moves.pop()
+        self.nature_eliminations.pop()
+        self.positions.pop()
+        self.attacks.pop()
+
+        if full_result:
+            return problem, status
         else:
-            # Perform move
-            self.grid[x2][y2] = piece
-            self.grid[x1][y1] = None
-            piece.x = x2
-            piece.y = y2
-            piece.has_moved = True
-            piece.possible_natures = [
-                n for n in piece.possible_natures
-                if n not in new_forbidden_natures[2]
-            ]
-            if target_piece is not None:
-                target_piece.is_dead = True
-            self.update_guess(problem)
+            return status[1] == 1
+
+    def perform_move(self, x1, y1, x2, y2, problem):
+        """Perform a move, assuming it is valid."""
+        piece = self.grid[x1][y1]
+        target_piece = self.grid[x2][y2]
+
+        # Augment history for good
+        self.time += 1
+        self.moves.append((x1, y1, x2, y2))
+        new_forbidden_natures = self.forbidden_natures(piece, x1, y1, x2, y2)
+        self.nature_eliminations.append(new_forbidden_natures)
+        self.positions.append(self.compute_position())
+        self.attacks.append(self.compute_attack())
+
+        # Update grid
+        self.grid[x2][y2] = piece
+        self.grid[x1][y1] = None
+
+        # Update pieces
+        piece.x = x2
+        piece.y = y2
+        piece.has_moved = True
+        piece.possible_natures = [
+            n for n in piece.possible_natures
+            if n not in new_forbidden_natures[2]
+        ]
+        if target_piece is not None:
+            target_piece.is_dead = True
+        self.update_guess(problem)
+
+    def move(self, x1, y1, x2, y2):
+        """Test and perform a move."""
+        problem, status = self.test_move(x1, y1, x2, y2, full_result=True)
+        if status[1] == 1:
+            self.perform_move(x1, y1, x2, y2, problem)
+        elif status[0] != -1:
+            raise IllegalMove(
+                "Trying to perform a move that is not possible for any " +
+                "initial piece configuration"
+            )
+        elif status[1] != 1:
+            raise IllegalMove(
+                "Trying to perform a move that is possible for some " +
+                "initial piece configuration but leads to an uncountered check"
+            )
+        return True
 
     def create_standard_board():
         """Define standard board for test purposes."""
