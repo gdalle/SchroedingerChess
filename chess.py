@@ -169,7 +169,8 @@ class ChessBoard():
                     for n in piece.all_natures:
                         n_ind = piece.all_natures.index(n)
                         if (
-                            self.feasible_move(piece.x, piece.y, xs, ys, n, c) and
+                            self.feasible_move(piece.x, piece.y, xs, ys, n, c)
+                            and
                             self.free_trajectory(piece.x, piece.y, xs, ys)
                         ):
                             attack[s, c, i, n_ind] = 1
@@ -192,7 +193,7 @@ class ChessBoard():
             return abs(h) == 1 and abs(v) == 1
         elif n == "Q":
             return (
-                (abs(h) == 0 and abs(h) >= 1) or
+                (abs(h) == 0 and abs(v) >= 1) or
                 (abs(v) == 0 and abs(h) >= 1) or
                 (abs(h) == abs(v) and abs(h) >= 1)
             )
@@ -363,6 +364,18 @@ class ChessBoard():
         status = problem.solve()
         return problem, status
 
+    def could_be(self, piece, n):
+        """Check if, given the current history, piece could have nature n."""
+        if n not in piece.possible_natures:
+            return False
+        else:
+            possible_natures_backup = piece.possible_natures[:]
+            piece.possible_natures = [n]
+        problem, status = self.quantum_check()
+        could_be_n = (status == 1)
+        piece.possible_natures = possible_natures_backup
+        return could_be_n
+
     def parse_variable(self, var):
         """Parse pulp variable name."""
         s = var.name.split("_")
@@ -433,7 +446,7 @@ class ChessBoard():
             piece.has_moved = True
             piece.possible_natures = [
                 n for n in piece.possible_natures
-                if n not in new_forbidden_natures
+                if n not in new_forbidden_natures[2]
             ]
             if target_piece is not None:
                 target_piece.is_dead = True
@@ -464,9 +477,15 @@ class ChessBoard():
 
 
 if __name__ == "__main__":
-    cb = ChessBoard.create_standard_board()
+    cb = ChessBoard()
     cb.display_guess()
-    cb.move(0, 1, 0, 3)
+    cb.move(1, 1, 1, 3)
     cb.display_guess()
     cb.move(0, 6, 0, 4)
     cb.display_guess()
+    cb.move(0, 0, 4, 4)
+    cb.display_guess()
+
+    piece = cb.grid[4][4]
+    print(piece.possible_natures)
+    cb.could_be(piece, "B")
