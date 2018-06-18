@@ -3,6 +3,7 @@
 
 import numpy as np
 import pulp
+from collections import defaultdict
 
 
 class IllegalMove(Exception):
@@ -195,20 +196,21 @@ class ChessBoard():
         """Verify that a move exists in chess."""
         h = x2 - x1
         v = y2 - y1
-        if (
-            max(abs(h), abs(v)) != 0 and
-            (
-                h == 0 or
-                v == 0 or
-                abs(h) == abs(v) or
-                (max(abs(h), abs(v)), min(abs(h), abs(v))) == (2, 1)
-            )
-        ):
-            return True
-        else:
+        ah = abs(h)
+        av = abs(v)
+        M = max(ah, av)
+        m = min(ah, av)
+        d = abs(ah - av)
+        if m > 0 and d > 1:
             return False
+        elif m > 0 and d == 1:
+            return M == 2 and m == 1
+        elif m == M == 0:
+            return False
+        else:
+            return True
 
-    def feasible_move(self, x1, y1, x2, y2, n, c):
+    def possible_move(self, x1, y1, x2, y2, n, c):
         """
         Decide if a move belongs to the abilities of a piece nature.
 
@@ -282,7 +284,7 @@ class ChessBoard():
         """Update nature of the piece that just moved."""
         new_forbidden_natures = []
         for n in piece.possible_natures:
-            if not self.feasible_move(x1, y1, x2, y2, n, piece.color):
+            if not self.possible_move(x1, y1, x2, y2, n, piece.color):
                 new_forbidden_natures.append(n)
         return (piece.color, piece.number, new_forbidden_natures)
 
@@ -296,38 +298,38 @@ class ChessBoard():
                     if piece.is_dead:
                         continue
                     if s == self.get_square(piece.x, piece.y):
-                        position[s, c, i] = 1
+                        position[(s, c, i)] = 1
         return position
 
     def compute_attack(self):
         """Encode attack as a binary table."""
         attack = np.zeros((64, 2, 16, 6))
-        for s in range(64):
-            xs, ys = self.get_coord(s)
-            for c in range(2):
-                for i in range(16):
-                    piece = self.pieces[c][i]
-                    x, y = piece.x, piece.y
-                    if piece.is_dead:
-                        continue
-                    for n in piece.all_natures:
+        # attack = defaultdict(int)
+        cur_c = self.time % 2
+        for c in [cur_c]:
+            for i in range(16):
+                piece = self.pieces[c][i]
+                x, y = piece.x, piece.y
+                if piece.is_dead:
+                    continue
+                if i < 8:
+                    for n in piece.possible_natures:
                         n_ind = piece.all_natures.index(n)
-                        if (
-                            n != "P"
-                            and
-                            self.move_exists(x, y, xs, ys)
-                            and
-                            self.free_trajectory(x, y, xs, ys)
-                            and
-                            self.feasible_move(x, y, xs, ys, n, c)
-                        ):
-                            attack[s, c, i, n_ind] = 1
-                        elif (
-                            n == "P"
-                            and
-                            self.pawn_could_take(x, y, xs, ys, c)
-                        ):
-                            attack[s, c, i, n_ind] = 1
+                        for s in range(64):
+                            xs, ys = self.get_coord(s)
+                            if (
+                                self.move_exists(x, y, xs, ys)
+                                and
+                                self.free_trajectory(x, y, xs, ys)
+                                and
+                                self.possible_move(x, y, xs, ys, n, c)
+                            ):
+                                attack[s, c, i, n_ind] = 1
+                elif i >= 8:
+                    for s in range(64):
+                        xs, ys = self.get_coord(s)
+                        if self.pawn_could_take(x, y, xs, ys, c):
+                            attack[s, c, i, -1] = 1
         return attack
 
     def quantum_check(self):
@@ -343,11 +345,11 @@ class ChessBoard():
         """
         colors = list(range(2))
         piece_numbers = list(range(16))
-        major_numbers = list(range(8))
+        major_piece_numbers = list(range(8))
         pawn_numbers = list(range(8, 16))
         natures = ["K", "Q", "R", "B", "N", "P"]
 
-        max_quant = {
+        max_quantity = {
             "K": 1,
             "Q": 1,
             "R": 2,
@@ -356,16 +358,22 @@ class ChessBoard():
             "P": 8
         }
 
-        variables = [
+        major_piece_variables = [
             (c, i, n)
             for c in colors
-            for i in piece_numbers
+            for i in major_piece_numbers
+            for n in natures
+        ]
+        pawn_variables = [
+            (c, i, n)
+            for c in colors
+            for i in pawn_numbers
             for n in natures
         ]
 
         z = pulp.LpVariable.dicts(
             name="z",
-            indexs=variables,
+            indexs=major_piece_variables,
             lowBound=0,
             upBound=1,
             cat="Integer"
@@ -376,94 +384,91 @@ class ChessBoard():
         problem += 1
 
         for c in colors:
-            for i in major_numbers:
+            for i in major_piece_numbers:
+
                 problem += (
                     sum([z[(c, i, n)] for n in natures]) == 1,
                     "One nature " + str((c, i))
                 )
 
-        for c in colors:
-            for i in major_numbers:
                 problem += (
                     z[(c, i, "P")] == 0,
-                    "Not pawn " + str((c, i))
+                    "Not a pawn " + str((c, i))
                 )
-            for i in pawn_numbers:
-                for n in natures:
-                    if n == "P":
-                        problem += (
-                            z[(c, i, n)] == 1,
-                            "Pawn " + str((c, i))
-                        )
-                    else:
-                        problem += (
-                            z[(c, i, n)] == 0,
-                            "Not major piece " + str((c, i, n))
-                        )
 
         for c in colors:
             for n in natures:
                 if n == "K":
                     problem += (
-                        sum([z[(c, i, "K")] for i in major_numbers]) == 1,
+                        sum([z[(c, i, "K")] for i in major_piece_numbers]) == 1,
                         "Always one king " + str(c)
                     )
-                elif n == "P":
-                    continue
-                else:
+
+                elif n != "P":
                     problem += (
                         sum(
-                            [z[(c, i, n)] for i in major_numbers]
-                        ) <= max_quant[n],
-                        "Right quantity " + str((c, n))
+                            [z[(c, i, n)] for i in major_piece_numbers]
+                        ) <= max_quantity[n],
+                        "Maximum quantity " + str((c, n))
                     )
+
+        for c in colors:
+            problem += (
+                sum([z[(c, i, "B")] for i in [1, 3, 5, 7]]) == 1,
+                "One " + str(c) + "-square bishop " + str(c)
+            )
+            problem += (
+                sum([z[(c, i, "B")] for i in [0, 2, 4, 6]]) == 1,
+                "One " + str(1 - c) + "-square bishop " + str(c)
+            )
 
         T = self.time
 
         for t in range(T):
             nature_elimination = self.nature_eliminations[t]
             c, i = nature_elimination[0], nature_elimination[1]
-            new_impossible_natures = nature_elimination[2]
-            for n in new_impossible_natures:
-                problem += (
-                    z[(c, i, n)] == 0,
-                    "Impossible nature " + str((t, c, i, n))
-                )
-
-        status_1 = problem.solve()
-
-        if status_1 != 1:
-            return problem, (-1, -1)
+            if i < 8:
+                new_impossible_natures = nature_elimination[2]
+                for n in new_impossible_natures:
+                    problem += (
+                        z[(c, i, n)] == 0,
+                        "Impossible nature " + str((t, c, i, n))
+                    )
 
         for t in range(1, T + 1):
             cur_c = t % 2
             prev_c = 1 - cur_c
             for s in range(64):
 
-                # If there is no major piece from cur_c on s at time t
-                # don't bother
-                if not self.positions[t][s][cur_c][major_numbers].sum() > 0.5:
+                if not self.positions[t][s, prev_c, major_piece_numbers].sum() > 0.5:
+                    continue
+                if not self.attacks[t][s, cur_c, :, :].sum() > 0.5:
                     continue
 
                 dangers = sum([
-                    self.attacks[t][s][cur_c][i][n_ind] * z[(cur_c, i, n)]
-                    for i in piece_numbers
-                    for n_ind, n in enumerate(natures)
-                    if self.attacks[t][s][cur_c][i][n_ind] > 0.5
+                    self.attacks[t][s, cur_c, i, n_ind] * z[(cur_c, i, n)]
+                    for i in major_piece_numbers
+                    for (n_ind, n) in enumerate(natures)
+                    if self.attacks[t][s, cur_c, i, n_ind] > 0.5
+                ]) + sum([
+                    self.attacks[t][s, cur_c, i, -1]
+                    for i in pawn_numbers
                 ])
+
                 king = sum([
-                    self.positions[t][s][prev_c][i] * z[(prev_c, i, "K")]
-                    for i in piece_numbers
-                    if self.positions[t][s][prev_c][i] > 0.5
+                    self.positions[t][s, prev_c, i] * z[(prev_c, i, "K")]
+                    for i in major_piece_numbers
+                    if self.positions[t][s, prev_c, i] > 0.5
                 ])
+
                 problem += (
-                    dangers <= 16 * (1 - king),
+                    16 * (1 - king) >= dangers,
                     "No king left in check " + str((t, c, s))
                 )
 
-        status_2 = problem.solve()
+        status = problem.solve()
 
-        return problem, (status_1, status_2)
+        return problem, status
 
     def parse_variable(self, var):
         """Parse pulp variable name."""
@@ -480,37 +485,49 @@ class ChessBoard():
                 c, i, n = self.parse_variable(v)
                 self.pieces[c][i].nature_guess = n
 
+    def trivial_test_move(self, x1, y1, x2, y2):
+        """Check obvious failures."""
+        error = None
+        if not self.on_board(x1, y1) or not self.on_board(x2, y2):
+            error = "Trying to move outside of the board"
+            return error
+        piece = self.grid[x1][y1]
+        target_piece = self.grid[x2][y2]
+        if piece is None:
+            error = "Trying to move the void"
+            return error
+        if self.time % 2 != piece.color:
+            error = "Trying to move out of turn"
+            return error
+        if (
+            target_piece is not None and
+            target_piece.color == piece.color
+        ):
+            error = "Trying to eat a friend"
+            return error
+        if not self.move_exists(x1, y1, x2, y2):
+            error = "Trying to perform a move that doesn't exist in chess"
+            return error
+        if not self.free_trajectory(x1, y1, x2, y2):
+            error = "Trying to move through other pieces"
+            return error
+
     def test_move(self, x1, y1, x2, y2, full_result=False):
         """
         Test whether a move is possible.
 
         Raise IllegalMove exceptions detailing the various move invalidities.
         """
-        # Check obvious failures
-        if not self.on_board(x1, y1) or not self.on_board(x2, y2):
-            raise IllegalMove("Trying to move outside of the board")
+        error = self.trivial_test_move(x1, y1, x2, y2)
+        if error is not None:
+            raise IllegalMove(error)
+
         piece = self.grid[x1][y1]
-        target_piece = self.grid[x2][y2]
-        if piece is None:
-            raise IllegalMove("Trying to move the void")
-        if self.time % 2 != piece.color:
-            raise IllegalMove(
-                "Trying to move out of turn"
-            )
-        if (
-            target_piece is not None and
-            target_piece.color == piece.color
-        ):
-            raise IllegalMove("Trying to eat a friend")
-        if not self.move_exists(x1, y1, x2, y2):
-            raise IllegalMove(
-                "Trying to perform a move that doesn't exist in chess")
-        if not self.free_trajectory(x1, y1, x2, y2):
-            raise IllegalMove("Trying to move through other pieces")
 
         # Augment history temporarily
         self.time += 1
         self.moves.append((x1, y1, x2, y2))
+        piece.x, piece.y = x2, y2
         new_forbidden_natures = self.forbidden_natures(piece, x1, y1, x2, y2)
         self.nature_eliminations.append(new_forbidden_natures)
         self.positions.append(self.compute_position())
@@ -522,20 +539,17 @@ class ChessBoard():
         # Reverse last move
         self.time -= 1
         self.moves.pop()
+        piece.x, piece.y = x1, y1
         self.nature_eliminations.pop()
         self.positions.pop()
         self.attacks.pop()
 
-        if status[0] != 1:
-            raise IllegalMove(
-                "Trying to perform a move that is not possible for any " +
+        if status == -1:
+            error = (
+                "Trying to perform a move that is illegal for any " +
                 "initial piece configuration"
             )
-        elif status[1] != 1:
-            raise IllegalMove(
-                "Trying to perform a move that is possible for some " +
-                "initial piece configuration but leads to an uncountered check"
-            )
+            raise IllegalMove(error)
 
         if full_result:
             return problem
@@ -552,8 +566,6 @@ class ChessBoard():
         self.moves.append((x1, y1, x2, y2))
         new_forbidden_natures = self.forbidden_natures(piece, x1, y1, x2, y2)
         self.nature_eliminations.append(new_forbidden_natures)
-        self.positions.append(self.compute_position())
-        self.attacks.append(self.compute_attack())
 
         # Update grid
         self.grid[x2][y2] = piece
@@ -569,6 +581,10 @@ class ChessBoard():
         ]
         if target_piece is not None:
             target_piece.is_dead = True
+
+        # Update other global stuff
+        self.positions.append(self.compute_position())
+        self.attacks.append(self.compute_attack())
         self.update_guess(problem)
 
     def move(self, x1, y1, x2, y2):
@@ -587,7 +603,6 @@ class ChessBoard():
         illegal_arrivals = []
         for x2 in range(8):
             for y2 in range(8):
-                print(x2, y2)
                 try:
                     self.test_move(x1, y1, x2, y2, full_result=False)
                     legal_arrivals.append((x2, y2))
@@ -595,7 +610,16 @@ class ChessBoard():
                     illegal_arrivals.append((x2, y2, e))
         return legal_arrivals
 
-    def could_be(self, piece, n):
+    def all_legal_moves(self):
+        """Search all legal move at a given turn."""
+        legal_moves = []
+        for x1 in range(8):
+            for y1 in range(8):
+                for (x2, y2) in self.legal_moves_from(x1, y1):
+                    legal_moves.append((x1, y1, x2, y2))
+        return legal_moves
+
+    def is_legal_nature(self, piece, n):
         """Check if, given the current history, piece could have nature n."""
         if n not in piece.possible_natures:
             return False
@@ -603,20 +627,21 @@ class ChessBoard():
             possible_natures_backup = piece.possible_natures[:]
             piece.possible_natures = [n]
         problem, status = self.quantum_check()
-        could_be_n = (status[1] == 1)
+        is_legal_nature_n = (status == 1)
         piece.possible_natures = possible_natures_backup
-        return could_be_n
+        return is_legal_nature_n
 
-    def legal_natures_for(self, piece):
+    def legal_natures(self, piece):
         """Search all legal natures a piece could have."""
         legal_natures = []
         for n in piece.all_natures:
-            if self.could_be(piece, n):
+            if self.is_legal_nature(piece, n):
                 legal_natures.append(n)
         return legal_natures
 
 
-if __name__ == "__main__":
+def main():
+    """Main."""
     cb = ChessBoard()
     cb.display_guess()
     cb.move(1, 1, 1, 3)
@@ -625,3 +650,15 @@ if __name__ == "__main__":
     cb.display_guess()
     cb.move(0, 0, 4, 4)
     cb.display_guess()
+    cb.move(1, 6, 1, 4)
+    cb.display_guess()
+    print(cb.all_legal_moves())
+
+
+if __name__ == "__main__":
+    import cProfile
+    import pstats
+
+    cProfile.run("main()", "stats")
+    p = pstats.Stats("stats")
+    p.strip_dirs().sort_stats("cumtime").print_stats()
