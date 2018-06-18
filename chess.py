@@ -639,6 +639,24 @@ class ChessBoard():
                 legal_natures.append(n)
         return legal_natures
 
+class LightBoard():
+    def __init__(self):
+        self.board = [ [None for _ in range(8)] for _ in range(8)]
+        for i in range(8):
+            self.board[i][0] = ("K", "w") #TODO replace with elephants
+            self.board[i][1] = ("P", "w")
+            self.board[i][6] = ("P", "b")
+            self.board[i][7] = ("K", "b") #TODO replace with elephants
+
+    def move(self, x1, y1, x2, y2):
+        self.board[x2][y2] = self.board[x1][y1]
+        self.board[x1][y1] = None
+
+    def promote(self, x, y):
+        self.board[x][y] = ("Piece", self.board[x][y][1])
+
+    def getPiece(self, x, y):
+        return self.board[x][y]
 
 def main():
     """Main."""
