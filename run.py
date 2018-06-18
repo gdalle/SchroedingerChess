@@ -1,4 +1,4 @@
-from clients import GameEngine
+from game_engines import GameEngine
 
 gameEngine = GameEngine()
 gameEngine.start()
