@@ -364,12 +364,6 @@ class ChessBoard():
             for i in major_piece_numbers
             for n in natures
         ]
-        pawn_variables = [
-            (c, i, n)
-            for c in colors
-            for i in pawn_numbers
-            for n in natures
-        ]
 
         z = pulp.LpVariable.dicts(
             name="z",
@@ -487,11 +481,11 @@ class ChessBoard():
 
     def trivial_test_move(self, x1, y1, x2, y2):
         """Check obvious failures."""
-        error = None
         if not self.on_board(x1, y1) or not self.on_board(x2, y2):
             error = "Trying to move outside of the board"
             return error
         piece = self.grid[x1][y1]
+        cur_c = piece.color
         target_piece = self.grid[x2][y2]
         if piece is None:
             error = "Trying to move the void"
@@ -501,7 +495,7 @@ class ChessBoard():
             return error
         if (
             target_piece is not None and
-            target_piece.color == piece.color
+            target_piece.color == cur_c
         ):
             error = "Trying to eat a friend"
             return error
@@ -511,6 +505,19 @@ class ChessBoard():
         if not self.free_trajectory(x1, y1, x2, y2):
             error = "Trying to move through other pieces"
             return error
+        if "P" in piece.possible_natures:
+            if not (
+                (
+                    target_piece is None and
+                    self.pawn_could_reach(x1, y1, x2, y2, cur_c)
+                ) or (
+                    target_piece is not None and
+                    self.pawn_could_take(x1, y1, x2, y2, cur_c)
+                )
+            ):
+                error = "Trying to perform an illegal pawn move"
+                return error
+        return None
 
     def test_move(self, x1, y1, x2, y2, full_result=False):
         """
@@ -529,6 +536,7 @@ class ChessBoard():
         self.moves.append((x1, y1, x2, y2))
         piece.x, piece.y = x2, y2
         new_forbidden_natures = self.forbidden_natures(piece, x1, y1, x2, y2)
+        print(new_forbidden_natures)
         self.nature_eliminations.append(new_forbidden_natures)
         self.positions.append(self.compute_position())
         self.attacks.append(self.compute_attack())
@@ -639,14 +647,15 @@ class ChessBoard():
                 legal_natures.append(n)
         return legal_natures
 
+
 class LightBoard():
     def __init__(self):
-        self.board = [ [None for _ in range(8)] for _ in range(8)]
+        self.board = [[None for _ in range(8)] for _ in range(8)]
         for i in range(8):
-            self.board[i][0] = ("K", "w") #TODO replace with elephants
+            self.board[i][0] = ("K", "w")  # TODO replace with elephants
             self.board[i][1] = ("P", "w")
             self.board[i][6] = ("P", "b")
-            self.board[i][7] = ("K", "b") #TODO replace with elephants
+            self.board[i][7] = ("K", "b")  # TODO replace with elephants
 
     def move(self, x1, y1, x2, y2):
         self.board[x2][y2] = self.board[x1][y1]
@@ -658,25 +667,20 @@ class LightBoard():
     def getPiece(self, x, y):
         return self.board[x][y]
 
+
 def main():
     """Main."""
     cb = ChessBoard()
     cb.display_guess()
-    cb.move(1, 1, 1, 3)
+    cb.move(0, 1, 1, 3)
     cb.display_guess()
-    cb.move(0, 6, 0, 4)
-    cb.display_guess()
-    cb.move(0, 0, 4, 4)
-    cb.display_guess()
-    cb.move(1, 6, 1, 4)
-    cb.display_guess()
-    print(cb.all_legal_moves())
 
 
 if __name__ == "__main__":
-    import cProfile
-    import pstats
-
-    cProfile.run("main()", "stats")
-    p = pstats.Stats("stats")
-    p.strip_dirs().sort_stats("cumtime").print_stats()
+    main()
+    # import cProfile
+    # import pstats
+    #
+    # cProfile.run("main()", "stats")
+    # p = pstats.Stats("stats")
+    # p.strip_dirs().sort_stats("cumtime").print_stats()
