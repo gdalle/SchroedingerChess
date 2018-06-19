@@ -46,8 +46,6 @@ class ChessPiece():
         self.forbidden_natures = []
         self.nature_guess = self.initial_nature_guess()
         self.board = b
-        self.is_dead = False
-        self.is_promoted = i in promoted_numbers
 
     def __str__(self, guess=False, natures=False):
         """Display color and number or nature guess."""
@@ -543,6 +541,39 @@ class ChessBoard():
                 )
         return None
 
+    def add_move_to_history(self, x1, y1, x2, y2, piece, target_piece):
+        """Add move to history (temporarily or not)."""
+        cur_c, i = piece.color, piece.number
+        self.time += 1
+        self.moves.append((x1, y1, x2, y2))
+        self.nature_eliminations.append(
+            self.forbidden_natures(piece, x1, y1, x2, y2))
+        self.grid[x2][y2] = piece
+        if (
+            ((y2 == 7 and cur_c == 0) or (y2 == 0 and cur_c == 1))
+            and
+            "P" in piece.possible_natures
+        ):
+            self.grid[x2][y2] = self.pieces[cur_c][i + 8]
+        self.grid[x1][y1] = None
+        alive = self.pieces_alive[-1][:]
+        if target_piece is not None:
+            alive[target_piece.color] -= 1
+        self.pieces_alive.append(alive)
+        self.positions.append(self.compute_position())
+        self.attacks.append(self.compute_attack())
+
+    def delete_move_from_history(self, x1, y1, x2, y2, piece, target_piece):
+        """Reverse the last move."""
+        self.time -= 1
+        self.moves.pop()
+        self.nature_eliminations.pop()
+        self.grid[x2][y2] = target_piece
+        self.grid[x1][y1] = piece
+        self.pieces_alive.pop()
+        self.positions.pop()
+        self.attacks.pop()
+
     def test_move(self, x1, y1, x2, y2, full_result=False):
         """
         Test whether a move is possible.
@@ -554,24 +585,14 @@ class ChessBoard():
             raise IllegalMove(error)
 
         piece = self.grid[x1][y1]
+        target_piece = self.grid[x2][y2]
 
-        # Augment history temporarily
-        self.time += 1
-        self.moves.append((x1, y1, x2, y2))
-        self.nature_eliminations.append(
-            self.forbidden_natures(piece, x1, y1, x2, y2))
-        self.positions.append(self.compute_position())
-        self.attacks.append(self.compute_attack())
+        self.add_move_to_history(x1, y1, x2, y2, piece, target_piece)
 
         # Check quantum failures (requires history with last move)
         problem, status = self.quantum_explanation()
 
-        # Reverse last move
-        self.time -= 1
-        self.moves.pop()
-        self.nature_eliminations.pop()
-        self.positions.pop()
-        self.attacks.pop()
+        self.delete_move_from_history(x1, y1, x2, y2, piece, target_piece)
 
         if status == -1:
             error = (
@@ -590,30 +611,13 @@ class ChessBoard():
         piece = self.grid[x1][y1]
         target_piece = self.grid[x2][y2]
 
-        # Augment history for good
-        self.time += 1
-        self.moves.append((x1, y1, x2, y2))
-        c, i, move_forbidden_natures = self.forbidden_natures(
-            piece, x1, y1, x2, y2)
-        self.nature_eliminations.append((c, i, move_forbidden_natures))
-        self.pieces_alive.append(self.pieces_alive[-1][:])
+        self.add_move_to_history(x1, y1, x2, y2, piece, target_piece)
 
-        # Update grid
-        self.grid[x2][y2] = piece
-        self.grid[x1][y1] = None
-
-        # Update pieces
+        # Update guesses and heuristics
         piece.possible_natures = [
             n for n in piece.possible_natures
-            if n not in move_forbidden_natures
+            if n not in self.nature_eliminations[-1][2]
         ]
-        if target_piece is not None:
-            target_piece.is_dead = True
-            self.pieces_alive[-1][target_piece.color] -= 1
-
-        # Update other global stuff
-        self.positions.append(self.compute_position())
-        self.attacks.append(self.compute_attack())
         self.update_guess(problem)
 
     def move(self, x1, y1, x2, y2):
@@ -717,8 +721,6 @@ def main():
     print(cb)
 
     cb.all_legal_moves()
-
-    print(cb.pieces_alive)
 
 
 if __name__ == "__main__":
