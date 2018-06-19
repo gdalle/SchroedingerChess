@@ -96,7 +96,7 @@ class ChessBoard():
             ChessPiece(c=0, i=i, n=None, b=self)
             for i in major_piece_numbers
         ] + [
-            ChessPiece(c=0, i=i, n=None, b=self)
+            ChessPiece(c=0, i=i, n="P", b=self)
             for i in pawn_numbers
         ] + [
             ChessPiece(c=0, i=i, n=None, b=self)
@@ -107,7 +107,7 @@ class ChessBoard():
             ChessPiece(c=1, i=i, n=None, b=self)
             for i in major_piece_numbers
         ] + [
-            ChessPiece(c=1, i=i, n=None, b=self)
+            ChessPiece(c=1, i=i, n="P", b=self)
             for i in pawn_numbers
         ] + [
             ChessPiece(c=1, i=i, n=None, b=self)
@@ -304,8 +304,8 @@ class ChessBoard():
 
         return True
 
-    def forbidden_natures(self, piece, x1, y1, x2, y2):
-        """Update nature of the piece that just moved."""
+    def nature_elimination(self, piece, x1, y1, x2, y2):
+        """Find which natures got impossible for the piece that just moved."""
         move_forbidden_natures = []
         for n in piece.possible_natures:
             if not self.possible_move(x1, y1, x2, y2, n, piece.color):
@@ -547,7 +547,7 @@ class ChessBoard():
         self.time += 1
         self.moves.append((x1, y1, x2, y2))
         self.nature_eliminations.append(
-            self.forbidden_natures(piece, x1, y1, x2, y2))
+            self.nature_elimination(piece, x1, y1, x2, y2))
         self.grid[x2][y2] = piece
         if (
             ((y2 == 7 and cur_c == 0) or (y2 == 0 and cur_c == 1))
@@ -667,16 +667,18 @@ class ChessBoard():
         piece.forbidden_natures = []
         return is_legal_nature_n
 
-    def all_legal_natures(self, piece):
+    def all_legal_natures(self, piece, update=False):
         """Search all legal natures a piece could have."""
         legal_natures = []
         for n in all_natures:
             if self.is_legal_nature(piece, n):
                 legal_natures.append(n)
-        piece.forbidden_natures = [
-            n for n in major_piece_natures
-            if n not in legal_natures
-        ]
+        if update:
+            piece.forbidden_natures = [
+                n for n in major_piece_natures
+                if n not in legal_natures
+            ]
+            piece.possible_natures = legal_natures
         return legal_natures
 
 
@@ -720,7 +722,7 @@ def main():
     cb.move(3, 4, 3, 3)
     print(cb)
 
-    cb.all_legal_moves()
+    print(cb.all_legal_moves())
 
 
 if __name__ == "__main__":
