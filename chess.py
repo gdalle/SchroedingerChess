@@ -671,8 +671,6 @@ class ChessBoard():
         """
         problem = self.test_move(x1, y1, x2, y2, full_result=True)
         self.perform_move(x1, y1, x2, y2, problem)
-        self.display_guess()
-        self.display_natures()
         return True
 
     def legal_moves_from(self, x1, y1):
