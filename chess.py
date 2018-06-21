@@ -701,7 +701,7 @@ class ChessBoard():
         """Check if, given the current history, piece could have nature n."""
         if n not in piece.possible_natures:
             return False
-        elif n == "P":
+        elif len(piece.possible_natures) == 1 and n in piece.possible_natures:
             return True
 
         piece.forbidden_natures = [
