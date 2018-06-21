@@ -139,11 +139,15 @@ class ChessBoard():
         for y in reversed(range(8)):
             s += str(y) + "  "
             for x in range(8):
+                square_color = (x + y) % 2
                 piece = self.grid[x][y]
                 if piece is not None:
                     s += piece.__str__(guess=guess, natures=natures)
                 else:
-                    s += "-- "
+                    if square_color == 0:
+                        s += "-- "
+                    else:
+                        s += "|| "
                 s += " "
             s += "\n"
         s += "   "
@@ -244,7 +248,11 @@ class ChessBoard():
         h = x2 - x1
         v = y2 - y1
         if n == "K":
-            return abs(h) == 1 and abs(v) == 1
+            return (
+                abs(h) <= 1 and
+                abs(v) <= 1 and
+                (h, v) != (0, 0)
+            )
         elif n == "Q":
             return (
                 (abs(h) == 0 and abs(v) >= 1) or
@@ -360,7 +368,7 @@ class ChessBoard():
                             attack[s, c, i, -1] = 1
         return attack
 
-    def quantum_explanation(self):
+    def quantum_explanation(self, check=None):
         """
         Perform consistency check with MIP.
 
@@ -469,7 +477,42 @@ class ChessBoard():
 
                 problem += (
                     max_dangers_king * (1 - king) >= dangers,
-                    "No king left in check " + str((t, c, s))
+                    "No king left in check " + str((t, prev_c, s))
+                )
+
+        cur_c = T % 2
+        prev_c = 1 - cur_c
+
+        for s in range(64):
+
+            current_dangers = sum([
+                self.attacks[T][s, prev_c, i, n_ind] * z[(prev_c, i, n)]
+                for i in major_piece_numbers + promoted_numbers
+                for (n_ind, n) in enumerate(major_piece_natures)
+                if self.attacks[T][s, prev_c, i, n_ind] > 0.5
+            ]) + sum([
+                self.attacks[T][s, prev_c, i, -1]
+                for i in pawn_numbers
+            ])
+
+            current_king = sum([
+                self.positions[T][s, cur_c, i] * z[(cur_c, i, "K")]
+                for i in major_piece_numbers
+                if self.positions[T][s, cur_c, i] > 0.5
+            ])
+
+            if check == True:
+
+                problem += (
+                    king >= dangers,
+                    "Current king in check " + str((T, cur_c))
+                )
+
+            elif check == False:
+
+                problem += (
+                    16 * (1 - current_king) >= current_dangers,
+                    "Current king not in check " + str((T, cur_c))
                 )
 
         status = problem.solve()
@@ -628,6 +671,8 @@ class ChessBoard():
         """
         problem = self.test_move(x1, y1, x2, y2, full_result=True)
         self.perform_move(x1, y1, x2, y2, problem)
+        self.display_guess()
+        self.display_natures()
         return True
 
     def legal_moves_from(self, x1, y1):
@@ -667,19 +712,29 @@ class ChessBoard():
         piece.forbidden_natures = []
         return is_legal_nature_n
 
-    def all_legal_natures(self, piece, update=False):
+    def all_legal_natures(self, piece, update=True):
         """Search all legal natures a piece could have."""
         legal_natures = []
         for n in all_natures:
             if self.is_legal_nature(piece, n):
                 legal_natures.append(n)
         if update:
-            piece.forbidden_natures = [
-                n for n in major_piece_natures
-                if n not in legal_natures
-            ]
             piece.possible_natures = legal_natures
         return legal_natures
+
+    def end_game(self):
+        if len(self.all_legal_moves()) > 0:
+            return "Legal moves still exist"
+        problem1, status1 = self.quantum_explanation(check=True)
+        problem2, status2 = self.quantum_explanation(check=False)
+        checkmate_possible = status1 == 1
+        stalemate_possible = status2 == 2
+        if checkmate_possible and stalemate_possible:
+            return "Result unclear"
+        elif checkmate_possible:
+            return "Current player checkmated"
+        else:
+            return "Stalemate"
 
 
 class LightBoard():
@@ -727,9 +782,24 @@ def main():
 
 if __name__ == "__main__":
 
-    import cProfile
-    import pstats
+    cb = ChessBoard()
+    cb.move(0, 1, 0, 3)
+    cb.move(0, 6, 0, 4)
+    cb.move(0, 0, 0, 2)
+    cb.move(0, 7, 0, 5)
+    cb.move(0, 2, 3, 5)
+    cb.move(0, 5, 3, 2)
+    cb.move(1, 0, 0, 0)
+    cb.move(1, 7, 0, 7)
+    cb.move(2, 0, 1, 0)
+    cb.move(2, 7, 1, 7)
+    cb.move(3, 0, 2, 0)
 
-    cProfile.run("main()", "stats")
-    p = pstats.Stats("stats")
-    p.strip_dirs().sort_stats("cumtime").print_stats()
+    cb.nature_eliminations
+
+    # import cProfile
+    # import pstats
+    #
+    # cProfile.run("main()", "stats")
+    # p = pstats.Stats("stats")
+    # p.strip_dirs().sort_stats("cumtime").print_stats()
