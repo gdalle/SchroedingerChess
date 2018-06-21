@@ -70,12 +70,11 @@ class GameEngine():
 
     def handleIllegalMove(self, reason):
         """ Handles an illegal move."""
-        print(reason)
-        # self.display.handleIllegalMove(reason) #TODO see the implementation of this method in ChessDisplay
+        self.display.handleIllegalMove(reason) #TODO see the implementation of this method in ChessDisplay
 
-    def makeDisplayDrawBoard(self):
+    def makeDisplayDrawBoard(self, exceptBox=None):
         """ Makes the display redraw the board."""
-        self.display.drawBoard(self.lightBoard)
+        self.display.drawBoard(self.lightBoard, exceptBox=exceptBox)
 
     def makeDisplayDrawSelectedCell(self, natures):
         """ Makes the display draw the selected box."""
@@ -84,7 +83,7 @@ class GameEngine():
     def makeDisplayDrawChecks(self, check_positions):
         self.display.drawChecks(check_positions)
 
-    def makeDisplayDrawChecks(self, checkmate_positions):
+    def makeDisplayDrawChecksMates(self, checkmate_positions):
         self.display.drawCheckMates(checkmate_positions)
 
 class TwoPlayersOnOneBoard(GameEngine):
@@ -105,17 +104,23 @@ class TwoPlayersOnOneBoard(GameEngine):
             # TODO recover list of checks created by the move
             # TODO recover checkmates
             self.lightBoard.move(x1, y1, x2, y2)
+            # We check if the nature of the piece is being frozen
+            if self.lightBoard.getPiece(x2, y2)[0] == "E":
+                piece = self.chessBoard.grid[x2][y2]
+                natures = self.chessBoard.all_legal_natures(piece)
+                if len(natures) == 1:
+                    self.lightBoard.setPiece(x2, y2, natures[0])
             self.makeDisplayDrawBoard()
         except IllegalMove as e:
             self.handleIllegalMove(str(e))
         finally:
             self.display.state = "PLAYING"
 
-    def selectBoxTask(self, x, y): # TODO enable computation of possible natures
+    def selectBoxTask(self, x, y):
         piece = self.chessBoard.grid[x][y]
         natures = []
-        # if piece is not None:
-        #    natures = self.chessBoard.legal_natures_for(piece)
+        if piece is not None:
+           natures = self.chessBoard.all_legal_natures(piece)
         self.display.drawSelectedBox(natures)
 
 
@@ -165,20 +170,3 @@ class OnePlayerOnNetwork(GameEngine):
         def handleDisconnection(self, description):
             raise NotImplementedError
             # TODO implement disconnection screen
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
