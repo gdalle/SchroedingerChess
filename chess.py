@@ -6,14 +6,13 @@ import pulp
 from collections import defaultdict
 
 colors = list(range(2))
-
-all_natures = ["K", "Q", "R", "B", "N", "P"]
-major_piece_natures = ["K", "Q", "R", "B", "N"]
-
 piece_numbers = list(range(16))
 major_piece_numbers = list(range(8))
 pawn_numbers = list(range(8, 16))
 promoted_numbers = list(range(16, 24))
+
+all_natures = ["K", "Q", "R", "B", "N", "P"]
+major_piece_natures = ["K", "Q", "R", "B", "N"]
 
 max_quantity = {
     "K": 1,
@@ -147,7 +146,7 @@ class ChessBoard():
                     if square_color == 0:
                         s += "-- "
                     else:
-                        s += "|| "
+                        s += "-- "
                 s += " "
             s += "\n"
         s += "   "
@@ -582,6 +581,7 @@ class ChessBoard():
                     "with one of its previous moves or preset " +
                     "possible natures"
                 )
+                return error
         return None
 
     def add_move_to_history(self, x1, y1, x2, y2, piece, target_piece):
@@ -671,6 +671,8 @@ class ChessBoard():
         """
         problem = self.test_move(x1, y1, x2, y2, full_result=True)
         self.perform_move(x1, y1, x2, y2, problem)
+        print(x1, y1, x2, y2)
+        self.display_guess()
         return True
 
     def legal_moves_from(self, x1, y1):
@@ -779,21 +781,6 @@ def main():
 
 
 if __name__ == "__main__":
-
-    cb = ChessBoard()
-    cb.move(0, 1, 0, 3)
-    cb.move(0, 6, 0, 4)
-    cb.move(0, 0, 0, 2)
-    cb.move(0, 7, 0, 5)
-    cb.move(0, 2, 3, 5)
-    cb.move(0, 5, 3, 2)
-    cb.move(1, 0, 0, 0)
-    cb.move(1, 7, 0, 7)
-    cb.move(2, 0, 1, 0)
-    cb.move(2, 7, 1, 7)
-    cb.move(3, 0, 2, 0)
-
-    cb.nature_eliminations
 
     # import cProfile
     # import pstats
