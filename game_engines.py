@@ -12,7 +12,7 @@ from client import ChessClientProtocol
 
 from twisted.internet.endpoints import TCP4ClientEndpoint, connectProtocol
 
-FRAME_PER_SECOND = 60
+FRAME_PER_SECOND = 10
 CONNECTION_WAITING_TIME = 10 # seconds
 
 class GameEngine():
@@ -55,18 +55,17 @@ class GameEngine():
         """ Task to perform when the display detects a move."""
         raise NotImplementedError
 
-    def selectBoxTask(self, x, y):
-        """ Task to perform when the display detects a box selection."""
+    def updateLightBoardTask(self, x1, y1, x2, y2):
+        """ Task to perform to update the display."""
         raise NotImplementedError
-
-    def selectBox(self, x, y):
-        """ Schedules a box selection task."""
-        reactor.callLater(0, self.selectBoxTask, x, y)
 
     def move(self, x1, y1, x2, y2):
         """ Schedules a move task. """
-        """ Tries to move the piece from position (x1, x2) to position (x2, y2)."""
         reactor.callLater(0, self.moveTask, x1, y1, x2, y2)
+
+    def updateLightBoard(self):
+        """ Schedules an update board task. """
+        reactor.callLater(0, self.updateLightBoardTask, x1, y1, x2, y2)
 
     def handleIllegalMove(self, reason):
         """ Handles an illegal move."""
@@ -75,10 +74,6 @@ class GameEngine():
     def makeDisplayDrawBoard(self, exceptBox=None):
         """ Makes the display redraw the board."""
         self.display.drawBoard(self.lightBoard, exceptBox=exceptBox)
-
-    def makeDisplayDrawSelectedCell(self, natures):
-        """ Makes the display draw the selected box."""
-        self.display.drawSelectedBox(natures)
 
     def makeDisplayDrawChecks(self, check_positions):
         self.display.drawChecks(check_positions)
@@ -98,30 +93,28 @@ class TwoPlayersOnOneBoard(GameEngine):
         self.display = gameEngine.display
         self.loopingCall = gameEngine.loopingCall
 
+    def updateLightBoardTask():
+        for x in range(8):
+                for y in range(8):
+                    piece = self.chessBoard.grid[x][y]
+                    if piece is not None:
+                        natures = self.chessBoard.all_legal_natures(piece)
+                        color = piece.color
+                        self.lightBoard.setPiece(x, y , color, natures)
+        self.makeDisplayDrawBoard()
+
     def moveTask(self, x1, y1, x2, y2):
         try:
             self.chessBoard.move(x1, y1, x2, y2)
             # TODO recover list of checks created by the move
             # TODO recover checkmates
             self.lightBoard.move(x1, y1, x2, y2)
-            # We check if the nature of the piece is being frozen
-            if self.lightBoard.getPiece(x2, y2)[0] == "E":
-                piece = self.chessBoard.grid[x2][y2]
-                natures = self.chessBoard.all_legal_natures(piece)
-                if len(natures) == 1:
-                    self.lightBoard.setPiece(x2, y2, natures[0])
             self.makeDisplayDrawBoard()
+            print("cb.move({},{},{},{})".format(x1,y1,x2,y2))
         except IllegalMove as e:
             self.handleIllegalMove(str(e))
         finally:
             self.display.state = "PLAYING"
-
-    def selectBoxTask(self, x, y):
-        piece = self.chessBoard.grid[x][y]
-        natures = []
-        if piece is not None:
-           natures = self.chessBoard.all_legal_natures(piece)
-        self.display.drawSelectedBox(natures)
 
 
 
@@ -139,7 +132,7 @@ class OnePlayerOnNetwork(GameEngine):
         self.lightBoard = gameEngine.lightBoard
         self.display = gameEngine.display
         self.loopingCall = gameEngine.loopingCall
-        self.protocol = ChessClientProtocol()
+        self.protocol = ChessClientProtocol(self)
 
         point = TCP4ClientEndpoint(reactor, host, int(port))  # connection point
         try:
@@ -148,24 +141,43 @@ class OnePlayerOnNetwork(GameEngine):
         except:
             self.connectionFailed()
 
+        def handleInit(self, description):
+            self.color = description["color"]
+            if self.color == "black":
+                self.display.flipDisplay(True)
+            self.display.state = "PLAYING"
+
         def moveTask(self, x1, y1, x2, y2):
             msg = {"type" : "move", "player" : self.color, "description" : (x1, y1, x2, y2)}
             self.protocol.sendMessage(msg)
 
-        def selectBoxTask(self, x, y):
-            msg = {"type": "box-selection", "player": self.color, "description": (x, y)}
-            self.protocol.sendMessage(msg)
-
         def handleMove(self, description):
-            self.lightBoard.move(description[0], description[1], description[2], description[3])
+            move = description["move"]
+            x1 = move[0]
+            y1 = move[1]
+            x2 = move[2]
+            y2 = move[3]
+            self.lightBoard.move(x1, y1, x2, y2)
+            natures = description["natures"]
             self.makeDisplayDrawBoard()
             self.display.state = "PLAYING"
+            if len(natures) == 1:
+                self.lightBoard.setPiece(x2, y2, natures[0])
+            else:
+                self.lightBoard.setPiece(x2, y2, "E")
+            # self.display.flipDisplay(not(self.display.flip))
+            self.makeDisplayDrawBoard()
+            print("cb.move({},{},{},{})".format(x1,y1,x2,y2))
 
         def handleChecks(self, description):
             self.makeDisplayDrawChecks(description)
 
         def handleCheckMates(self, description):
             self.makeDisplayDrawCheckMates(description)
+
+        def connectionFailed(self):
+            raise NotImplementedError
+            # TODO implement disconnection screen
 
         def handleDisconnection(self, description):
             raise NotImplementedError

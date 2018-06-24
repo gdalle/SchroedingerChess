@@ -27,13 +27,15 @@ class ChessClientProtocol(Protocol):
 
         if self.state == "INITIALIZATION":
             if msg["type"] == "init":
-                self.client.color = msg["color"]
+                self.client.handleInit(msg["description"])
             self.state = "PLAYING"
         elif self.state == "PLAYING":
             if msg["type"] == "move":
                 self.client.handleMove(msg["description"])
             elif msg["type"] == "illegal-move":
                 self.client.handleIllegalMove(msg["description"])
+            elif msg["type"] == "box-selection":
+                self.client.handleBoxSelection(msg["description"])
             elif msg["type"] == "checks":
                 self.client.handleChecks(msg["description"])
             elif msg["type"] == "checkmates":

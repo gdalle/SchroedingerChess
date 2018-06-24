@@ -82,7 +82,17 @@ class ChessDisplay():
 
                 piece = lightBoard.getPiece(x, y)
                 if piece is not None:
-                    picture = self.pieces_pictures[piece[1] + piece[0]]
+                    color = piece[0]
+                    natures = piece[1]
+                    if color==0:
+                        picture_name = "w"
+                    else:
+                        picture_name = "b"
+                    if (len(natures) > 1):
+                        picture_name += "E"
+                    else:
+                        picture_name += natures[0]
+                    picture = self.pieces_pictures[picture_name]
                     self.screen.blit(picture, ((x * self.width) // 8, (self.flipY(y) * self.height) // 8))
         pygame.display.flip()
 
@@ -93,17 +103,20 @@ class ChessDisplay():
         if self.selectedBox is not None:
             self.gameEngine.makeDisplayDrawBoard()
 
-    def drawSelectedBox(self, natures):
+    def drawSelectedBox(self):
         """
         Draws the selected box.
-        :param natures: List of the possible natures of the piece.
         """
         if self.selectedBox is not None:
             x = (self.selectedBox[0] * self.width) // 8
             y = (self.selectedBox[1] * self.height) // 8
             piece = self.gameEngine.lightBoard.getPiece(self.selectedBox[0], self.flipY(self.selectedBox[1]))
             if piece is not None:
-                color = piece[1]
+                if piece[0] == 0:
+                    color = "w"
+                else:
+                    color = "b"
+                natures = piece[1]
                 if len(natures) == 1:
                     self.gameEngine.makeDisplayDrawBoard()
                 else:
@@ -262,7 +275,7 @@ class ChessDisplay():
                     if box[0] < 8 and box[1] < 8:
                         if self.selectedBox is None:  # If no box is selected
                                 self.selectedBox = box
-                                self.gameEngine.selectBox(self.selectedBox[0], self.flipY(self.selectedBox[1]))
+                                self.drawSelectedBox()
                         else:  # if another box has already been selected, we try a move from the old box to the new box
                             self.gameEngine.move(self.selectedBox[0], self.flipY(self.selectedBox[1]), box[0], self.flipY(box[1]))
                             self.undrawSelectedBox()

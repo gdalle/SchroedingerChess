@@ -739,17 +739,17 @@ class LightBoard():
     def __init__(self):
         self.board = [[None for _ in range(8)] for _ in range(8)]
         for i in range(8):
-            self.board[i][0] = ("E", "w")
-            self.board[i][1] = ("P", "w")
-            self.board[i][6] = ("P", "b")
-            self.board[i][7] = ("E", "b")
+            self.board[i][0] = (0, major_piece_natures)
+            self.board[i][1] = (0, "P")
+            self.board[i][6] = (1, "P")
+            self.board[i][7] = (1, major_piece_natures)
 
     def move(self, x1, y1, x2, y2):
         self.board[x2][y2] = self.board[x1][y1]
         self.board[x1][y1] = None
 
-    def setPiece(self, x, y, nature):
-        self.board[x][y] = (nature, self.board[x][y][1])
+    def setPiece(self, x, y, color,  natures):
+        self.board[x][y] = (color, natures)
 
     def getPiece(self, x, y):
         return self.board[x][y]
