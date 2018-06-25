@@ -64,6 +64,7 @@ class ChessDisplay():
         :param lightBoard: The light board to draw. :see LightBoard
         :param exceptBox: A box which has to bet let empty whatever it contains
         """
+        print("hi")
         self.screen.blit(self.boardFlip if self.flip else self.board, (0, 0))
         for y in range(8):
             for x in range(8):
@@ -169,6 +170,7 @@ class ChessDisplay():
 
 
     def update(self):
+        #print(self.state)
         """ Updates the frame."""
         if self.state == "MENU":
             self.updateMenu()
@@ -278,8 +280,8 @@ class ChessDisplay():
                                 self.drawSelectedBox()
                         else:  # if another box has already been selected, we try a move from the old box to the new box
                             self.gameEngine.move(self.selectedBox[0], self.flipY(self.selectedBox[1]), box[0], self.flipY(box[1]))
-                            self.undrawSelectedBox()
                             self.selectedBox = None
+                            self.undrawSelectedBox()
                             self.state = "WAITNG"
                     else:
                         self.undrawSelectedBox()

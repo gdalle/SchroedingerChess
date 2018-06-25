@@ -55,7 +55,7 @@ class GameEngine():
         """ Task to perform when the display detects a move."""
         raise NotImplementedError
 
-    def updateLightBoardTask(self, x1, y1, x2, y2):
+    def updateLightBoardTask(self):
         """ Task to perform to update the display."""
         raise NotImplementedError
 
@@ -65,7 +65,7 @@ class GameEngine():
 
     def updateLightBoard(self):
         """ Schedules an update board task. """
-        reactor.callLater(0, self.updateLightBoardTask, x1, y1, x2, y2)
+        reactor.callLater(0, self.updateLightBoardTask)
 
     def handleIllegalMove(self, reason):
         """ Handles an illegal move."""
@@ -93,7 +93,8 @@ class TwoPlayersOnOneBoard(GameEngine):
         self.display = gameEngine.display
         self.loopingCall = gameEngine.loopingCall
 
-    def updateLightBoardTask():
+    def updateLightBoardTask(self):
+        print("hello")
         for x in range(8):
                 for y in range(8):
                     piece = self.chessBoard.grid[x][y]
@@ -101,7 +102,9 @@ class TwoPlayersOnOneBoard(GameEngine):
                         natures = self.chessBoard.all_legal_natures(piece)
                         color = piece.color
                         self.lightBoard.setPiece(x, y , color, natures)
+        print("done")
         self.makeDisplayDrawBoard()
+        self.display.state = "PLAYING"
 
     def moveTask(self, x1, y1, x2, y2):
         try:
@@ -111,6 +114,7 @@ class TwoPlayersOnOneBoard(GameEngine):
             self.lightBoard.move(x1, y1, x2, y2)
             self.makeDisplayDrawBoard()
             print("cb.move({},{},{},{})".format(x1,y1,x2,y2))
+            self.updateLightBoard()
         except IllegalMove as e:
             self.handleIllegalMove(str(e))
         finally:
