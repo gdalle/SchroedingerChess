@@ -1,5 +1,7 @@
 from twisted.internet.task import LoopingCall
 
+from twisted.internet.defer import inlineCallbacks, Deferred
+
 from twisted.internet import reactor
 
 from twisted.python import log
@@ -55,17 +57,10 @@ class GameEngine():
         """ Task to perform when the display detects a move."""
         raise NotImplementedError
 
-    def updateLightBoardTask(self):
-        """ Task to perform to update the display."""
-        raise NotImplementedError
-
     def move(self, x1, y1, x2, y2):
         """ Schedules a move task. """
         reactor.callLater(0, self.moveTask, x1, y1, x2, y2)
 
-    def updateLightBoard(self):
-        """ Schedules an update board task. """
-        reactor.callLater(0, self.updateLightBoardTask)
 
     def handleIllegalMove(self, reason):
         """ Handles an illegal move."""
@@ -92,33 +87,51 @@ class TwoPlayersOnOneBoard(GameEngine):
         self.lightBoard = gameEngine.lightBoard
         self.display = gameEngine.display
         self.loopingCall = gameEngine.loopingCall
+        self.updateCount = 0
 
-    def updateLightBoardTask(self):
-        print("hello")
+    @inlineCallbacks
+    def updateLightBoard(self):
+        self.updateCount +=1
+        nb = self.updateCount
         for x in range(8):
                 for y in range(8):
-                    piece = self.chessBoard.grid[x][y]
-                    if piece is not None:
-                        natures = self.chessBoard.all_legal_natures(piece)
-                        color = piece.color
-                        self.lightBoard.setPiece(x, y , color, natures)
-        print("done")
-        self.makeDisplayDrawBoard()
-        self.display.state = "PLAYING"
+                    if nb == self.updateCount:
+                        piece = self.chessBoard.grid[x][y]
+                        if piece is not None:
+                            self.updateDeferred = Deferred()
+                            self.updateDeferred.addCallback(self.chessBoard.all_legal_natures)
+                            self.updateDeferred.addErrback(log.err)
+                            reactor.callLater(0, self.updateDeferred.callback, piece)
+                            natures = yield self.updateDeferred
+                            color = piece.color
+                            self.lightBoard.setPiece(x, y , color, natures)
+                            self.makeDisplayDrawBoard()
+                            self.display.drawSelectedBox()
 
-    def moveTask(self, x1, y1, x2, y2):
+    def moveTask(self, mov):
+        x1, y1, x2, y2 = mov[0], mov[1], mov[2], mov[3]
         try:
             self.chessBoard.move(x1, y1, x2, y2)
-            # TODO recover list of checks created by the move
-            # TODO recover checkmates
             self.lightBoard.move(x1, y1, x2, y2)
             self.makeDisplayDrawBoard()
-            print("cb.move({},{},{},{})".format(x1,y1,x2,y2))
             self.updateLightBoard()
         except IllegalMove as e:
             self.handleIllegalMove(str(e))
-        finally:
-            self.display.state = "PLAYING"
+
+    def move(self, x1, y1, x2, y2):
+        d = Deferred()
+        d.addCallback(self.moveTask)
+        reactor.callLater(0, d.callback, (x1, y1, x2, y2))
+
+    # def moveTask(self, x1, y1, x2, y2):
+    #     try:
+    #         self.chessBoard.move(x1, y1, x2, y2)
+    #         self.lightBoard.move(x1, y1, x2, y2)
+    #         self.makeDisplayDrawBoard()
+    #         print("cb.move({},{},{},{})".format(x1,y1,x2,y2))
+    #         self.updateLightBoard()
+    #     except IllegalMove as e:
+    #         self.handleIllegalMove(str(e))
 
 
 
@@ -149,7 +162,6 @@ class OnePlayerOnNetwork(GameEngine):
             self.color = description["color"]
             if self.color == "black":
                 self.display.flipDisplay(True)
-            self.display.state = "PLAYING"
 
         def moveTask(self, x1, y1, x2, y2):
             msg = {"type" : "move", "player" : self.color, "description" : (x1, y1, x2, y2)}
@@ -164,14 +176,11 @@ class OnePlayerOnNetwork(GameEngine):
             self.lightBoard.move(x1, y1, x2, y2)
             natures = description["natures"]
             self.makeDisplayDrawBoard()
-            self.display.state = "PLAYING"
-            if len(natures) == 1:
-                self.lightBoard.setPiece(x2, y2, natures[0])
-            else:
-                self.lightBoard.setPiece(x2, y2, "E")
-            # self.display.flipDisplay(not(self.display.flip))
-            self.makeDisplayDrawBoard()
             print("cb.move({},{},{},{})".format(x1,y1,x2,y2))
+
+        def handleUpdateBoard(self, description):
+            self.lightBoard.unWrap(description)
+            self.makeDisplayDrawBoard()
 
         def handleChecks(self, description):
             self.makeDisplayDrawChecks(description)

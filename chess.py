@@ -739,12 +739,15 @@ class ChessBoard():
 
 class LightBoard():
     def __init__(self):
-        self.board = [[None for _ in range(8)] for _ in range(8)]
+        self.clean()
         for i in range(8):
             self.board[i][0] = (0, major_piece_natures)
             self.board[i][1] = (0, "P")
             self.board[i][6] = (1, "P")
             self.board[i][7] = (1, major_piece_natures)
+
+    def clean(self):
+        self.board = [[None for _ in range(8)] for _ in range(8)]
 
     def move(self, x1, y1, x2, y2):
         self.board[x2][y2] = self.board[x1][y1]
@@ -755,6 +758,26 @@ class LightBoard():
 
     def getPiece(self, x, y):
         return self.board[x][y]
+
+    def wrapUp(self):
+        wrap = []
+        for x in range(8):
+            for y in range(8):
+                piece = self.board[x][y]
+                color = piece[0]
+                natures = piece[1]
+                wrap.append({"x" : x, "y": y, "color" : color, "natures": natures})
+        return wrap
+
+    def unwrap(self, wrap):
+        self.clean()
+        for piece in wrap:
+                x = piece["x"]
+                y = piece["y"]
+                color = piece["color"]
+                natures = piece["nature"]
+                self.setPiece(x, y, color, natures)
+                
 
 
 def main():

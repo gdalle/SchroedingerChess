@@ -46,16 +46,16 @@ class ChessDisplay():
         """ Sets the game engine on the two-players-on-one-board mode."""
         if self.state == "MENU":
             self.state = "PLAYING"
-            self.gameEngine.setTwoPlayersOnOneBoardMode()
             self.gameEngine.makeDisplayDrawBoard()
+            self.gameEngine.setTwoPlayersOnOneBoardMode()
 
 
     def setOnePlayerOnNetworkMode(self):
         """ Sets the game engine on the one-player on network mode."""
         if self.state == "MENU":
             self.state = "PLAYING"
-            self.gameEngine.setOnePlayerOnNetworkMode()
             self.gameEngine.makeDisplayDrawBoard()
+            self.gameEngine.setOnePlayerOnNetworkMode()
 
 
     def drawBoard(self, lightBoard, exceptBox=None):
@@ -64,7 +64,6 @@ class ChessDisplay():
         :param lightBoard: The light board to draw. :see LightBoard
         :param exceptBox: A box which has to bet let empty whatever it contains
         """
-        print("hi")
         self.screen.blit(self.boardFlip if self.flip else self.board, (0, 0))
         for y in range(8):
             for x in range(8):
@@ -170,7 +169,7 @@ class ChessDisplay():
 
 
     def update(self):
-        #print(self.state)
+        # print(self.state)
         """ Updates the frame."""
         if self.state == "MENU":
             self.updateMenu()
@@ -178,8 +177,6 @@ class ChessDisplay():
         elif self.state == "PLAYING":
             self.updateBoard()
             self.updateMessage()
-        elif self.state == "WAITING":
-            pass
         else:
             pass
 
@@ -279,10 +276,9 @@ class ChessDisplay():
                                 self.selectedBox = box
                                 self.drawSelectedBox()
                         else:  # if another box has already been selected, we try a move from the old box to the new box
+                            self.undrawSelectedBox()
                             self.gameEngine.move(self.selectedBox[0], self.flipY(self.selectedBox[1]), box[0], self.flipY(box[1]))
                             self.selectedBox = None
-                            self.undrawSelectedBox()
-                            self.state = "WAITNG"
                     else:
                         self.undrawSelectedBox()
                         self.selectedBox = None

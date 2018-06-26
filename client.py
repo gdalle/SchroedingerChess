@@ -34,8 +34,6 @@ class ChessClientProtocol(Protocol):
                 self.client.handleMove(msg["description"])
             elif msg["type"] == "illegal-move":
                 self.client.handleIllegalMove(msg["description"])
-            elif msg["type"] == "box-selection":
-                self.client.handleBoxSelection(msg["description"])
             elif msg["type"] == "checks":
                 self.client.handleChecks(msg["description"])
             elif msg["type"] == "checkmates":
