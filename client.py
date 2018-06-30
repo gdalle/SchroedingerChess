@@ -27,7 +27,7 @@ class ChessClientProtocol(Protocol):
 
         if self.state == "INITIALIZATION":
             if msg["type"] == "init":
-                self.client.color = msg["color"]
+                self.client.handleInit(msg["description"])
             self.state = "PLAYING"
         elif self.state == "PLAYING":
             if msg["type"] == "move":
