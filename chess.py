@@ -781,7 +781,18 @@ def main():
 
 
 if __name__ == "__main__":
-    pass
+    cb = ChessBoard()
+    cb.move(4, 1, 4, 3)
+    cb.move(4, 6, 4, 4)
+    cb.move(4, 0, 4, 1)
+    cb.move(7, 6, 7, 5)
+    cb.move(4, 1, 3, 2)
+    cb.move(7, 5, 7, 4)
+    cb.move(3, 2, 3, 3)
+
+    piece = cb.grid[3][3]
+    piece.possible_natures
+    cb.all_legal_natures(piece)
     # import cProfile
     # import pstats
     #
