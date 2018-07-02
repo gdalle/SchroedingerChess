@@ -742,16 +742,60 @@ class LightBoard():
         self.clean()
         for i in range(8):
             self.board[i][0] = (0, major_piece_natures)
-            self.board[i][1] = (0, "P")
-            self.board[i][6] = (1, "P")
+            self.board[i][1] = (0, ["P"])
+            self.board[i][6] = (1, ["P"])
             self.board[i][7] = (1, major_piece_natures)
 
     def clean(self):
         self.board = [[None for _ in range(8)] for _ in range(8)]
 
     def move(self, x1, y1, x2, y2):
-        self.board[x2][y2] = self.board[x1][y1]
-        self.board[x1][y1] = None
+        piece = self.getPiece(x1, y1)
+        if piece is not None:
+            natures = self.possibleNaturesFromMove(x1, y1, x2, y2, piece[0], piece[1])
+            assert(len(natures)>=1)
+            self.setPiece(x2, y2, piece[0], natures)
+            self.board[x1][y1] = None
+            for x in range(8):
+                for y in range(8):
+                    if x != x2 and y != y2:
+                        piece = self.getPiece(x, y)
+                        if piece is not None:
+                            if len(piece[1]) > 1:
+                                self.setPiece(x, y, piece[0], "E")
+
+    @staticmethod
+    def possibleNaturesFromMove(x1, y1, x2, y2, color,  natures):
+        h = x2 - x1
+        v = y2 - y1
+        output_natures = []
+        for n in natures:
+            if n == "K":
+                if abs(h) <= 1 and abs(v) <= 1 and (h, v) != (0, 0):
+                    output_natures.append("K")
+            elif n == "Q":
+                if (abs(h) == 0 and abs(v) >= 1) or (abs(v) == 0 and abs(h) >= 1) or (abs(h) == abs(v) and abs(h) >= 1):
+                    output_natures.append("Q")
+            elif n == "R":
+                if (abs(h) == 0 and abs(v) >= 1) or (abs(v) == 0 and abs(h) >= 1):
+                    output_natures.append("R")
+            elif n == "B":
+                if abs(h) == abs(v) and abs(h) >= 1:
+                    output_natures.append("B")
+            elif n == "N":
+                if (abs(h) == 2 and abs(v) == 1) or (abs(h) == 1 and abs(v) == 2):
+                    output_natures.append("N")
+            elif n == "P":
+                if color == 0 and y2 == 7:
+                    return ["E"]
+                elif color == 0 and y2 == 0:
+                    return ["E"]
+                else:
+                    output_natures.append("P")
+            elif n == "E":
+                return ["E"]
+
+        return output_natures
 
     def setPiece(self, x, y, color,  natures):
         self.board[x][y] = (color, natures)

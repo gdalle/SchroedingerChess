@@ -46,16 +46,16 @@ class ChessDisplay():
         """ Sets the game engine on the two-players-on-one-board mode."""
         if self.state == "MENU":
             self.state = "PLAYING"
-            self.gameEngine.makeDisplayDrawBoard()
             self.gameEngine.setTwoPlayersOnOneBoardMode()
+            self.gameEngine.makeDisplayDrawBoard()
 
 
     def setOnePlayerOnNetworkMode(self):
         """ Sets the game engine on the one-player on network mode."""
         if self.state == "MENU":
             self.state = "PLAYING"
-            self.gameEngine.makeDisplayDrawBoard()
             self.gameEngine.setOnePlayerOnNetworkMode()
+            self.gameEngine.makeDisplayDrawBoard()
 
 
     def drawBoard(self, lightBoard, exceptBox=None):
@@ -169,7 +169,6 @@ class ChessDisplay():
 
 
     def update(self):
-        # print(self.state)
         """ Updates the frame."""
         if self.state == "MENU":
             self.updateMenu()
@@ -223,11 +222,13 @@ class ChessDisplay():
                             self.currentMessage = ""
                             self.menuSelection = "NONE"
                             self.setTwoPlayersOnOneBoardMode()
+                            return
                     if mouse[0] > self.width//2-250 and mouse[0] < self.width//2+250 and mouse[1] > 475 and mouse[1] < 625:
                         if self.menuSelection == "ONLINE_DOWN":
                             self.currentMessage = "The online mode is not supported yet."
                             changeState = True
                             self.menuSelection = "ONLINE"
+                            return
 
             if changeState:
                 fontTitle = pygame.font.Font("fonts/CFRemingtonTypewriter-Regul.ttf", 60)

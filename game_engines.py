@@ -29,7 +29,7 @@ class GameEngine():
 
     def stop(self):
         """ Stops the game engine."""
-        self.loopingCall.stop()
+        # self.loopingCall.stop() # causing an unhandled error and don't seem necessary
         self.display = None
         reactor.stop()
 
@@ -87,32 +87,33 @@ class TwoPlayersOnOneBoard(GameEngine):
         self.lightBoard = gameEngine.lightBoard
         self.display = gameEngine.display
         self.loopingCall = gameEngine.loopingCall
-        self.updateCount = 0
+        self.validMovesCounter = 0
 
     @inlineCallbacks
     def updateLightBoard(self):
-        self.updateCount +=1
-        nb = self.updateCount
+        nb = self.validMovesCounter
         for x in range(8):
                 for y in range(8):
-                    if nb == self.updateCount:
+                    if nb == self.validMovesCounter:
                         piece = self.chessBoard.grid[x][y]
                         if piece is not None:
                             self.updateDeferred = Deferred()
                             self.updateDeferred.addCallback(self.chessBoard.all_legal_natures)
-                            self.updateDeferred.addErrback(log.err)
+                            self.updateDeferred.addErrback(log.err) # DEBUG
                             reactor.callLater(0, self.updateDeferred.callback, piece)
                             natures = yield self.updateDeferred
-                            color = piece.color
-                            self.lightBoard.setPiece(x, y , color, natures)
-                            self.makeDisplayDrawBoard()
-                            self.display.drawSelectedBox()
+                            if nb == self.validMovesCounter:
+                                color = piece.color
+                                self.lightBoard.setPiece(x, y , color, natures)
+                                self.makeDisplayDrawBoard()
+                                self.display.drawSelectedBox()
 
     def moveTask(self, mov):
         x1, y1, x2, y2 = mov[0], mov[1], mov[2], mov[3]
         try:
             self.chessBoard.move(x1, y1, x2, y2)
             self.lightBoard.move(x1, y1, x2, y2)
+            self.validMovesCounter += 1
             self.makeDisplayDrawBoard()
             self.updateLightBoard()
         except IllegalMove as e:
@@ -120,7 +121,8 @@ class TwoPlayersOnOneBoard(GameEngine):
 
     def move(self, x1, y1, x2, y2):
         d = Deferred()
-        d.addCallback(self.moveTask)
+        #d.addCallback(self.moveTask)
+        d.addCallback(self.moveTask).addErrback(log.err) #DEBUG
         reactor.callLater(0, d.callback, (x1, y1, x2, y2))
 
     # def moveTask(self, x1, y1, x2, y2):
