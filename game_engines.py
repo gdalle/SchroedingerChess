@@ -112,6 +112,7 @@ class TwoPlayersOnOneBoard(GameEngine):
         try:
             self.chessBoard.move(x1, y1, x2, y2)
             self.lightBoard.move(x1, y1, x2, y2)
+            self.display.addMessage("Move from ({},{}) to ({},{})".format(x1, y1, x2, y2))
             self.makeDisplayDrawBoard()
             self.updateLightBoard()
         except IllegalMove as e:

@@ -15,11 +15,12 @@ class ChessDisplay():
         os.environ['SDL_VIDEO_CENTERED'] = '1'
         self.width = 600
         self.height = 600
-        self.total_width = 600
-        self.total_height = 700
+        self.pane_width = 300
+        self.total_width = self.width + self.pane_width
+        self.total_height = self.height
 
         pygame.init()
-        # self.screen = pygame.display.set_mode((self.width, self.total_height), pygame.RESIZABLE)
+        # self.screen = pygame.display.set_mode((self.total_width, self.total_height), pygame.RESIZABLE)
         self.screen = pygame.display.set_mode((self.total_width, self.total_height))
         pygame.display.set_caption("Schroedinger Chess Game")
 
@@ -39,10 +40,14 @@ class ChessDisplay():
         self.check_positions = [[False for i in range(8)] for j in range(8)]
         self.checkmate_positions = [[False for i in range(8)] for j in range(8)]
 
-        self.currentMessage = "Please select a game mode."
+        self.message_history = []
+        self.maximum_messages = 9
+        self.current_first_message = 0
+        self.message_font = pygame.font.SysFont("Arial", 13)
+        self.addMessage("Please select a game mode")
 
         self.drawMenu()
-        self.updateMessage()
+        self.drawPane()
 
     def setTwoPlayersOnOneBoardMode(self):
         """ Sets the game engine on the two-players-on-one-board mode."""
@@ -50,6 +55,7 @@ class ChessDisplay():
             self.state = "PLAYING"
             self.gameEngine.makeDisplayDrawBoard()
             self.gameEngine.setTwoPlayersOnOneBoardMode()
+            self.addMessage("Started local game")
 
 
     def setOnePlayerOnNetworkMode(self):
@@ -58,6 +64,7 @@ class ChessDisplay():
             self.state = "PLAYING"
             self.gameEngine.makeDisplayDrawBoard()
             self.gameEngine.setOnePlayerOnNetworkMode()
+            self.addMessage("Started online game")
 
 
     def drawBoard(self, lightBoard):
@@ -164,29 +171,31 @@ class ChessDisplay():
         Handles illegal moves.
         :param reason: TOD0
         """
-        self.currentMessage = reason
-        self.updateMessage()
+        self.addMessage(reason)
+        self.updatePane()
 
 
     def update(self):
         """ Updates the frame."""
         # for event in pygame.event.get(pygame.VIDEORESIZE):
-        #     self.width = event.w
+        #     self.total_width = event.w
         #     self.total_height = event.h
         #     self.height = min(event.w, event.h-100)
+        #     self.width = self.height
         #     self.load_images()
         #     self.gameEngine.makeDisplayDrawBoard()
-
+        all_events = pygame.event.get()
+        dispatched_events = self.dispatch_events(all_events)
         if self.state == "MENU":
-            self.updateMenu()
-            self.updateMessage()
+            self.updateMenu(dispatched_events["board"])
+            self.updatePane(dispatched_events["pane"])
         elif self.state == "PLAYING":
-            self.updateBoard()
-            self.updateMessage()
+            self.updateBoard(dispatched_events["board"])
+            self.updatePane(dispatched_events["pane"])
         else:
             pass
 
-    def updateMenu(self):
+    def updateMenu(self, events):
         """
         Updates the start menu.
         """
@@ -199,7 +208,7 @@ class ChessDisplay():
             abs_h2 = int(0.59375*self.height)
 
             changeState = False
-            for event in pygame.event.get():
+            for event in events:
                 if event.type == pygame.QUIT:
                     self.gameEngine.stop()
 
@@ -218,7 +227,7 @@ class ChessDisplay():
                             changeState = True
                             self.menuSelection = "NONE"
 
-                if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button <= 3:
                     mouse = event.pos
                     if mouse[0] > abs_w and mouse[0] < abs_w+w and mouse[1] > abs_h and mouse[1] < abs_h+h:
                         if self.menuSelection != "LOCAL_DOWN":
@@ -229,17 +238,16 @@ class ChessDisplay():
                             changeState = True
                             self.menuSelection = "ONLINE_DOWN"
 
-                if event.type == pygame.MOUSEBUTTONUP:
+                if event.type == pygame.MOUSEBUTTONUP and event.button <= 3:
                     mouse = event.pos
                     if mouse[0] > abs_w and mouse[0] < abs_w+w and mouse[1] > abs_h and mouse[1] < abs_h+h:
                         if self.menuSelection == "LOCAL_DOWN":
-                            self.currentMessage = ""
                             self.menuSelection = "NONE"
                             self.setTwoPlayersOnOneBoardMode()
                             return
                     if mouse[0] > abs_w and mouse[0] < abs_w+w and mouse[1] > abs_h2 and mouse[1] < abs_h2+h:
                         if self.menuSelection == "ONLINE_DOWN":
-                            self.currentMessage = "The online mode is not supported yet."
+                            self.addMessage("The online mode is not supported yet.")
                             changeState = True
                             self.menuSelection = "ONLINE"
 
@@ -269,18 +277,16 @@ class ChessDisplay():
                     self.drawMenu()
                 pygame.display.flip()
 
-    def updateBoard(self):
+    def updateBoard(self, events):
         """
         Handles piece selection and move attempts.
         """
-        for event in pygame.event.get():
+        for event in events:
             if event.type == pygame.QUIT:
                 self.gameEngine.stop()
 
             # We check for a mouse click
             elif event.type == pygame.MOUSEBUTTONUP:
-                self.currentMessage = ""
-                self.updateMessage()
                 # A left click triggers the move, other clicks cancel it
                 if event.button == 1:
                     mouse = pygame.mouse.get_pos()
@@ -289,7 +295,8 @@ class ChessDisplay():
                         if self.selectedBox is None:  # If no box is selected
                                 self.selectedBox = box
                         else:  # if another box has already been selected, we try a move from the old box to the new box
-                            self.gameEngine.move(self.selectedBox[0], self.flipY(self.selectedBox[1]), box[0], self.flipY(box[1]))
+                            x1, y1, x2, y2 = self.selectedBox[0], self.flipY(self.selectedBox[1]), box[0], self.flipY(box[1])
+                            self.gameEngine.move(x1, y1, x2, y2)
                             self.selectedBox = None
                     else:
                         self.selectedBox = None
@@ -300,19 +307,19 @@ class ChessDisplay():
 
         pygame.display.flip()
 
-    def updateMessage(self):
+    def updatePane(self, events):
         """
-        Change the currently displayed message using self.currentMessage
+        Update the right hand side plane
         """
-        font = pygame.font.SysFont("Arial", 20)
-        text = font.render(self.currentMessage, True, (0, 0, 0))
-        text_rect = text.get_rect(center=(self.width // 2, (self.total_height+self.height+5) // 2))
-        pygame.draw.rect(self.screen, pygame.Color(200, 200, 200), [
-            0, self.height, self.width, self.total_height-self.height
-        ])
-        pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [0, self.height, self.width, 5])
-        self.screen.blit(text, text_rect)
-        pygame.display.flip()
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                mouse = pygame.mouse.get_pos()
+                if event.button == 4 and mouse[1] < self.height // 4:
+                    self.current_first_message = max(0, self.current_first_message-1)
+                    self.drawPane()
+                if event.button == 5 and mouse[1] < self.height // 4:
+                    self.current_first_message = min(max(0, len(self.message_history)-self.maximum_messages), self.current_first_message+1)
+                    self.drawPane()
 
     def drawMenu(self):
         """
@@ -341,6 +348,19 @@ class ChessDisplay():
         # TODO: implement the other states of the menu -> see with gameEngine
         pygame.display.flip()
 
+    def drawPane(self):
+        pygame.draw.rect(self.screen, pygame.Color(200, 200, 200), [
+            self.width, 0, self.total_width, self.total_height
+        ])
+        pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [self.width, 0, 5, self.height])
+        pygame.draw.rect(self.screen, pygame.Color(230, 230, 230), [self.width+15, 10, self.pane_width-30, self.height//4-4])
+        pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [self.width+15, 10, self.pane_width-30, self.height//4-4], 2)
+        selected_messages = self.message_history[self.current_first_message:self.current_first_message+self.maximum_messages]
+        for i, message in enumerate(selected_messages):
+            local = self.message_font.render(message, True, (0, 0, 0))
+            self.screen.blit(local, (self.width+20, 15+i*15))
+        pygame.display.flip()
+
     def load_images(self):
         """Retrieve images from memory."""
         pieces_names = ["bB", "bK", "bN", "bP", "bQ", "bR", "bE", "wB", "wK", "wN", "wP", "wQ", "wR", "wE"]
@@ -367,5 +387,44 @@ class ChessDisplay():
     def flipY(self, y):
         """
         Flip the y coordinate depending on the flip parameter
+        :param y: The y coordinate
         """
         return y if self.flip else 7-y
+
+    def dispatch_events(self, events):
+        """
+        Dispatch the events to the board and the right hand side pane
+        :param events: Array of events produced by pygame.events.get()
+        """
+        dict = {"board": [], "pane": []}
+        for event in events:
+            # The board only cares about the click and mouse motion events occuring on the left side of the display
+            if event.type in [pygame.MOUSEMOTION, pygame.MOUSEBUTTONUP, pygame.MOUSEBUTTONDOWN]:
+                mouse = event.pos
+                if mouse[0] < self.width:
+                    dict["board"].append(event)
+                else:
+                    dict["pane"].append(event)
+            else:
+                dict["pane"].append(event)
+        return dict
+
+    def addMessage(self, message):
+        """
+        Split the incoming text message according to the screen size and add it to the message history
+        :param message: A string message
+        """
+        length = 0
+        i0 = 0
+        message = "> " + message
+        for i, c in enumerate(message):
+            length += self.message_font.metrics(c)[0][4] # The advance of each letter
+            if length > self.pane_width-50:
+                length = 0
+                self.message_history.append(message[i0:i])
+                i0 = i
+        if i0 != len(message)-1:
+            self.message_history.append(message[i0:])
+
+        self.current_first_message = max(0, len(self.message_history)-self.maximum_messages) # Scroll to the end of the messages
+        self.drawPane()
