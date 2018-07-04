@@ -66,9 +66,9 @@ class GameEngine():
         """ Handles an illegal move."""
         self.display.handleIllegalMove(reason) #TODO see the implementation of this method in ChessDisplay
 
-    def makeDisplayDrawBoard(self, exceptBox=None):
+    def makeDisplayDrawBoard(self):
         """ Makes the display redraw the board."""
-        self.display.drawBoard(self.lightBoard, exceptBox=exceptBox)
+        self.display.drawBoard(self.lightBoard)
 
     def makeDisplayDrawChecks(self, check_positions):
         self.display.drawChecks(check_positions)
@@ -106,7 +106,6 @@ class TwoPlayersOnOneBoard(GameEngine):
                             color = piece.color
                             self.lightBoard.setPiece(x, y , color, natures)
                             self.makeDisplayDrawBoard()
-                            self.display.drawSelectedBox()
 
     def moveTask(self, mov):
         x1, y1, x2, y2 = mov[0], mov[1], mov[2], mov[3]

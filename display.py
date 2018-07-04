@@ -13,12 +13,14 @@ class ChessDisplay():
     def __init__(self, gameEngine):
         """Init."""
         os.environ['SDL_VIDEO_CENTERED'] = '1'
-        self.width = 800
-        self.height = 800
-        self.total_height = 900
+        self.width = 600
+        self.height = 600
+        self.total_width = 600
+        self.total_height = 700
 
         pygame.init()
-        self.screen = pygame.display.set_mode((self.width, self.total_height))
+        # self.screen = pygame.display.set_mode((self.width, self.total_height), pygame.RESIZABLE)
+        self.screen = pygame.display.set_mode((self.total_width, self.total_height))
         pygame.display.set_caption("Schroedinger Chess Game")
 
         self.state = "MENU"
@@ -58,11 +60,10 @@ class ChessDisplay():
             self.gameEngine.setOnePlayerOnNetworkMode()
 
 
-    def drawBoard(self, lightBoard, exceptBox=None):
+    def drawBoard(self, lightBoard):
         """
         Draws the board.
         :param lightBoard: The light board to draw. :see LightBoard
-        :param exceptBox: A box which has to bet let empty whatever it contains
         """
         self.screen.blit(self.boardFlip if self.flip else self.board, (0, 0))
         for y in range(8):
@@ -77,7 +78,7 @@ class ChessDisplay():
                         (x * self.width) // 8, (self.flipY(y) * self.height) // 8,
                         self.width // 8, self.height // 8], 5)
 
-                if exceptBox is not None and exceptBox[0]==x and exceptBox[1]==self.flipY(y):
+                if self.selectedBox is not None and self.selectedBox[0]==x and self.selectedBox[1]==self.flipY(y):
                     continue
 
                 piece = lightBoard.getPiece(x, y)
@@ -94,6 +95,7 @@ class ChessDisplay():
                         picture_name += natures[0]
                     picture = self.pieces_pictures[picture_name]
                     self.screen.blit(picture, ((x * self.width) // 8, (self.flipY(y) * self.height) // 8))
+        self.drawSelectedBox()
         pygame.display.flip()
 
     def undrawSelectedBox(self):
@@ -118,9 +120,9 @@ class ChessDisplay():
                     color = "b"
                 natures = piece[1]
                 if len(natures) == 1:
-                    self.gameEngine.makeDisplayDrawBoard()
+                    picture = self.pieces_pictures[color + natures[0]]
+                    self.screen.blit(picture, (x, y))
                 else:
-                    self.gameEngine.makeDisplayDrawBoard(exceptBox=self.selectedBox)
                     if len(natures) == 5:
                         for i in range(len(natures)):
                             xp = x + ((2*i)%3)*self.width // 24
@@ -134,9 +136,7 @@ class ChessDisplay():
                             picture = self.pieces_pictures[color + natures[i] + "s"]
                             self.screen.blit(picture, (xp, yp))
             pygame.draw.rect(self.screen, pygame.Color(0, 0, 0, 0), [
-                x, y, self.width // 8, self.height // 8], 5)
-
-            pygame.display.flip()
+                x, y, self.width // 8, self.height // 8], int(0.00625*self.width))
 
 
     def drawChecks(self, check_positions):
@@ -169,8 +169,14 @@ class ChessDisplay():
 
 
     def update(self):
-        # print(self.state)
         """ Updates the frame."""
+        # for event in pygame.event.get(pygame.VIDEORESIZE):
+        #     self.width = event.w
+        #     self.total_height = event.h
+        #     self.height = min(event.w, event.h-100)
+        #     self.load_images()
+        #     self.gameEngine.makeDisplayDrawBoard()
+
         if self.state == "MENU":
             self.updateMenu()
             self.updateMessage()
@@ -185,6 +191,13 @@ class ChessDisplay():
         Updates the start menu.
         """
         if self.menuState == "START":
+            # Reference coordinates
+            w = int(0.6375*self.width)
+            h = int(0.1875*self.height)
+            abs_w = int(0.1875*self.width)
+            abs_h = int(0.21875*self.height)
+            abs_h2 = int(0.59375*self.height)
+
             changeState = False
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -192,11 +205,11 @@ class ChessDisplay():
 
                 if event.type == pygame.MOUSEMOTION:
                     mouse = event.pos
-                    if mouse[0] > self.width//2-250 and mouse[0] < self.width//2+250 and mouse[1] > 175 and mouse[1] < 325:
+                    if mouse[0] > abs_w and mouse[0] < abs_w+w and mouse[1] > abs_h and mouse[1] < abs_h+h:
                         if self.menuSelection != "LOCAL" and self.menuSelection != "LOCAL_DOWN":
                             changeState = True
                             self.menuSelection = "LOCAL"
-                    elif mouse[0] > self.width//2-250 and mouse[0] < self.width//2+250 and mouse[1] > 475 and mouse[1] < 625:
+                    elif mouse[0] > abs_w and mouse[0] < abs_w+w and mouse[1] > abs_h2 and mouse[1] < abs_h2+h:
                         if self.menuSelection != "ONLINE" and self.menuSelection != "ONLINE_DOWN":
                             changeState = True
                             self.menuSelection = "ONLINE"
@@ -207,23 +220,24 @@ class ChessDisplay():
 
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     mouse = event.pos
-                    if mouse[0] > self.width//2-250 and mouse[0] < self.width//2+250 and mouse[1] > 175 and mouse[1] < 325:
+                    if mouse[0] > abs_w and mouse[0] < abs_w+w and mouse[1] > abs_h and mouse[1] < abs_h+h:
                         if self.menuSelection != "LOCAL_DOWN":
                             changeState = True
                             self.menuSelection = "LOCAL_DOWN"
-                    if mouse[0] > self.width//2-250 and mouse[0] < self.width//2+250 and mouse[1] > 475 and mouse[1] < 625:
+                    if mouse[0] > abs_w and mouse[0] < abs_w+w and mouse[1] > abs_h2 and mouse[1] < abs_h2+h:
                         if self.menuSelection != "ONLINE_DOWN":
                             changeState = True
                             self.menuSelection = "ONLINE_DOWN"
 
                 if event.type == pygame.MOUSEBUTTONUP:
                     mouse = event.pos
-                    if mouse[0] > self.width//2-250 and mouse[0] < self.width//2+250 and mouse[1] > 175 and mouse[1] < 325:
+                    if mouse[0] > abs_w and mouse[0] < abs_w+w and mouse[1] > abs_h and mouse[1] < abs_h+h:
                         if self.menuSelection == "LOCAL_DOWN":
                             self.currentMessage = ""
                             self.menuSelection = "NONE"
                             self.setTwoPlayersOnOneBoardMode()
-                    if mouse[0] > self.width//2-250 and mouse[0] < self.width//2+250 and mouse[1] > 475 and mouse[1] < 625:
+                            return
+                    if mouse[0] > abs_w and mouse[0] < abs_w+w and mouse[1] > abs_h2 and mouse[1] < abs_h2+h:
                         if self.menuSelection == "ONLINE_DOWN":
                             self.currentMessage = "The online mode is not supported yet."
                             changeState = True
@@ -232,24 +246,24 @@ class ChessDisplay():
             if changeState:
                 fontTitle = pygame.font.Font("fonts/CFRemingtonTypewriter-Regul.ttf", 60)
                 if self.menuSelection == "LOCAL":
-                    pygame.draw.rect(self.screen, pygame.Color(170, 170, 170), [self.width//2-250, 175, 500, 150])
+                    pygame.draw.rect(self.screen, pygame.Color(170, 170, 170), [abs_w, abs_h, w, h])
                     local = fontTitle.render("Local game", True, (0, 0, 0))
-                    local_rect = local.get_rect(center=(self.width // 2, 250))
+                    local_rect = local.get_rect(center=(self.width // 2, (0.3125*self.height)))
                     self.screen.blit(local, local_rect)
                 elif self.menuSelection == "LOCAL_DOWN":
-                    pygame.draw.rect(self.screen, pygame.Color(140, 140, 140), [self.width//2-250, 175, 500, 150])
+                    pygame.draw.rect(self.screen, pygame.Color(140, 140, 140), [abs_w, abs_h, w, h])
                     local = fontTitle.render("Local game", True, (0, 0, 0))
-                    local_rect = local.get_rect(center=(self.width // 2, 250))
+                    local_rect = local.get_rect(center=(self.width // 2, (0.3125*self.height)))
                     self.screen.blit(local, local_rect)
                 elif self.menuSelection == "ONLINE":
-                    pygame.draw.rect(self.screen, pygame.Color(170, 170, 170), [self.width//2-250, 475, 500, 150])
+                    pygame.draw.rect(self.screen, pygame.Color(170, 170, 170), [abs_w, abs_h2, w, h])
                     online = fontTitle.render("Online game", True, (0, 0, 0))
-                    online_rect = online.get_rect(center=(self.width // 2, 550))
+                    online_rect = online.get_rect(center=(self.width // 2, (0.6875*self.height)))
                     self.screen.blit(online, online_rect)
                 elif self.menuSelection == "ONLINE_DOWN":
-                    pygame.draw.rect(self.screen, pygame.Color(140, 140, 140), [self.width//2-250, 475, 500, 150])
+                    pygame.draw.rect(self.screen, pygame.Color(140, 140, 140), [abs_w, abs_h2, w, h])
                     online = fontTitle.render("Online game", True, (0, 0, 0))
-                    online_rect = online.get_rect(center=(self.width // 2, 550))
+                    online_rect = online.get_rect(center=(self.width // 2, (0.6875*self.height)))
                     self.screen.blit(online, online_rect)
                 else:
                     self.drawMenu()
@@ -274,17 +288,15 @@ class ChessDisplay():
                     if box[0] < 8 and box[1] < 8:
                         if self.selectedBox is None:  # If no box is selected
                                 self.selectedBox = box
-                                self.drawSelectedBox()
                         else:  # if another box has already been selected, we try a move from the old box to the new box
-                            self.undrawSelectedBox()
                             self.gameEngine.move(self.selectedBox[0], self.flipY(self.selectedBox[1]), box[0], self.flipY(box[1]))
                             self.selectedBox = None
                     else:
-                        self.undrawSelectedBox()
                         self.selectedBox = None
                 else:
-                    self.undrawSelectedBox()
                     self.selectedBox = None
+
+                self.gameEngine.makeDisplayDrawBoard()
 
         pygame.display.flip()
 
@@ -309,16 +321,22 @@ class ChessDisplay():
         self.screen.blit(self.board, (0, 0))
         fontTitle = pygame.font.Font("fonts/CFRemingtonTypewriter-Regul.ttf", 60)
         if self.menuState == "START":
-            pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [self.width//2-255, 170, 510, 160])
-            pygame.draw.rect(self.screen, pygame.Color(200, 200, 200), [self.width//2-250, 175, 500, 150])
+            # When multiplied by 800 we get integer numbers
+            w = int(0.6375*self.width)
+            h = int(0.1875*self.height)
+            abs_w = int(0.1875*self.width)
+            abs_h = int(0.21875*self.height)
+            abs_h2 = int(0.59375*self.height)
+            pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [abs_w-5, abs_h-5, w+10, h+10])
+            pygame.draw.rect(self.screen, pygame.Color(200, 200, 200), [abs_w, abs_h, w, h])
             local = fontTitle.render("Local game", True, (0, 0, 0))
-            local_rect = local.get_rect(center=(self.width // 2, 250))
+            local_rect = local.get_rect(center=(self.width // 2, (0.3125*self.height)))
             self.screen.blit(local, local_rect)
 
-            pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [self.width//2-255, 470, 510, 160])
-            pygame.draw.rect(self.screen, pygame.Color(200, 200, 200), [self.width//2-250, 475, 500, 150])
+            pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [abs_w-5, abs_h2-5, w+10, h+10])
+            pygame.draw.rect(self.screen, pygame.Color(200, 200, 200), [abs_w, abs_h2, w, h])
             online = fontTitle.render("Online game", True, (0, 0, 0))
-            online_rect = online.get_rect(center=(self.width // 2, 550))
+            online_rect = online.get_rect(center=(self.width // 2, (0.6875*self.height)))
             self.screen.blit(online, online_rect)
         # TODO: implement the other states of the menu -> see with gameEngine
         pygame.display.flip()
@@ -328,11 +346,11 @@ class ChessDisplay():
         pieces_names = ["bB", "bK", "bN", "bP", "bQ", "bR", "bE", "wB", "wK", "wN", "wP", "wQ", "wR", "wE"]
         self.pieces_pictures = {}
         for name in pieces_names:
-            self.pieces_pictures[name] = pygame.transform.scale(pygame.image.load(
+            self.pieces_pictures[name] = pygame.transform.smoothscale(pygame.image.load(
                 "img/" + name + ".png"), (self.width // 8, self.height // 8))
-            self.pieces_pictures[name+"s"] = pygame.transform.scale(self.pieces_pictures[name],
+            self.pieces_pictures[name+"s"] = pygame.transform.smoothscale(self.pieces_pictures[name],
                 (self.width // 16, self.height // 16)) # small icons for multiple display
-            self.pieces_pictures[name+"xs"] = pygame.transform.scale(self.pieces_pictures[name],
+            self.pieces_pictures[name+"xs"] = pygame.transform.smoothscale(self.pieces_pictures[name],
                 (self.width // 24, self.height // 24))
         self.board = pygame.transform.scale(pygame.image.load(
             "img/board.png"), (self.width, self.height)) # smaller icons for multiple display
