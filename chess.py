@@ -599,7 +599,7 @@ class ChessBoard():
             "P" in piece.possible_natures
         )
         if promotion:
-            promoted_piece = self.pieces[cur_c][i + 16]
+            promoted_piece = self.pieces[cur_c][i + 8]
             self.grid[x2][y2] = promoted_piece
             piece.position = None
             promoted_piece.position = (x2, y2)
@@ -631,7 +631,7 @@ class ChessBoard():
             "P" in piece.possible_natures
         )
         if promotion:
-            promoted_piece = self.pieces[cur_c][i + 16]
+            promoted_piece = self.pieces[cur_c][i + 8]
             promoted_piece.position = None
         self.pieces_alive.pop()
         self.positions.pop()
