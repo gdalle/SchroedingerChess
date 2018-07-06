@@ -32,7 +32,7 @@ class IllegalMove(Exception):
 class ChessPiece():
     """Chess piece manipulation."""
 
-    def __init__(self, c, i, n, b=None):
+    def __init__(self, c, i, n, p, b=None):
         """Initialize color, number, nature, position."""
         self.color = c
         self.color_name = "W" if c == 0 else "B"
@@ -44,6 +44,7 @@ class ChessPiece():
         self.legal_natures = self.possible_natures
         self.forbidden_natures = []
         self.nature_guess = self.initial_nature_guess()
+        self.position = p
         self.board = b
 
     def __str__(self, guess=False, natures=False):
@@ -92,24 +93,24 @@ class ChessBoard():
         """Initialize the board."""
         # Colorized lists of pieces
         white_pieces = [
-            ChessPiece(c=0, i=i, n=None, b=self)
+            ChessPiece(c=0, i=i, n=None, p=(i, 0), b=self)
             for i in major_piece_numbers
         ] + [
-            ChessPiece(c=0, i=i, n="P", b=self)
+            ChessPiece(c=0, i=i, n="P", p=(i, 1), b=self)
             for i in pawn_numbers
         ] + [
-            ChessPiece(c=0, i=i, n=None, b=self)
+            ChessPiece(c=0, i=i, n=None, p=None, b=self)
             for i in promoted_numbers
         ]
 
         black_pieces = [
-            ChessPiece(c=1, i=i, n=None, b=self)
+            ChessPiece(c=1, i=i, n=None, p=(i, 7), b=self)
             for i in major_piece_numbers
         ] + [
-            ChessPiece(c=1, i=i, n="P", b=self)
+            ChessPiece(c=1, i=i, n="P", p=(i, 6), b=self)
             for i in pawn_numbers
         ] + [
-            ChessPiece(c=1, i=i, n=None, b=self)
+            ChessPiece(c=1, i=i, n=None, p=None, b=self)
             for i in promoted_numbers
         ]
 
@@ -591,16 +592,23 @@ class ChessBoard():
         self.moves.append((x1, y1, x2, y2))
         self.nature_eliminations.append(
             self.nature_elimination(piece, x1, y1, x2, y2))
-        self.grid[x2][y2] = piece
-        if (
+        self.grid[x1][y1] = None
+        promotion = (
             ((y2 == 7 and cur_c == 0) or (y2 == 0 and cur_c == 1))
             and
             "P" in piece.possible_natures
-        ):
-            self.grid[x2][y2] = self.pieces[cur_c][i + 8]
-        self.grid[x1][y1] = None
+        )
+        if promotion:
+            promoted_piece = self.pieces[cur_c][i + 16]
+            self.grid[x2][y2] = promoted_piece
+            piece.position = None
+            promoted_piece.position = (x2, y2)
+        else:
+            self.grid[x2][y2] = piece
+            piece.position = (x2, y2)
         alive = self.pieces_alive[-1][:]
         if target_piece is not None:
+            target_piece.position = False
             alive[target_piece.color] -= 1
         self.pieces_alive.append(alive)
         self.positions.append(self.compute_position())
@@ -608,11 +616,23 @@ class ChessBoard():
 
     def delete_move_from_history(self, x1, y1, x2, y2, piece, target_piece):
         """Reverse the last move."""
+        cur_c, i = piece.color, piece.number
         self.time -= 1
         self.moves.pop()
         self.nature_eliminations.pop()
-        self.grid[x2][y2] = target_piece
         self.grid[x1][y1] = piece
+        piece.position = (x1, y1)
+        self.grid[x2][y2] = target_piece
+        if target_piece is not None:
+            target_piece.position = (x2, y2)
+        promotion = (
+            ((y2 == 7 and cur_c == 0) or (y2 == 0 and cur_c == 1))
+            and
+            "P" in piece.possible_natures
+        )
+        if promotion:
+            promoted_piece = self.pieces[cur_c][i + 16]
+            promoted_piece.position = None
         self.pieces_alive.pop()
         self.positions.pop()
         self.attacks.pop()
@@ -661,6 +681,10 @@ class ChessBoard():
             n for n in piece.possible_natures
             if n not in self.nature_eliminations[-1][2]
         ]
+
+        if target_piece is not None:
+            target_piece.position = False
+
         self.update_guess(problem)
 
     def move(self, x1, y1, x2, y2):
@@ -671,8 +695,6 @@ class ChessBoard():
         """
         problem = self.test_move(x1, y1, x2, y2, full_result=True)
         self.perform_move(x1, y1, x2, y2, problem)
-        # print(x1, y1, x2, y2)
-        # self.display_guess()
         return True
 
     def legal_moves_from(self, x1, y1):
@@ -766,18 +788,17 @@ class LightBoard():
                 piece = self.board[x][y]
                 color = piece[0]
                 natures = piece[1]
-                wrap.append({"x" : x, "y": y, "color" : color, "natures": natures})
+                wrap.append({"x": x, "y": y, "color": color, "natures": natures})
         return wrap
 
     def unwrap(self, wrap):
         self.clean()
         for piece in wrap:
-                x = piece["x"]
-                y = piece["y"]
-                color = piece["color"]
-                natures = piece["nature"]
-                self.setPiece(x, y, color, natures)
-
+            x = piece["x"]
+            y = piece["y"]
+            color = piece["color"]
+            natures = piece["nature"]
+            self.setPiece(x, y, color, natures)
 
 
 def main():
