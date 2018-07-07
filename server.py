@@ -132,7 +132,7 @@ class Game:
         self.black=None
         self.ready = False
         self.gameid=currentIndex
-        self.chessBoard = ChessBoard() 
+        self.chessBoard = ChessBoard()
         self.lightBoard = LightBoard()
 
     def move(self, x1, y1, x2, y2, color):
@@ -142,7 +142,7 @@ class Game:
         self.chessBoard.move(x1, y1, x2, y2)
         self.lightBoard.move(x1, y1, x2, y2)
         self.updateLightBoardTask()
-    
+
     def updateLightBoardTask(self):
         for x in range(8):
                 for y in range(8):
@@ -161,7 +161,7 @@ class Game:
         self.white.sendMessage(msg)
         self.black.sendMessage(msg)
 
-    def sendMessageTo(self, msg, color)
+    def sendMessageTo(self, msg, color):
         if color == 0:
             self.white.sendMessage(msg)
         elif color == 1:
