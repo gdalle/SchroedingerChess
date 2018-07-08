@@ -143,6 +143,7 @@ class OnePlayerOnNetwork(GameEngine):
         raise NotImplementedError("Server not yet implemented")
         self.name = input("Player name: ")
         address = input("Address of Server: ")
+        self.color = input("Color (0 or 1): ")
         if not address:
             host, port = "localhost", 6000
         else:
@@ -164,6 +165,7 @@ class OnePlayerOnNetwork(GameEngine):
             self.color = description["color"]
             if self.color == "black":
                 self.display.flipDisplay(True)
+            if self.gameid = msg[""]
 
         def moveTask(self, x1, y1, x2, y2):
             msg = {"type" : "move", "player" : self.color, "description" : (x1, y1, x2, y2)}
@@ -176,7 +178,6 @@ class OnePlayerOnNetwork(GameEngine):
             x2 = move[2]
             y2 = move[3]
             self.lightBoard.move(x1, y1, x2, y2)
-            natures = description["natures"]
             self.makeDisplayDrawBoard()
             print("cb.move({},{},{},{})".format(x1,y1,x2,y2))
 
