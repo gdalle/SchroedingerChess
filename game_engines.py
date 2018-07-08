@@ -47,10 +47,10 @@ class GameEngine():
         self.display.gameEngine = TwoPlayersOnOneBoard(self)
         self.display.gameEngine.resume()
 
-    def setOnePlayerOnNetworkMode(self):
+    def setOnePlayerOnNetworkMode(self, name, address):
         """ Sets the engine on the one-player-on-network mode."""
         self.suspend()
-        self.display.gameEngine = OnePlayerOnNetwork(self)
+        self.display.gameEngine = OnePlayerOnNetwork(self, name, address)
         self.display.gameEngine.resume()
 
     def moveTask(self, x1, y1, x2, y2):
@@ -66,9 +66,9 @@ class GameEngine():
         """ Handles an illegal move."""
         self.display.handleIllegalMove(reason) #TODO see the implementation of this method in ChessDisplay
 
-    def makeDisplayDrawBoard(self, exceptBox=None):
+    def makeDisplayDrawBoard(self):
         """ Makes the display redraw the board."""
-        self.display.drawBoard(self.lightBoard, exceptBox=exceptBox)
+        self.display.drawBoard(self.lightBoard)
 
     def makeDisplayDrawChecks(self, check_positions):
         self.display.drawChecks(check_positions)
@@ -106,7 +106,6 @@ class TwoPlayersOnOneBoard(GameEngine):
                                 color = piece.color
                                 self.lightBoard.setPiece(x, y , color, natures)
                                 self.makeDisplayDrawBoard()
-                                self.display.drawSelectedBox()
 
     def moveTask(self, mov):
         x1, y1, x2, y2 = mov[0], mov[1], mov[2], mov[3]
@@ -114,6 +113,7 @@ class TwoPlayersOnOneBoard(GameEngine):
             self.chessBoard.move(x1, y1, x2, y2)
             self.lightBoard.move(x1, y1, x2, y2)
             self.validMovesCounter += 1
+            self.display.addMessage("Move from ({},{}) to ({},{})".format(x1, y1, x2, y2))
             self.makeDisplayDrawBoard()
             self.updateLightBoard()
         except IllegalMove as e:
@@ -139,10 +139,8 @@ class TwoPlayersOnOneBoard(GameEngine):
 
 class OnePlayerOnNetwork(GameEngine):
 
-    def __init__(self, gameEngine):
+    def __init__(self, gameEngine, name, address=None):
         raise NotImplementedError("Server not yet implemented")
-        self.name = input("Player name: ")
-        address = input("Address of Server: ")
         self.color = input("Color (0 or 1): ")
         if not address:
             host, port = "localhost", 6000
@@ -158,6 +156,7 @@ class OnePlayerOnNetwork(GameEngine):
         try:
             attempt = connectProtocol(point, self.protocol)
             attempt.addTimeout(CONNECTION_WAITING_TIME, reactor)
+            self.display.addMessage("Connection established")
         except:
             self.connectionFailed()
 
@@ -165,7 +164,8 @@ class OnePlayerOnNetwork(GameEngine):
             self.color = description["color"]
             if self.color == "black":
                 self.display.flipDisplay(True)
-            if self.gameid = msg[""]
+            if self.gameid == msg[""]:
+                pass
 
         def moveTask(self, x1, y1, x2, y2):
             msg = {"type" : "move", "player" : self.color, "description" : (x1, y1, x2, y2)}
@@ -192,8 +192,8 @@ class OnePlayerOnNetwork(GameEngine):
             self.makeDisplayDrawCheckMates(description)
 
         def connectionFailed(self):
-            raise NotImplementedError
-            # TODO implement disconnection screen
+            self.display.setMenuMode()
+            self.display.addMessage("The server could not be reached.")
 
         def handleDisconnection(self, description):
             raise NotImplementedError
