@@ -418,6 +418,10 @@ class ChessBoard():
                     )
 
         for c in colors:
+            for i in promoted_numbers:
+                problem += z[(c, i, "K")] == 0, "No promoted king " + str((c, i))
+
+        for c in colors:
             problem += (
                 sum([z[(c, i, "B")] for i in [1, 3, 5, 7]]) == 1,
                 "One " + str(c) + "-square bishop " + str(c)
