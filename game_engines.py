@@ -47,7 +47,7 @@ class GameEngine():
         self.display.gameEngine = TwoPlayersOnOneBoard(self)
         self.display.gameEngine.resume()
 
-    def setOnePlayerOnNetworkMode(self, name, address):
+    def setOnePlayerOnNetworkMode(self, name, address, color):
         """ Sets the engine on the one-player-on-network mode."""
         self.suspend()
         self.display.gameEngine = OnePlayerOnNetwork(self, name, address)
@@ -139,9 +139,8 @@ class TwoPlayersOnOneBoard(GameEngine):
 
 class OnePlayerOnNetwork(GameEngine):
 
-    def __init__(self, gameEngine, name, address=None):
+    def __init__(self, gameEngine, name, address=None, color=0):
         raise NotImplementedError("Server not yet implemented")
-        self.color = input("Color (0 or 1): ")
         if not address:
             host, port = "localhost", 6000
         else:

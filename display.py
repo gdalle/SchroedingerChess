@@ -92,6 +92,7 @@ class ChessDisplay():
         self.address = InputBox(int(0.458*self.width), int(0.6875*self.height)+10, int(self.width/3), 32)
         self.input_boxes = [self.name, self.address]
         self.clock = pygame.time.Clock()
+        self.selected_color = "B"
 
         self.drawMenu()
         self.drawPane()
@@ -110,11 +111,11 @@ class ChessDisplay():
             self.addMessage("Started local game")
 
 
-    def setOnePlayerOnNetworkMode(self, name, address):
+    def setOnePlayerOnNetworkMode(self, name, address, color):
         """ Sets the game engine on the one-player on network mode."""
         if self.state == "MENU":
             self.state = "PLAYING"
-            self.gameEngine.setOnePlayerOnNetworkMode(name, address)
+            self.gameEngine.setOnePlayerOnNetworkMode(name, address, color)
             self.gameEngine.makeDisplayDrawBoard()
             self.addMessage("Starting online game")
 
@@ -322,9 +323,10 @@ class ChessDisplay():
             # Reference coordinates
             w = int(0.6375*self.width)
             h = int(0.1875*self.height)
+            h2 = int(0.2675*self.height)
             abs_w = int(0.1875*self.width)
             abs_h = int(0.21875*self.height)
-            abs_h2 = int(0.59375*self.height)
+            abs_h2 = int(0.52*self.height)
             w3 = int(0.4*self.width)
             h3 = int(0.12*self.height)
             abs_w3 = int(0.3*self.width)
@@ -367,6 +369,16 @@ class ChessDisplay():
                             self.menuSelection = "NONE"
                             self.setTwoPlayersOnOneBoardMode()
                             return
+                    elif mouse[0] > int(0.458*self.width) and mouse[0] < int(0.458*self.width) + self.width // 16 + 6 and mouse[1] > int(0.61*self.height)-45-3 and mouse[1] < int(0.61*self.height) + self.width // 16 + 6:
+                        if self.menuSelection != "SELECT_BLACK":
+                            changeState = True
+                            self.menuSelection = "SELECT_BLACK"
+                            self.selected_color = "B"
+                    elif mouse[0] > int(0.55*self.width) and mouse[0] < int(0.55*self.width) + self.width // 16 + 6 and mouse[1] > int(0.61*self.height)-45-3 and mouse[1] < int(0.61*self.height)-45-3 + self.width // 16 + 6:
+                        if self.menuSelection != "SELECT_WHITE":
+                            changeState = True
+                            self.menuSelection = "SELECT_WHITE"
+                            self.selected_color = "W"
                     elif mouse[0] > abs_w3 and mouse[0] < abs_w3+w3 and mouse[1] > abs_h3 and mouse[1] < abs_h3+h3:
                         if self.menuSelection == "CONNECT_DOWN":
                             check_IP_port = self.check_address_format(self.address.text)
@@ -379,7 +391,8 @@ class ChessDisplay():
                                 self.menuSelection = "CONNECT"
                                 self.addMessage("Please enter a player name")
                             else:
-                                self.setOnePlayerOnNetworkMode(self.name.text, self.address.text)
+                                c = 0 if self.selected_color == "B" else 1
+                                self.setOnePlayerOnNetworkMode(self.name.text, self.address.text, c)
                                 return
 
         if changeState:
@@ -415,6 +428,13 @@ class ChessDisplay():
                 connect = fontTitleS.render("Connect", True, (0, 0, 0))
                 connect_rect = connect.get_rect(center=(abs_w3+0.5*w3, abs_h3+0.5*h3))
                 self.screen.blit(connect, connect_rect)
+            elif self.menuSelection == "SELECT_WHITE":
+                pygame.draw.rect(self.screen, pygame.Color(200, 200, 200), [int(0.458*self.width), int(0.61*self.height)-45-3, self.width // 16 + 6, self.width // 16 + 6], 2)
+                pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [int(0.55*self.width), int(0.61*self.height)-45-3, self.width // 16 + 6, self.width // 16 + 6], 2)
+            elif self.menuSelection == "SELECT_BLACK":
+                pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [int(0.458*self.width), int(0.61*self.height)-45-3, self.width // 16 + 6, self.width // 16 + 6], 2)
+                pygame.draw.rect(self.screen, pygame.Color(200, 200, 200), [int(0.55*self.width), int(0.61*self.height)-45-3, self.width // 16 + 6, self.width // 16 + 6], 2)
+
             else:
                 self.drawMenu()
 
@@ -495,23 +515,33 @@ class ChessDisplay():
         if self.menuState == "ONLINE":
             w = int(0.6375*self.width)
             h = int(0.1875*self.height)
+            h2 = int(0.2675*self.height)
             abs_w = int(0.1875*self.width)
             abs_h = int(0.21875*self.height)
-            abs_h2 = int(0.59375*self.height)
+            abs_h2 = int(0.52*self.height)
             pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [abs_w-5, abs_h-5, w+10, h+10])
             pygame.draw.rect(self.screen, pygame.Color(200, 200, 200), [abs_w, abs_h, w, h])
             local = fontTitle.render("Local game", True, (0, 0, 0))
             local_rect = local.get_rect(center=(self.width // 2, (0.3125*self.height)))
             self.screen.blit(local, local_rect)
 
-            pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [abs_w-5, abs_h2-5, w+10, h+10])
-            pygame.draw.rect(self.screen, pygame.Color(200, 200, 200), [abs_w, abs_h2, w, h])
+            pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [abs_w-5, abs_h2-5, w+10, h2+10])
+            pygame.draw.rect(self.screen, pygame.Color(200, 200, 200), [abs_w, abs_h2, w, h2])
+            color = fontText.render("Color", True, (0, 0, 0))
+            self.screen.blit(color, (int(0.2*self.width), int(0.61*self.height)-40))
             player = fontText.render("Player name", True, (0, 0, 0))
             self.screen.blit(player, (int(0.2*self.width), int(0.697*self.height)-40))
             address = fontText.render("[Server IP]:[port]", True, (0, 0, 0))
             self.screen.blit(address, (int(0.2*self.width), int(0.78*self.height)-40))
             for box in self.input_boxes:
                 box.draw(self.screen)
+
+            self.screen.blit(self.pieces_pictures["bEs"], (int(0.458*self.width)+3, int(0.61*self.height)-45))
+            self.screen.blit(self.pieces_pictures["wEs"], (int(0.55*self.width)+3, int(0.61*self.height)-45))
+            if self.selected_color == "B":
+                pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [int(0.458*self.width), int(0.61*self.height)-45-3, self.width // 16 + 6, self.width // 16 + 6], 2)
+            else:
+                pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [int(0.55*self.width), int(0.61*self.height)-45-3, self.width // 16 + 6, self.width // 16 + 6], 2)
 
             w3 = int(0.4*self.width)
             h3 = int(0.12*self.height)
@@ -527,7 +557,6 @@ class ChessDisplay():
             self.clock.tick(30)
 
 
-        # TODO: implement the other states of the menu -> see with gameEngine
         pygame.display.flip()
 
     def drawPane(self):
