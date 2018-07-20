@@ -723,6 +723,12 @@ class ChessBoard():
                     legal_moves.append((x1, y1, x2, y2))
         return legal_moves
 
+    def auto_move(self):
+        """Perform one of the legal moves at random."""
+        legal_moves = self.all_legal_moves()
+        x1, y1, x2, y2 = np.random.choice(legal_moves)
+        self.move(x1, y1, x2, y2)
+
     def is_legal_nature(self, piece, n):
         """Check if, given the current history, piece could have nature n."""
         if n not in piece.possible_natures:
@@ -779,7 +785,7 @@ class LightBoard():
         piece = self.getPiece(x1, y1)
         if piece is not None:
             natures = self.possibleNaturesFromMove(x1, y1, x2, y2, piece[0], piece[1])
-            assert(len(natures)>=1)
+            assert(len(natures) >= 1)
             self.setPiece(x2, y2, piece[0], natures)
             self.board[x1][y1] = None
             for x in range(8):
