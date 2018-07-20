@@ -10,7 +10,9 @@ Welcome to SchroedingerChess's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   Haft Schrödinger Chess <source/notes>
 
+   API reference <source/modules>
 
 Indices and tables
 ==================
