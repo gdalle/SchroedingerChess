@@ -2,7 +2,7 @@ from twisted.internet.protocol import Protocol, Factory
 from twisted.internet import reactor
 from twisted.internet.endpoints import TCP4ServerEndpoint
 
-from .chess import ChessBoard, LightBoard, IllegalMove
+from chess import ChessBoard, LightBoard, IllegalMove
 
 import json
 

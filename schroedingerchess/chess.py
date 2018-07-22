@@ -723,36 +723,35 @@ class ChessBoard():
             print(self.__str__(guess=1))
         return True
 
-    def legal_moves_from(self, x1, y1):
+    def legal_moves_from_gen(self, x1, y1):
         """Search all legal moves starting from a given square."""
-        legal_arrivals = []
-        illegal_arrivals = []
-        for x2 in range(8):
-            for y2 in range(8):
+        for x2 in np.random.permutation(np.arange(8)):
+            for y2 in np.random.permutation(np.arange(8)):
                 try:
                     self.test_move(x1, y1, x2, y2, full_result=False)
-                    legal_arrivals.append((x2, y2))
+                    yield (x2, y2)
                 except IllegalMove as e:
-                    illegal_arrivals.append((x2, y2, e))
-        return legal_arrivals
+                    pass
+
+    def all_legal_moves_gen(self):
+        """Search all legal move at a given turn."""
+        for x1 in np.random.permutation(np.arange(8)):
+            for y1 in np.random.permutation(np.arange(8)):
+                for (x2, y2) in self.legal_moves_from(x1, y1):
+                    yield (x1, y1, x2, y2)
+
+    def legal_moves_from(self, x1, y1):
+        return list(self.legal_moves_from_gen(x1, y1))
 
     def all_legal_moves(self):
-        """Search all legal move at a given turn."""
-        legal_moves = []
-        for x1 in range(8):
-            for y1 in range(8):
-                for (x2, y2) in self.legal_moves_from(x1, y1):
-                    legal_moves.append((x1, y1, x2, y2))
-        return legal_moves
+        return list(self.all_legal_moves_gen())
 
     def auto_move(self, disp=False):
         """Perform one of the legal moves at random."""
-        legal_moves = self.all_legal_moves()
-        if legal_moves:
-            m = np.random.choice(len(legal_moves))
-            x1, y1, x2, y2 = legal_moves[m]
+        try:
+            x1, y1, x2, y2 = self.all_legal_moves_gen().__next__()
             self.move(x1, y1, x2, y2, disp=disp)
-        else:
+        except StopIteration:
             raise ValueError("Game over - " + self.end_game())
 
     def is_legal_nature(self, piece, n):

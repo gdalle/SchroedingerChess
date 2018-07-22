@@ -4,7 +4,7 @@ import sys
 import os
 import pygame
 
-from .chess import ChessPiece, ChessBoard, IllegalMove
+from chess import ChessPiece, ChessBoard, IllegalMove
 
 
 class InputBox():
