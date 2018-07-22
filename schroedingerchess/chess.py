@@ -22,6 +22,25 @@ max_quantity = {
     "N": 2
 }
 
+color_nature_to_icon = {
+    0: {
+        "K": "♔",
+        "Q": "♕",
+        "R": "♖",
+        "B": "♗",
+        "N": "♘",
+        "P": "♙",
+    },
+    1: {
+        "K": "♚",
+        "Q": "♛",
+        "R": "♜",
+        "B": "♝",
+        "N": "♞",
+        "P": "♟",
+    }
+}
+
 
 class IllegalMove(Exception):
     """Illegal move."""
@@ -42,10 +61,22 @@ class ChessPiece():
         else:
             self.possible_natures = [n]
         self.legal_natures = self.possible_natures
-        self.forbidden_natures = []
-        self.nature_guess = self.initial_nature_guess()
         self.position = p
         self.board = b
+        self.forbidden_natures = []
+
+        if self.number >= 8:
+            self.nature_guess = "P"
+        elif self.number in [0, 7]:
+            self.nature_guess = "R"
+        elif self.number in [1, 6]:
+            self.nature_guess = "N"
+        elif self.number in [2, 5]:
+            self.nature_guess = "B"
+        elif self.number == 3:
+            self.nature_guess = "Q"
+        elif self.number == 4:
+            self.nature_guess = "K"
 
     def __str__(self, guess=False, natures=False):
         """Display color and number or nature guess."""
@@ -60,6 +91,7 @@ class ChessPiece():
                 " " * (2 - len(str(self.number)))
             )
         elif guess:
+            return color_nature_to_icon[self.color][self.nature_guess]
             return (
                 color_name +
                 self.nature_guess + " "
@@ -69,21 +101,6 @@ class ChessPiece():
                 color_name +
                 str(len(self.board.all_legal_natures(self))) + " "
             )
-
-    def initial_nature_guess(self):
-        """Define standard initial configuration."""
-        if self.number >= 8:
-            return "P"
-        elif self.number in [0, 7]:
-            return "R"
-        elif self.number in [1, 6]:
-            return "N"
-        elif self.number in [2, 5]:
-            return "B"
-        elif self.number == 3:
-            return "Q"
-        elif self.number == 4:
-            return "K"
 
 
 class ChessBoard():
@@ -137,23 +154,25 @@ class ChessBoard():
         s = "At time " + str(self.time) + ":\n"
         s += "\n"
         for y in reversed(range(8)):
-            s += str(y) + "  "
+            if not guess:
+                s += str(y) + "  "
             for x in range(8):
-                square_color = (x + y) % 2
                 piece = self.grid[x][y]
                 if piece is not None:
                     s += piece.__str__(guess=guess, natures=natures)
                 else:
-                    if square_color == 0:
+                    square_color = (x + y) % 2
+                    if not guess:
                         s += "-- "
-                    else:
-                        s += "-- "
+                    elif guess:
+                        s += "\u2796"
                 s += " "
             s += "\n"
-        s += "   "
-        for x in range(8):
-            s += str(x) + "   "
-        s += "\n"
+        if not guess:
+            s += "   "
+            for x in range(8):
+                s += str(x) + "   "
+            s += "\n"
         return s
 
     def display_guess(self):
@@ -691,7 +710,7 @@ class ChessBoard():
 
         self.update_guess(problem)
 
-    def move(self, x1, y1, x2, y2):
+    def move(self, x1, y1, x2, y2, disp=False):
         """
         Test and perform a move.
 
@@ -699,6 +718,9 @@ class ChessBoard():
         """
         problem = self.test_move(x1, y1, x2, y2, full_result=True)
         self.perform_move(x1, y1, x2, y2, problem)
+        if disp:
+            print(self.__str__(guess=0))
+            print(self.__str__(guess=1))
         return True
 
     def legal_moves_from(self, x1, y1):
@@ -723,11 +745,15 @@ class ChessBoard():
                     legal_moves.append((x1, y1, x2, y2))
         return legal_moves
 
-    def auto_move(self):
+    def auto_move(self, disp=False):
         """Perform one of the legal moves at random."""
         legal_moves = self.all_legal_moves()
-        x1, y1, x2, y2 = np.random.choice(legal_moves)
-        self.move(x1, y1, x2, y2)
+        if legal_moves:
+            m = np.random.choice(len(legal_moves))
+            x1, y1, x2, y2 = legal_moves[m]
+            self.move(x1, y1, x2, y2, disp=disp)
+        else:
+            raise ValueError("Game over - " + self.end_game())
 
     def is_legal_nature(self, piece, n):
         """Check if, given the current history, piece could have nature n."""
@@ -858,39 +884,13 @@ class LightBoard():
 def main():
     """Main."""
     cb = ChessBoard()
-    print(cb)
-
-    cb.move(6, 1, 6, 3)
-    print(cb)
-
-    cb.move(3, 6, 3, 4)
-    print(cb)
-
-    cb.move(7, 0, 3, 4)
-    print(cb)
-
-    cb.move(4, 7, 5, 5)
-    print(cb)
-
-    cb.move(3, 4, 3, 3)
-    print(cb)
-
-    print(cb.all_legal_moves())
+    for k in range(10):
+        cb.auto_move(disp=True)
 
 
 if __name__ == "__main__":
-    cb = ChessBoard()
-    cb.move(4, 1, 4, 3)
-    cb.move(4, 6, 4, 4)
-    cb.move(4, 0, 4, 1)
-    cb.move(7, 6, 7, 5)
-    cb.move(4, 1, 3, 2)
-    cb.move(7, 5, 7, 4)
-    cb.move(3, 2, 3, 3)
+    main()
 
-    piece = cb.grid[3][3]
-    piece.possible_natures
-    cb.all_legal_natures(piece)
     # import cProfile
     # import pstats
     #
