@@ -5,4 +5,4 @@ install:
   - pip install numpy pulp behave twisted pygame
 
 script:
-  - behave
+  - cd schroedingerchess && behave
