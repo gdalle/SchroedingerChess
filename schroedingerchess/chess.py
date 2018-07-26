@@ -1,6 +1,6 @@
 """First test for chess implementation."""
 
-
+import itertools
 import numpy as np
 import pulp
 from collections import defaultdict
@@ -149,13 +149,17 @@ class ChessBoard():
         self.attacks = [self.compute_attack()]
         self.pieces_alive = [[16, 16]]
 
-    def __str__(self, guess=False, natures=False):
+    def __str__(self, guess=False, natures=False, letters=True):
         """Display the board in ASCII art."""
-        s = "At time " + str(self.time) + ":\n"
+        s = "\n"
+        s += "At time " + str(self.time) + ":\n"
         s += "\n"
         for y in reversed(range(8)):
             if not guess:
-                s += str(y) + "  "
+                if letters:
+                    s += str(y + 1) + "  "
+                else:
+                    s += str(y) + "  "
             for x in range(8):
                 piece = self.grid[x][y]
                 if piece is not None:
@@ -165,13 +169,17 @@ class ChessBoard():
                     if not guess:
                         s += "-- "
                     elif guess:
-                        s += "\u2796"
+                        s += "· "
+                        # s += "\u2796"
                 s += " "
             s += "\n"
         if not guess:
             s += "   "
             for x in range(8):
-                s += str(x) + "   "
+                if letters:
+                    s += chr(97 + x) + "   "
+                else:
+                    s += str(x) + "   "
             s += "\n"
         return s
 
@@ -720,33 +728,41 @@ class ChessBoard():
         self.perform_move(x1, y1, x2, y2, problem)
         if disp:
             print(self.__str__(guess=0))
-            print(self.__str__(guess=1))
         return True
 
     def legal_moves_from_gen(self, x1, y1):
         """Search all legal moves starting from a given square."""
-        for x2 in np.random.permutation(np.arange(8)):
-            for y2 in np.random.permutation(np.arange(8)):
-                try:
-                    self.test_move(x1, y1, x2, y2, full_result=False)
-                    yield (x2, y2)
-                except IllegalMove as e:
-                    pass
+        X2, Y2 = range(8), range(8)
+        couples = np.random.permutation(
+            list(itertools.product(X2, Y2))
+        )
+        for x2, y2 in couples:
+            try:
+                self.test_move(x1, y1, x2, y2, full_result=False)
+                yield (x2, y2)
+            except IllegalMove as e:
+                pass
 
     def all_legal_moves_gen(self):
         """Search all legal move at a given turn."""
-        for x1 in np.random.permutation(np.arange(8)):
-            for y1 in np.random.permutation(np.arange(8)):
-                for (x2, y2) in self.legal_moves_from(x1, y1):
-                    yield (x1, y1, x2, y2)
+        X1, Y1, X2, Y2 = range(8), range(8), range(8), range(8)
+        quadruples = np.random.permutation(
+            list(itertools.product(X1, Y1, X2, Y2))
+        )
+        for x1, y1, x2, y2 in quadruples:
+            try:
+                self.test_move(x1, y1, x2, y2, full_result=False)
+                yield (x1, y1, x2, y2)
+            except IllegalMove as e:
+                pass
 
     def legal_moves_from(self, x1, y1):
         return list(self.legal_moves_from_gen(x1, y1))
 
     def all_legal_moves(self):
-        return list(self.all_legal_moves_gen())
+        return sorted(list(self.all_legal_moves_gen()))
 
-    def auto_move(self, disp=False):
+    def auto_move(self, disp=False, intelligent=False):
         """Perform one of the legal moves at random."""
         try:
             x1, y1, x2, y2 = self.all_legal_moves_gen().__next__()
@@ -792,6 +808,63 @@ class ChessBoard():
             return "Current player checkmated"
         else:
             return "Stalemate"
+
+    def translate_move(self, move):
+        if len(move) == 4:
+            x1, y1, x2, y2 = move
+            a = chr(97 + x1)
+            b = chr(97 + x2)
+            return (a + str(y1 + 1), b + str(y2 + 1))
+        elif len(move) == 2:
+            first_square, last_square = move
+            x1 = ord(first_square[0]) - 97
+            y1 = int(first_square[1])
+            x2 = ord(last_square[0]) - 97
+            y2 = int(last_square[1])
+            return (x1, y1, x2, y2)
+
+    def one_player_game(self):
+        print(self.__str__())
+        while True:
+            if self.time % 2 == 1:
+                print("The computer is playing")
+                try:
+                    self.auto_move(disp=True)
+                except StopIteration as e:
+                    print(e)
+                    return
+            else:
+                valid_player_move = False
+                while not valid_player_move:
+                    print("You have not entered a valid move yet")
+
+                    stop = input("Stop? [y/n] ")
+                    if stop == "y":
+                        return
+
+                    list_moves = input("List possible moves [y/n] ")
+                    if list_moves == "y":
+                        legal_moves = self.all_legal_moves()
+                        print([
+                            self.translate_move(move)
+                            for move in legal_moves
+                        ])
+                        if len(legal_moves) == 0:
+                            print(self.end_game())
+                            return
+
+                    first_square = input("Go from ")
+                    last_square = input("...to ")
+                    if not (first_square + last_square).isalnum():
+                        print("This move is not a chess move")
+                    x1, y1, x2, y2 = self.translate_move(
+                        (first_square, last_square)
+                    )
+                    try:
+                        self.move(x1, y1, x2, y2, disp=True)
+                        valid_player_move = True
+                    except IllegalMove as e:
+                        print(e)
 
 
 class LightBoard():
@@ -883,8 +956,7 @@ class LightBoard():
 def main():
     """Main."""
     cb = ChessBoard()
-    for k in range(10):
-        cb.auto_move(disp=True)
+    cb.one_player_game()
 
 
 if __name__ == "__main__":
