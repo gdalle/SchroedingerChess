@@ -113,7 +113,7 @@ class ChessBoard():
             ChessPiece(c=0, i=i, n=None, p=(i, 0), b=self)
             for i in major_piece_numbers
         ] + [
-            ChessPiece(c=0, i=i, n="P", p=(i, 1), b=self)
+            ChessPiece(c=0, i=i, n="P", p=(i-8, 1), b=self)
             for i in pawn_numbers
         ] + [
             ChessPiece(c=0, i=i, n=None, p=None, b=self)
@@ -124,7 +124,7 @@ class ChessBoard():
             ChessPiece(c=1, i=i, n=None, p=(i, 7), b=self)
             for i in major_piece_numbers
         ] + [
-            ChessPiece(c=1, i=i, n="P", p=(i, 6), b=self)
+            ChessPiece(c=1, i=i, n="P", p=(i-8, 6), b=self)
             for i in pawn_numbers
         ] + [
             ChessPiece(c=1, i=i, n=None, p=None, b=self)
@@ -869,33 +869,44 @@ class ChessBoard():
 
 class LightBoard():
     def __init__(self):
-        self.clean()
-        for i in range(8):
-            self.board[i][0] = (0, major_piece_natures)
-            self.board[i][1] = (0, ["P"])
-            self.board[i][6] = (1, ["P"])
-            self.board[i][7] = (1, major_piece_natures)
-
-    def clean(self):
-        self.board = [[None for _ in range(8)] for _ in range(8)]
+        self.pieces = []
+        for j in range(8):
+            self.pieces.append({"position": (j, 0), "color": 0, "natures": major_piece_natures})
+        for j in range(8):
+            self.pieces.append({"position": (j, 1), "color": 0, "natures": ["P"]})
+        for j in range(8):
+            self.pieces.append({"position": None, "color": 0, "natures": major_piece_natures})
+        for j in range(8):
+            self.pieces.append({"position": (j, 7), "color": 1, "natures": major_piece_natures})
+        for j in range(8):
+            self.pieces.append({"position": (j, 6), "color": 1, "natures": ["P"]})
+        for j in range(8):
+            self.pieces.append({"position": None, "color": 1, "natures": major_piece_natures})
 
     def move(self, x1, y1, x2, y2):
-        piece = self.getPiece(x1, y1)
-        if piece is not None:
-            natures = self.possibleNaturesFromMove(x1, y1, x2, y2, piece[0], piece[1])
+        i = self.getPieceIndex(x1, y1)
+        if i is not None:
+            piece = self.pieces[i]
+            natures = self.possibleNaturesFromMove(x1, y1, x2, y2, piece["color"], piece["natures"])
             assert(len(natures) >= 1)
-            self.setPiece(x2, y2, piece[0], natures)
-            self.board[x1][y1] = None
+            # Mark the target box as a dead piece if necessary
+            j = self.getPieceIndex(x2, y2)
+            if j is not None:
+                piece2 = self.pieces[j]
+                self.setPiece(j, piece2["color"], False, piece2["natures"])
+            # Move the main piece
+            self.setPiece(i, piece["color"], (x2, y2), natures)
             for x in range(8):
                 for y in range(8):
                     if x != x2 and y != y2:
-                        piece = self.getPiece(x, y)
-                        if piece is not None:
-                            if len(piece[1]) > 1:
-                                self.setPiece(x, y, piece[0], "E")
+                        k = self.getPieceIndex(x, y)
+                        if k is not None:
+                            piece = self.pieces[k]
+                            if len(piece["natures"]) > 1:
+                                self.setPiece(k, piece["color"], (x, y), "E")
 
     @staticmethod
-    def possibleNaturesFromMove(x1, y1, x2, y2, color,  natures):
+    def possibleNaturesFromMove(x1, y1, x2, y2, color, natures):
         h = x2 - x1
         v = y2 - y1
         output_natures = []
@@ -927,30 +938,35 @@ class LightBoard():
 
         return output_natures
 
-    def setPiece(self, x, y, color,  natures):
-        self.board[x][y] = (color, natures)
+    def setPiece(self, i, color, position, natures):
+        """i is the index of the piece in self.pieces (same as ChessBoard.pieces)"""
+        self.pieces[i] = {"position": position, "color": color, "natures": natures}
 
     def getPiece(self, x, y):
-        return self.board[x][y]
+        for piece in self.pieces:
+            if (piece["position"] is not None) and (piece["position"] is not False):
+                a, b = piece["position"]
+                if x == a and y == b:
+                    return piece
+        # print(x, y)
+        # if (x == 0) and (y == 0):
+        #     for p in self.pieces:
+        #         print(p)
+        return None
+
+    def getPieceIndex(self, x, y):
+        for i, piece in enumerate(self.pieces):
+            if (piece["position"] is not None) and (piece["position"] is not False):
+                a, b = piece["position"]
+                if x == a and y == b:
+                    return i
+        return None
 
     def wrapUp(self):
-        wrap = []
-        for x in range(8):
-            for y in range(8):
-                piece = self.board[x][y]
-                color = piece[0]
-                natures = piece[1]
-                wrap.append({"x": x, "y": y, "color": color, "natures": natures})
-        return wrap
+        return pieces
 
     def unwrap(self, wrap):
-        self.clean()
-        for piece in wrap:
-            x = piece["x"]
-            y = piece["y"]
-            color = piece["color"]
-            natures = piece["nature"]
-            self.setPiece(x, y, color, natures)
+        self.pieces = wrap
 
 
 def main():

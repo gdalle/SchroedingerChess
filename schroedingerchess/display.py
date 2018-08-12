@@ -144,8 +144,8 @@ class ChessDisplay():
 
                 piece = lightBoard.getPiece(x, y)
                 if piece is not None:
-                    color = piece[0]
-                    natures = piece[1]
+                    color = piece["color"]
+                    natures = piece["natures"]
                     if color == 0:
                         picture_name = "w"
                     else:
@@ -177,11 +177,11 @@ class ChessDisplay():
             piece = self.gameEngine.lightBoard.getPiece(
                 self.selectedBox[0], self.flipY(self.selectedBox[1]))
             if piece is not None:
-                if piece[0] == 0:
+                if piece["color"] == 0:
                     color = "w"
                 else:
                     color = "b"
-                natures = piece[1]
+                natures = piece["natures"]
                 if len(natures) == 1:
                     picture = self.pieces_pictures[color + natures[0]]
                     self.screen.blit(picture, (x, y))

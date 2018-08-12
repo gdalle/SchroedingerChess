@@ -91,22 +91,41 @@ class TwoPlayersOnOneBoard(GameEngine):
         self.loopingCall = gameEngine.loopingCall
         self.validMovesCounter = 0
 
+    # @inlineCallbacks
+    # def updateLightBoard(self):
+    #     nb = self.validMovesCounter
+    #     for x in range(8):
+    #         for y in range(8):
+    #             if nb == self.validMovesCounter:
+    #                 piece = self.chessBoard.grid[x][y]
+    #                 if piece is not None:
+    #                     self.updateDeferred = Deferred()
+    #                     self.updateDeferred.addCallback(self.chessBoard.all_legal_natures)
+    #                     self.updateDeferred.addErrback(log.err)  # DEBUG
+    #                     reactor.callLater(0, self.updateDeferred.callback, piece)
+    #                     natures = yield self.updateDeferred
+    #                     if nb == self.validMovesCounter:
+    #                         color = piece.color
+    #                         self.lightBoard.setPiece(x, y, color, natures)
+    #                         self.makeDisplayDrawBoard()
+
     @inlineCallbacks
     def updateLightBoard(self):
         nb = self.validMovesCounter
-        for x in range(8):
-            for y in range(8):
+        for col in [0, 1]:
+            for i, piece in enumerate(self.chessBoard.pieces[col]):
                 if nb == self.validMovesCounter:
-                    piece = self.chessBoard.grid[x][y]
-                    if piece is not None:
-                        self.updateDeferred = Deferred()
-                        self.updateDeferred.addCallback(self.chessBoard.all_legal_natures)
-                        self.updateDeferred.addErrback(log.err)  # DEBUG
-                        reactor.callLater(0, self.updateDeferred.callback, piece)
-                        natures = yield self.updateDeferred
-                        if nb == self.validMovesCounter:
-                            color = piece.color
-                            self.lightBoard.setPiece(x, y, color, natures)
+                    self.updateDeferred = Deferred()
+                    self.updateDeferred.addCallback(self.chessBoard.all_legal_natures)
+                    self.updateDeferred.addErrback(log.err)  # DEBUG
+                    reactor.callLater(0, self.updateDeferred.callback, piece)
+                    natures = yield self.updateDeferred
+                    if nb == self.validMovesCounter:
+                        color = piece.color
+                        position = piece.position
+                        pieceIndex = i + col * 24
+                        self.lightBoard.setPiece(pieceIndex, color, position, natures)
+                        if (piece.position is not None) and (piece.position is not False):
                             self.makeDisplayDrawBoard()
 
     def moveTask(self, mov):

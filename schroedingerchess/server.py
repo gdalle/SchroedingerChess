@@ -228,13 +228,12 @@ class Game:
         self.updateLightBoardTask()
 
     def updateLightBoardTask(self):
-        for x in range(8):
-            for y in range(8):
-                piece = self.chessBoard.grid[x][y]
-                if piece is not None:
-                    natures = self.chessBoard.all_legal_natures(piece)
-                    color = piece.color
-                    self.lightBoard.setPiece(x, y, color, natures)
+        for i, piece in enumerate(self.chessBoard.pieces):
+            if piece is not None:
+                natures = self.chessBoard.all_legal_natures(piece)
+                color = piece.color
+                position = piece.position
+                self.lightBoard.setPiece(i, color, position, natures)
         self.sendMessage(self.lightBoard.wrapUp())
 
     def updateLightBoard(self):
