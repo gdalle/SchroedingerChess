@@ -83,6 +83,10 @@ class ChessDisplay():
         self.check_positions = [[False for i in range(8)] for j in range(8)]
         self.checkmate_positions = [[False for i in range(8)] for j in range(8)]
 
+        self.white_dead = []
+        self.black_dead = []
+        self.dead_font = pygame.font.SysFont("Arial", 17)
+
         self.message_history = []
         self.maximum_messages = 9
         self.current_first_message = 0
@@ -95,7 +99,7 @@ class ChessDisplay():
                                                              self.height) + 10, int(self.width / 3), 32)
         self.input_boxes = [self.name, self.address]
         self.clock = pygame.time.Clock()
-        self.selected_color = "B"
+        self.selected_color = "W"
 
         self.drawMenu()
         self.drawPane()
@@ -139,67 +143,23 @@ class ChessDisplay():
                         (x * self.width) // 8, (self.flipY(y) * self.height) // 8,
                         self.width // 8, self.height // 8], 5)
 
-                if self.selectedBox is not None and self.selectedBox[0] == x and self.selectedBox[1] == self.flipY(y):
-                    continue
-
                 piece = lightBoard.getPiece(x, y)
                 if piece is not None:
-                    color = piece["color"]
-                    natures = piece["natures"]
-                    if color == 0:
-                        picture_name = "w"
-                    else:
-                        picture_name = "b"
-                    if (len(natures) > 1):
-                        picture_name += "E"
-                    else:
-                        picture_name += natures[0]
-                    picture = self.pieces_pictures[picture_name]
-                    self.screen.blit(picture, ((x * self.width) // 8,
-                                               (self.flipY(y) * self.height) // 8))
-        self.drawSelectedBox()
+                    isSelection = self.selectedBox is not None and self.selectedBox[0] == x and self.selectedBox[1] == self.flipY(y)
+                    self.draw_piece(color=piece["color"],
+                                    natures=piece["natures"],
+                                    x=(x * self.width) // 8,
+                                    y=(self.flipY(y) * self.height) // 8,
+                                    size=self.height // 8,
+                                    extended=isSelection)
+                    if isSelection:
+                        pygame.draw.rect(self.screen, pygame.Color(0,0,0), [
+                            (x * self.width) // 8,
+                            (self.flipY(y) * self.height) // 8,
+                            self.width // 8, self.height // 8
+                        ], int(0.00625 * self.width))
+
         pygame.display.flip()
-
-    def undrawSelectedBox(self):
-        """
-        Undraws the selected box.
-        """
-        if self.selectedBox is not None:
-            self.gameEngine.makeDisplayDrawBoard()
-
-    def drawSelectedBox(self):
-        """
-        Draws the selected box.
-        """
-        if self.selectedBox is not None:
-            x = (self.selectedBox[0] * self.width) // 8
-            y = (self.selectedBox[1] * self.height) // 8
-            piece = self.gameEngine.lightBoard.getPiece(
-                self.selectedBox[0], self.flipY(self.selectedBox[1]))
-            if piece is not None:
-                if piece["color"] == 0:
-                    color = "w"
-                else:
-                    color = "b"
-                natures = piece["natures"]
-                if len(natures) == 1:
-                    picture = self.pieces_pictures[color + natures[0]]
-                    self.screen.blit(picture, (x, y))
-                else:
-                    if len(natures) == 5:
-                        for i in range(len(natures)):
-                            xp = x + ((2 * i) % 3) * self.width // 24
-                            yp = y + ((2 * i) // 3) * self.height // 24
-                            picture = self.pieces_pictures[color + natures[i] + "xs"]
-                            self.screen.blit(picture, (xp, yp))
-                    else:
-                        for i in range(len(natures)):
-                            xp = x + (i % 2) * self.width // 16
-                            yp = y + (i // 2) * self.height // 16
-                            picture = self.pieces_pictures[color + natures[i] + "s"]
-                            self.screen.blit(picture, (xp, yp))
-            pygame.draw.rect(self.screen, pygame.Color(0, 0, 0, 0), [
-                x, y, self.width // 8, self.height // 8], int(0.00625 * self.width))
 
     def drawChecks(self, check_positions):
         """
@@ -224,21 +184,13 @@ class ChessDisplay():
     def handleIllegalMove(self, reason):
         """
         Handles illegal moves.
-        :param reason: TOD0
+        :param reason: Reason of the illegal move
         """
         self.addMessage(reason)
         self.updatePane()
 
     def update(self):
         """ Updates the frame."""
-        # for event in pygame.event.get(pygame.VIDEORESIZE):
-        #     self.total_width = event.w
-        #     self.total_height = event.h
-        #     self.height = min(event.w, event.h-100)
-        #     self.width = self.height
-        #     self.load_images()
-        #     self.gameEngine.makeDisplayDrawBoard()
-
         events = pygame.event.get()
         if self.state == "MENU":
             self.updateMenu(events)
@@ -372,15 +324,15 @@ class ChessDisplay():
                             self.setTwoPlayersOnOneBoardMode()
                             return
                     elif mouse[0] > int(0.458 * self.width) and mouse[0] < int(0.458 * self.width) + self.width // 16 + 6 and mouse[1] > int(0.61 * self.height) - 45 - 3 and mouse[1] < int(0.61 * self.height) + self.width // 16 + 6:
-                        if self.menuSelection != "SELECT_BLACK":
-                            changeState = True
-                            self.menuSelection = "SELECT_BLACK"
-                            self.selected_color = "B"
-                    elif mouse[0] > int(0.55 * self.width) and mouse[0] < int(0.55 * self.width) + self.width // 16 + 6 and mouse[1] > int(0.61 * self.height) - 45 - 3 and mouse[1] < int(0.61 * self.height) - 45 - 3 + self.width // 16 + 6:
                         if self.menuSelection != "SELECT_WHITE":
                             changeState = True
                             self.menuSelection = "SELECT_WHITE"
                             self.selected_color = "W"
+                    elif mouse[0] > int(0.55 * self.width) and mouse[0] < int(0.55 * self.width) + self.width // 16 + 6 and mouse[1] > int(0.61 * self.height) - 45 - 3 and mouse[1] < int(0.61 * self.height) - 45 - 3 + self.width // 16 + 6:
+                        if self.menuSelection != "SELECT_BLACK":
+                            changeState = True
+                            self.menuSelection = "SELECT_BLACK"
+                            self.selected_color = "B"
                     elif mouse[0] > abs_w3 and mouse[0] < abs_w3 + w3 and mouse[1] > abs_h3 and mouse[1] < abs_h3 + h3:
                         if self.menuSelection == "CONNECT_DOWN":
                             check_IP_port = self.check_address_format(self.address.text)
@@ -394,7 +346,7 @@ class ChessDisplay():
                                 self.menuSelection = "CONNECT"
                                 self.addMessage("Please enter a player name")
                             else:
-                                c = 0 if self.selected_color == "B" else 1
+                                c = 0 if self.selected_color == "W" else 1
                                 self.setOnePlayerOnNetworkMode(self.name.text, self.address.text, c)
                                 return
 
@@ -431,12 +383,12 @@ class ChessDisplay():
                 connect = fontTitleS.render("Connect", True, (0, 0, 0))
                 connect_rect = connect.get_rect(center=(abs_w3 + 0.5 * w3, abs_h3 + 0.5 * h3))
                 self.screen.blit(connect, connect_rect)
-            elif self.menuSelection == "SELECT_WHITE":
+            elif self.menuSelection == "SELECT_BLACK":
                 pygame.draw.rect(self.screen, pygame.Color(200, 200, 200), [int(
                     0.458 * self.width), int(0.61 * self.height) - 45 - 3, self.width // 16 + 6, self.width // 16 + 6], 2)
                 pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [int(
                     0.55 * self.width), int(0.61 * self.height) - 45 - 3, self.width // 16 + 6, self.width // 16 + 6], 2)
-            elif self.menuSelection == "SELECT_BLACK":
+            elif self.menuSelection == "SELECT_WHITE":
                 pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [int(
                     0.458 * self.width), int(0.61 * self.height) - 45 - 3, self.width // 16 + 6, self.width // 16 + 6], 2)
                 pygame.draw.rect(self.screen, pygame.Color(200, 200, 200), [int(
@@ -473,14 +425,13 @@ class ChessDisplay():
                         self.selectedBox = None
                 else:
                     self.selectedBox = None
-
                 self.gameEngine.makeDisplayDrawBoard()
 
         pygame.display.flip()
 
     def updatePane(self, events=[]):
         """
-        Update the right hand side plane
+        Update the right hand side pane
         """
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN:
@@ -492,6 +443,11 @@ class ChessDisplay():
                     self.current_first_message = min(
                         max(0, len(self.message_history) - self.maximum_messages), self.current_first_message + 1)
                     self.drawPane()
+
+        self.white_dead = self.gameEngine.lightBoard.getDeadPieces(0)
+        self.black_dead = self.gameEngine.lightBoard.getDeadPieces(1)
+        self.drawPane()
+
 
     def drawMenu(self):
         """
@@ -548,11 +504,13 @@ class ChessDisplay():
             for box in self.input_boxes:
                 box.draw(self.screen)
 
-            self.screen.blit(self.pieces_pictures["bEs"], (int(
-                0.458 * self.width) + 3, int(0.61 * self.height) - 45))
-            self.screen.blit(self.pieces_pictures["wEs"], (int(
-                0.55 * self.width) + 3, int(0.61 * self.height) - 45))
-            if self.selected_color == "B":
+            self.draw_piece(0, ["E"],
+                int(0.458 * self.width) + 3, int(0.61 * self.height) - 45,
+                self.width // 16, extended=False)
+            self.draw_piece(1, ["E"],
+                int(0.55 * self.width) + 3, int(0.61 * self.height) - 45,
+                self.width // 16, extended=False)
+            if self.selected_color == "W":
                 pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [int(
                     0.458 * self.width), int(0.61 * self.height) - 45 - 3, self.width // 16 + 6, self.width // 16 + 6], 2)
             else:
@@ -579,6 +537,7 @@ class ChessDisplay():
         pygame.draw.rect(self.screen, pygame.Color(200, 200, 200), [
             self.width, 0, self.total_width, self.total_height
         ])
+        # Messages
         pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [self.width, 0, 5, self.height])
         pygame.draw.rect(self.screen, pygame.Color(230, 230, 230), [
                          self.width + 15, 10, self.pane_width - 30, self.height // 4 - 4])
@@ -589,6 +548,24 @@ class ChessDisplay():
         for i, message in enumerate(selected_messages):
             local = self.message_font.render(message, True, (0, 0, 0))
             self.screen.blit(local, (self.width + 20, 15 + i * 15))
+
+        # Dead pieces
+        text_white = self.dead_font.render("White losses", True, (0, 0, 0))
+        text_black = self.dead_font.render("Black losses", True, (0, 0, 0))
+        self.screen.blit(text_white, (self.width + 20, 1.5 * self.height // 4 - 30))
+        self.screen.blit(text_black, (self.width + 20, 2.75 * self.height // 4 - 30))
+
+        for i, p in enumerate(self.white_dead):
+            self.draw_piece(color=0, natures =p["natures"],
+                            x=self.width + 20 + i % 5 * (self.width//12),
+                            y=1.5*self.height // 4 + i // 5 * (self.width//12),
+                            size=self.width//12)
+        for i, p in enumerate(self.black_dead):
+            self.draw_piece(color=1, natures =p["natures"],
+                            x=self.width + 20 + i % 5 * (self.width//12),
+                            y=2.75*self.height // 4 + i // 5 * (self.width//12),
+                            size=self.width//12)
+
         pygame.display.flip()
 
     def load_images(self):
@@ -599,10 +576,6 @@ class ChessDisplay():
         for name in pieces_names:
             self.pieces_pictures[name] = pygame.transform.smoothscale(pygame.image.load(
                 "img/" + name + ".png"), (self.width // 8, self.height // 8))
-            self.pieces_pictures[name + "s"] = pygame.transform.smoothscale(self.pieces_pictures[name],
-                                                                            (self.width // 16, self.height // 16))  # small icons for multiple display
-            self.pieces_pictures[name + "xs"] = pygame.transform.smoothscale(self.pieces_pictures[name],
-                                                                             (self.width // 24, self.height // 24))
         self.board = pygame.transform.scale(pygame.image.load(
             "img/board.png"), (self.width, self.height))  # smaller icons for multiple display
         self.boardFlip = pygame.transform.flip(self.board, False, True)
@@ -662,3 +635,44 @@ class ChessDisplay():
         if int(port) > 65535:
             return False
         return True
+
+    def draw_piece(self, color, natures, x, y, size, extended=False):
+        """x, y are in pixels"""
+        if extended:
+            if color == 0:
+                color = "w"
+            else:
+                color = "b"
+            if len(natures) == 1:
+                picture = self.pieces_pictures[color + natures[0]]
+                self.screen.blit(picture, (x, y))
+            else:
+                if len(natures) == 5:
+                    for i in range(len(natures)):
+                        xp = x + ((2 * i) % 3) * self.width // 24
+                        yp = y + ((2 * i) // 3) * self.height // 24
+                        picture = pygame.transform.smoothscale(
+                                    self.pieces_pictures[color + natures[i]],
+                                    (size//3, size//3))
+                        self.screen.blit(picture, (xp, yp))
+                else:
+                    for i in range(len(natures)):
+                        xp = x + (i % 2) * self.width // 16
+                        yp = y + (i // 2) * self.height // 16
+                        picture = pygame.transform.smoothscale(
+                                    self.pieces_pictures[color + natures[i]],
+                                    (size//2, size//2))
+                        self.screen.blit(picture, (xp, yp))
+        else:
+            if color == 0:
+                picture_name = "w"
+            else:
+                picture_name = "b"
+            if (len(natures) > 1):
+                picture_name += "E"
+            else:
+                picture_name += natures[0]
+            picture = pygame.transform.smoothscale(
+                        self.pieces_pictures[picture_name],
+                        (size, size))
+            self.screen.blit(picture, (x, y))

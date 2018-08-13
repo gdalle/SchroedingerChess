@@ -22,8 +22,8 @@ class GameEngine():
 
     def start(self):
         """ Starts the game engine. Create the window and initiate the reaction loop."""
-        self.display = ChessDisplay(self)
         self.lightBoard = LightBoard()
+        self.display = ChessDisplay(self)
         self.loopingCall = LoopingCall(self.display.update)
         self.loopingCall.start(1 / FRAME_PER_SECOND).addErrback(log.err)
         reactor.run()
@@ -64,8 +64,7 @@ class GameEngine():
 
     def handleIllegalMove(self, reason):
         """ Handles an illegal move."""
-        self.display.handleIllegalMove(
-            reason)  # TODO see the implementation of this method in ChessDisplay
+        self.display.handleIllegalMove(reason)
 
     def makeDisplayDrawBoard(self):
         """ Makes the display redraw the board."""
@@ -91,24 +90,6 @@ class TwoPlayersOnOneBoard(GameEngine):
         self.loopingCall = gameEngine.loopingCall
         self.validMovesCounter = 0
 
-    # @inlineCallbacks
-    # def updateLightBoard(self):
-    #     nb = self.validMovesCounter
-    #     for x in range(8):
-    #         for y in range(8):
-    #             if nb == self.validMovesCounter:
-    #                 piece = self.chessBoard.grid[x][y]
-    #                 if piece is not None:
-    #                     self.updateDeferred = Deferred()
-    #                     self.updateDeferred.addCallback(self.chessBoard.all_legal_natures)
-    #                     self.updateDeferred.addErrback(log.err)  # DEBUG
-    #                     reactor.callLater(0, self.updateDeferred.callback, piece)
-    #                     natures = yield self.updateDeferred
-    #                     if nb == self.validMovesCounter:
-    #                         color = piece.color
-    #                         self.lightBoard.setPiece(x, y, color, natures)
-    #                         self.makeDisplayDrawBoard()
-
     @inlineCallbacks
     def updateLightBoard(self):
         nb = self.validMovesCounter
@@ -127,6 +108,8 @@ class TwoPlayersOnOneBoard(GameEngine):
                         self.lightBoard.setPiece(pieceIndex, color, position, natures)
                         if (piece.position is not None) and (piece.position is not False):
                             self.makeDisplayDrawBoard()
+                        elif (piece.position is False):
+                            self.display.updatePane()
 
     def moveTask(self, mov):
         x1, y1, x2, y2 = mov[0], mov[1], mov[2], mov[3]

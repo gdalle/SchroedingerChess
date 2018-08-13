@@ -948,10 +948,6 @@ class LightBoard():
                 a, b = piece["position"]
                 if x == a and y == b:
                     return piece
-        # print(x, y)
-        # if (x == 0) and (y == 0):
-        #     for p in self.pieces:
-        #         print(p)
         return None
 
     def getPieceIndex(self, x, y):
@@ -961,6 +957,9 @@ class LightBoard():
                 if x == a and y == b:
                     return i
         return None
+
+    def getDeadPieces(self, color):
+        return [p for p in self.pieces if p["color"] == color and p["position"] == False]
 
     def wrapUp(self):
         return pieces
