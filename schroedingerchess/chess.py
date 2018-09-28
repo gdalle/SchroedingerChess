@@ -113,7 +113,7 @@ class ChessBoard():
             ChessPiece(c=0, i=i, n=None, p=(i, 0), b=self)
             for i in major_piece_numbers
         ] + [
-            ChessPiece(c=0, i=i, n="P", p=(i-8, 1), b=self)
+            ChessPiece(c=0, i=i, n="P", p=(i - 8, 1), b=self)
             for i in pawn_numbers
         ] + [
             ChessPiece(c=0, i=i, n=None, p=None, b=self)
@@ -124,7 +124,7 @@ class ChessBoard():
             ChessPiece(c=1, i=i, n=None, p=(i, 7), b=self)
             for i in major_piece_numbers
         ] + [
-            ChessPiece(c=1, i=i, n="P", p=(i-8, 6), b=self)
+            ChessPiece(c=1, i=i, n="P", p=(i - 8, 6), b=self)
             for i in pawn_numbers
         ] + [
             ChessPiece(c=1, i=i, n=None, p=None, b=self)
@@ -479,6 +479,7 @@ class ChessBoard():
                     )
 
         for t in range(1, T + 1):
+            print("time", t)
             cur_c = t % 2
             prev_c = 1 - cur_c
             for s in range(64):
@@ -504,10 +505,8 @@ class ChessBoard():
                     if self.positions[t][s, prev_c, i] > 0.5
                 ])
 
-                max_dangers_king = self.pieces_alive[t - 1][cur_c]
-
                 problem += (
-                    max_dangers_king * (1 - king) >= dangers,
+                    16 * (1 - king) >= dangers,
                     "No king left in check " + str((t, prev_c, s))
                 )
 
@@ -688,7 +687,7 @@ class ChessBoard():
 
         self.delete_move_from_history(x1, y1, x2, y2, piece, target_piece)
 
-        if status == -1:
+        if status != 1:
             error = (
                 "Trying to perform a move that is illegal for any " +
                 "initial piece configuration"
@@ -718,7 +717,7 @@ class ChessBoard():
 
         self.update_guess(problem)
 
-    def move(self, x1, y1, x2, y2, disp=False):
+    def move(self, x1, y1, x2, y2, disp=True):
         """
         Test and perform a move.
 
@@ -801,7 +800,7 @@ class ChessBoard():
         problem1, status1 = self.quantum_explanation(check=True)
         problem2, status2 = self.quantum_explanation(check=False)
         checkmate_possible = status1 == 1
-        stalemate_possible = status2 == 2
+        stalemate_possible = status2 == 1
         if checkmate_possible and stalemate_possible:
             return "Result unclear"
         elif checkmate_possible:
@@ -975,11 +974,21 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
-
-    # import cProfile
-    # import pstats
-    #
-    # cProfile.run("main()", "stats")
-    # p = pstats.Stats("stats")
-    # p.strip_dirs().sort_stats("cumtime").print_stats()
+    cb = ChessBoard()
+    print(cb.move(4, 1, 4, 3))
+    print(cb.move(7, 6, 7, 5))
+    print(cb.move(3, 0, 7, 4))
+    print(cb.move(6, 6, 6, 5))
+    print(cb.move(7, 4, 7, 5))
+    print(cb.move(5, 6, 5, 5))
+    print(cb.move(7, 5, 6, 5))
+    print(cb.move(4, 6, 4, 5))
+    print(cb.move(6, 5, 5, 5))
+    print(cb.move(3, 6, 3, 5))
+    print(cb.move(5, 5, 4, 5))
+    print(cb.move(2, 6, 2, 5))
+    print(cb.move(4, 5, 3, 5))
+    print(cb.move(1, 6, 1, 5))
+    print(cb.move(3, 5, 2, 5))
+    # Leaving a king in check: no longer possible
+    # print(cb.move(0, 6, 0, 5))
