@@ -534,14 +534,14 @@ class ChessBoard():
 
                 problem += (
                     king >= dangers,
-                    "Current king in check " + str((T, cur_c))
+                    "Current king in check " + str(s)
                 )
 
             elif check == False:
 
                 problem += (
                     16 * (1 - current_king) >= current_dangers,
-                    "Current king not in check " + str((T, cur_c))
+                    "Current king not in check " + str(s)
                 )
 
         status = problem.solve()
