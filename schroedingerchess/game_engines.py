@@ -129,6 +129,12 @@ class TwoPlayersOnOneBoard(GameEngine):
         d.addCallback(self.moveTask).addErrback(log.err)  # DEBUG
         reactor.callLater(0, d.callback, (x1, y1, x2, y2))
 
+    def autoMove(self):
+        return self.chessBoard.auto_move()
+
+    def checkEnd(self):
+        return self.chessBoard.end_game()
+
     # def moveTask(self, x1, y1, x2, y2):
     #     try:
     #         self.chessBoard.move(x1, y1, x2, y2)

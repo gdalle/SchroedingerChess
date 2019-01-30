@@ -479,7 +479,6 @@ class ChessBoard():
                     )
 
         for t in range(1, T + 1):
-            print("time", t)
             cur_c = t % 2
             prev_c = 1 - cur_c
             for s in range(64):
@@ -761,11 +760,11 @@ class ChessBoard():
     def all_legal_moves(self):
         return sorted(list(self.all_legal_moves_gen()))
 
-    def auto_move(self, disp=False, intelligent=False):
+    def auto_move(self, intelligent=False):
         """Perform one of the legal moves at random."""
         try:
             x1, y1, x2, y2 = self.all_legal_moves_gen().__next__()
-            self.move(x1, y1, x2, y2, disp=disp)
+            return x1, y1, x2, y2
         except StopIteration:
             raise ValueError("Game over - " + self.end_game())
 
@@ -828,7 +827,8 @@ class ChessBoard():
             if self.time % 2 == 1:
                 print("The computer is playing")
                 try:
-                    self.auto_move(disp=True)
+                    x1, y1, x2, y2 = self.auto_move()
+                    self.move(x1, y1, x2, y2, disp=True)
                 except StopIteration as e:
                     print(e)
                     return

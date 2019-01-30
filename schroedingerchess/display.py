@@ -68,6 +68,7 @@ class ChessDisplay():
         pygame.display.set_caption("Schroedinger Chess Game")
 
         self.state = "MENU"
+        self.mode = "NONE"
 
         self.menuState = "START"  # The menu has different states
         self.menuSelection = "NONE"  # The item currently being selected in the menu
@@ -85,13 +86,16 @@ class ChessDisplay():
 
         self.white_dead = []
         self.black_dead = []
-        self.dead_font = pygame.font.SysFont("Arial", 17)
+        self.dead_font = pygame.font.SysFont("Arial", 18)
 
         self.message_history = []
-        self.maximum_messages = 9
+        self.maximum_messages = 6
         self.current_first_message = 0
         self.message_font = pygame.font.SysFont("Arial", 13)
-        self.addMessage("Please select a game mode")
+
+        self.pane_buttons_font = pygame.font.SysFont("Arial", 20)
+        self.automoveSelection = "NONE"
+        self.finishSelection = "NONE"
 
         self.name = InputBox(int(0.458 * self.width), int(0.6875 *
                                                           self.height) - 40, int(self.width / 3), 32)
@@ -100,6 +104,8 @@ class ChessDisplay():
         self.input_boxes = [self.name, self.address]
         self.clock = pygame.time.Clock()
         self.selected_color = "W"
+
+        self.addMessage("Please select a game mode")
 
         self.drawMenu()
         self.drawPane()
@@ -113,6 +119,7 @@ class ChessDisplay():
         """ Sets the game engine on the two-players-on-one-board mode."""
         if self.state == "MENU":
             self.state = "PLAYING"
+            self.mode = "LOCAL"
             self.gameEngine.setTwoPlayersOnOneBoardMode()
             self.gameEngine.makeDisplayDrawBoard()
             self.addMessage("Started local game")
@@ -121,6 +128,7 @@ class ChessDisplay():
         """ Sets the game engine on the one-player on network mode."""
         if self.state == "MENU":
             self.state = "PLAYING"
+            self.mode = "ONLINE"
             self.gameEngine.setOnePlayerOnNetworkMode(name, address, color)
             self.gameEngine.makeDisplayDrawBoard()
             self.addMessage("Starting online game")
@@ -340,7 +348,7 @@ class ChessDisplay():
                                 changeState = True
                                 self.menuSelection = "CONNECT"
                                 self.addMessage(
-                                    "Please enter a valid [IP]:[port] (example : \"127.0.0.1:8006\")")
+                                    "Please enter a valid [IP]:[port] (example :    \"127.0.0.1:8006\")")
                             elif len(self.name.text) == 0:
                                 changeState = True
                                 self.menuSelection = "CONNECT"
@@ -433,21 +441,91 @@ class ChessDisplay():
         """
         Update the right hand side pane
         """
+
+        # Automove click bounding box
+        w = int((0.6375) * self.width)
+        h = int(0.1875 * self.height)
+        abs_w = int(self.width + 15)
+        abs_h = int(0.21875 * self.height)
+
         for event in events:
             if event.type == pygame.MOUSEBUTTONDOWN:
                 mouse = pygame.mouse.get_pos()
-                if event.button == 4 and mouse[1] < self.height // 4:
+                if event.button == 4 and mouse[0] > self.width and mouse[1] < self.height // 4:
                     self.current_first_message = max(0, self.current_first_message - 1)
-                    self.drawPane()
-                if event.button == 5 and mouse[1] < self.height // 4:
+                if event.button == 5 and mouse[0] > self.width and mouse[1] < self.height // 4:
                     self.current_first_message = min(
                         max(0, len(self.message_history) - self.maximum_messages), self.current_first_message + 1)
-                    self.drawPane()
+                # Auto_move and game finish click
+                if self.state == "PLAYING":
+                    w = int(0.42 * self.pane_width)
+                    h = int(0.12 * self.height)
+                    abs_w = int(self.width + 15)
+                    abs_h = int(0.195 * self.height)
+                    if mouse[0] > abs_w and mouse[0] < abs_w + w and mouse[1] > abs_h and mouse[1] < abs_h + h:
+                        self.automoveSelection = "DOWN"
+
+                    abs_w = int(self.width + 0.5 * self.pane_width + 10)
+                    abs_h = int(0.195 * self.height)
+                    if mouse[0] > abs_w and mouse[0] < abs_w + w and mouse[1] > abs_h and mouse[1] < abs_h + h:
+                        self.finishSelection = "DOWN"
+
+            if self.state == "PLAYING":
+                w = int(0.42 * self.pane_width)
+                h = int(0.12 * self.height)
+
+                # Auto_move and game finish hover
+                if event.type == pygame.MOUSEMOTION:
+                    mouse = event.pos
+
+                    abs_w = int(self.width + 15)
+                    abs_h = int(0.195 * self.height)
+                    if mouse[0] > abs_w and mouse[0] < abs_w + w and mouse[1] > abs_h and mouse[1] < abs_h + h:
+                        if self.automoveSelection != "HOVER" and self.automoveSelection != "DOWN":
+                            self.automoveSelection = "HOVER"
+                    else:
+                        if self.automoveSelection != "NONE":
+                            self.automoveSelection = "NONE"
+
+                    abs_w = int(self.width + 0.5 * self.pane_width + 10)
+                    abs_h = int(0.195 * self.height)
+                    if mouse[0] > abs_w and mouse[0] < abs_w + w and mouse[1] > abs_h and mouse[1] < abs_h + h:
+                        if self.finishSelection != "HOVER" and self.finishSelection != "DOWN":
+                            self.finishSelection = "HOVER"
+                    else:
+                        if self.finishSelection != "NONE":
+                            self.finishSelection = "NONE"
+
+                # Auto_move button release
+                if event.type == pygame.MOUSEBUTTONUP:
+                    mouse = event.pos
+
+                    abs_w = int(self.width + 15)
+                    abs_h = int(0.195 * self.height)
+                    if mouse[0] > abs_w and mouse[0] < abs_w + w and mouse[1] > abs_h and mouse[1] < abs_h + h:
+                        if self.automoveSelection == "DOWN":
+                            if self.mode == "LOCAL":
+                                x1, y1, x2, y2 = self.gameEngine.autoMove()
+                                self.gameEngine.move(x1, y1, x2, y2)
+                                self.gameEngine.makeDisplayDrawBoard()
+                            else: # Online mode
+                                self.addMessage("Auto-move is not available online")
+                            self.automoveSelection = "HOVER"
+
+                    abs_w = int(self.width + 0.5 * self.pane_width + 10)
+                    abs_h = int(0.195 * self.height)
+                    if mouse[0] > abs_w and mouse[0] < abs_w + w and mouse[1] > abs_h and mouse[1] < abs_h + h:
+                        if self.finishSelection == "DOWN":
+                            if self.mode == "LOCAL":
+                                outcome = self.gameEngine.checkEnd()
+                                self.addMessage(outcome)
+                            else: # Online mode
+                                self.addMessage("End check is not available online yet")
+                            self.finishSelection = "HOVER"
 
         self.white_dead = self.gameEngine.lightBoard.getDeadPieces(0)
         self.black_dead = self.gameEngine.lightBoard.getDeadPieces(1)
         self.drawPane()
-
 
     def drawMenu(self):
         """
@@ -540,14 +618,48 @@ class ChessDisplay():
         # Messages
         pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [self.width, 0, 5, self.height])
         pygame.draw.rect(self.screen, pygame.Color(230, 230, 230), [
-                         self.width + 15, 10, self.pane_width - 30, self.height // 4 - 4])
+                         self.width + 15, 10, self.pane_width - 30, self.height // 6])
         pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [
-                         self.width + 15, 10, self.pane_width - 30, self.height // 4 - 4], 2)
+                         self.width + 15, 10, self.pane_width - 30, self.height // 6], 2)
         selected_messages = self.message_history[self.current_first_message:
                                                  self.current_first_message + self.maximum_messages]
         for i, message in enumerate(selected_messages):
             local = self.message_font.render(message, True, (0, 0, 0))
             self.screen.blit(local, (self.width + 20, 15 + i * 15))
+
+        # Auto-move button and finish test
+        if self.state == "PLAYING":
+            w = int(0.42 * self.pane_width)
+            h = int(0.12 * self.height)
+            abs_w = int(self.width + 15)
+            abs_h = int(0.195 * self.height)
+            pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [abs_w, abs_h, w, h])
+            if self.automoveSelection == "NONE":
+                color = pygame.Color(220, 220, 220)
+            elif self.automoveSelection == "HOVER":
+                color = pygame.Color(170, 170, 170)
+            elif self.automoveSelection == "DOWN":
+                color = pygame.Color(140, 140, 140)
+            pygame.draw.rect(self.screen, color, [abs_w+2, abs_h+2, w-4, h-4])
+            auto_move = self.pane_buttons_font.render("Auto-move", True, (0, 0, 0))
+            self.screen.blit(auto_move, (abs_w + 0.13*w, abs_h + 0.35*h))
+
+            w = int(0.42 * self.pane_width)
+            h = int(0.12 * self.height)
+            abs_w = int(self.width + 0.5 * self.pane_width + 10)
+            abs_h = int(0.195 * self.height)
+            pygame.draw.rect(self.screen, pygame.Color(0, 0, 0), [abs_w, abs_h, w, h])
+            if self.finishSelection == "NONE":
+                color = pygame.Color(220, 220, 220)
+            elif self.finishSelection == "HOVER":
+                color = pygame.Color(170, 170, 170)
+            elif self.finishSelection == "DOWN":
+                color = pygame.Color(140, 140, 140)
+            pygame.draw.rect(self.screen, color, [abs_w+2, abs_h+2, w-4, h-4])
+            has_game = self.pane_buttons_font.render("Has game", True, (0, 0, 0))
+            ended = self.pane_buttons_font.render("ended ?", True, (0, 0, 0))
+            self.screen.blit(has_game, (abs_w + 0.15*w, abs_h + 0.15*h))
+            self.screen.blit(ended, (abs_w + 0.25*w, abs_h + 0.55*h))
 
         # Dead pieces
         text_white = self.dead_font.render("White losses", True, (0, 0, 0))
