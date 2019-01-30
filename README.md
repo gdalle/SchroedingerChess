@@ -6,4 +6,4 @@ Implementation of Haft Schroedinger Chess, where chess pieces decide what they w
 
 See the docs at https://gdalle.github.io/SchroedingerChess/
 
-To play a game against a dumb computer, just run `python chess.py`
+To play a game, all it takes is to execute `python run.py`.
