@@ -504,10 +504,11 @@ class ChessBoard():
                     if self.positions[t][s, prev_c, i] > 0.5
                 ])
 
-                problem += (
-                    16 * (1 - king) >= dangers,
-                    "No king left in check " + str((t, prev_c, s))
-                )
+                if king:
+                    problem += (
+                        16 * (1 - king) >= dangers,
+                        "No king left in check " + str((t, prev_c, s))
+                    )
 
         cur_c = T % 2
         prev_c = 1 - cur_c
@@ -530,14 +531,14 @@ class ChessBoard():
                 if self.positions[T][s, cur_c, i] > 0.5
             ])
 
-            if check == True:
+            if check == True and current_king:
 
                 problem += (
                     current_king >= current_dangers,
                     "Current king in check " + str(s)
                 )
 
-            elif check == False:
+            elif check == False and current_king:
 
                 problem += (
                     16 * (1 - current_king) >= current_dangers,
