@@ -370,8 +370,6 @@ class ChessBoard():
                 if piece is None:
                     continue
                 c, i = piece.color, piece.number
-                if c != cur_c:
-                    continue
                 if (
                     i in major_piece_numbers or
                     i in promoted_numbers
@@ -416,7 +414,7 @@ class ChessBoard():
             cat="Integer"
         )
 
-        problem = pulp.LpProblem("chess", 1)
+        problem = pulp.LpProblem("Chess", 1)
 
         problem += 1
 
@@ -504,46 +502,49 @@ class ChessBoard():
                     if self.positions[t][s, prev_c, i] > 0.5
                 ])
 
-                if king:
+                problem += (
+                    16 * (1 - king) >= dangers,
+                    "No king left in check " + str((t, prev_c, s))
+                )
+
+        if check is not None:
+            cur_c = T % 2
+            prev_c = 1 - cur_c
+
+            for s in range(64):
+
+                if self.attacks[T][s, prev_c, :, :].sum() < 0.5:
+                    continue
+                if self.positions[T][s, cur_c, major_piece_numbers].sum() < 0.5:
+                    continue
+
+                current_dangers = sum([
+                    self.attacks[T][s, prev_c, i, n_ind] * z[(prev_c, i, n)]
+                    for i in major_piece_numbers + promoted_numbers
+                    for (n_ind, n) in enumerate(major_piece_natures)
+                    if self.attacks[T][s, prev_c, i, n_ind] > 0.5
+                ]) + sum([
+                    self.attacks[T][s, prev_c, i, -1]
+                    for i in pawn_numbers
+                ])
+
+                current_king = sum([
+                    self.positions[T][s, cur_c, i] * z[(cur_c, i, "K")]
+                    for i in major_piece_numbers
+                    if self.positions[T][s, cur_c, i] > 0.5
+                ])
+
+                if check == True:
                     problem += (
-                        16 * (1 - king) >= dangers,
-                        "No king left in check " + str((t, prev_c, s))
+                        current_king <= current_dangers,
+                        "Current king in check " + str(s)
                     )
 
-        cur_c = T % 2
-        prev_c = 1 - cur_c
-
-        for s in range(64):
-
-            current_dangers = sum([
-                self.attacks[T][s, prev_c, i, n_ind] * z[(prev_c, i, n)]
-                for i in major_piece_numbers + promoted_numbers
-                for (n_ind, n) in enumerate(major_piece_natures)
-                if self.attacks[T][s, prev_c, i, n_ind] > 0.5
-            ]) + sum([
-                self.attacks[T][s, prev_c, i, -1]
-                for i in pawn_numbers
-            ])
-
-            current_king = sum([
-                self.positions[T][s, cur_c, i] * z[(cur_c, i, "K")]
-                for i in major_piece_numbers
-                if self.positions[T][s, cur_c, i] > 0.5
-            ])
-
-            if check == True and current_king:
-
-                problem += (
-                    current_king <= current_dangers,
-                    "Current king in check " + str(s)
-                )
-
-            elif check == False and current_king:
-
-                problem += (
-                    16 * (1 - current_king) >= current_dangers,
-                    "Current king not in check " + str(s)
-                )
+                elif check == False:
+                    problem += (
+                        16 * (1 - current_king) >= current_dangers,
+                        "Current king not in check " + str(s)
+                    )
 
         status = problem.solve()
 
@@ -799,8 +800,8 @@ class ChessBoard():
             return "Legal moves still exist"
         problem1, status1 = self.quantum_explanation(check=True)
         problem2, status2 = self.quantum_explanation(check=False)
-        checkmate_possible = status1 == 1
-        stalemate_possible = status2 == 1
+        checkmate_possible = (status1 == 1)
+        stalemate_possible = (status2 == 1)
         if checkmate_possible and stalemate_possible:
             return "Result unclear"
         elif checkmate_possible:
@@ -976,20 +977,28 @@ def main():
 
 if __name__ == "__main__":
     cb = ChessBoard()
-    print(cb.move(4, 1, 4, 3))
-    print(cb.move(7, 6, 7, 5))
-    print(cb.move(3, 0, 7, 4))
-    print(cb.move(6, 6, 6, 5))
-    print(cb.move(7, 4, 7, 5))
-    print(cb.move(5, 6, 5, 5))
-    print(cb.move(7, 5, 6, 5))
-    print(cb.move(4, 6, 4, 5))
-    print(cb.move(6, 5, 5, 5))
-    print(cb.move(3, 6, 3, 5))
-    print(cb.move(5, 5, 4, 5))
-    print(cb.move(2, 6, 2, 5))
-    print(cb.move(4, 5, 3, 5))
-    print(cb.move(1, 6, 1, 5))
-    print(cb.move(3, 5, 2, 5))
-    # Leaving a king in check: no longer possible
-    # print(cb.move(0, 6, 0, 5))
+    cb.move(4, 1, 4, 3)
+    cb.move(7, 6, 7, 5)
+    cb.move(5, 0, 0, 5)
+    cb.move(7, 5, 7, 4)
+    cb.move(0, 5, 0, 6)
+    cb.move(7, 4, 7, 3)
+    cb.move(0, 6, 0, 7)
+    cb.move(7, 3, 7, 2)
+    cb.move(0, 7, 1, 7)
+    cb.move(6, 6, 6, 5)
+    cb.move(1, 7, 2, 7)
+    cb.move(6, 5, 6, 4)
+    cb.move(2, 7, 3, 7)
+    cb.move(6, 4, 6, 3)
+    cb.move(3, 7, 4, 7)
+    cb.move(6, 3, 6, 2)
+    cb.move(4, 7, 5, 7)
+    cb.move(5, 6, 5, 5)
+    cb.move(2, 1, 2, 2)
+    cb.move(1, 6, 1, 5)
+    cb.move(3, 0, 1, 2)
+    cb.move(5, 5, 5, 4)
+    cb.move(5, 7, 6, 7)
+    cb.display_guess()
+    print(cb.end_game())
