@@ -533,7 +533,7 @@ class ChessBoard():
             if check == True:
 
                 problem += (
-                    king >= dangers,
+                    current_king >= dangers,
                     "Current king in check " + str(s)
                 )
 
