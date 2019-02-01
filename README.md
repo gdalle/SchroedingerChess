@@ -6,4 +6,11 @@ Implementation of Haft Schroedinger Chess, where chess pieces decide what they w
 
 See the docs at https://gdalle.github.io/SchroedingerChess/
 
-To play a game, all it takes is to execute `python run.py`.
+To run the code, you first need to install a few dependencies:
+```
+conda create -n chess python=3.6.8
+conda activate chess
+python3 -m pip install twisted==18.9.0 pygame==1.9.4 pulp==1.6.9
+```
+
+Then, all it takes to play a game is to execute `python run.py`.
