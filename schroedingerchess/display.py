@@ -78,6 +78,7 @@ class ChessDisplay():
         self.gameEngine = gameEngine
 
         self.selectedBox = None  # The box which has been clicked on
+        self.last_move = (-1,-1,-1,-1) # x1, y1, x2, y2 coordinates
 
         self.flip = False  # Should the ChessBoard be upside down
 
@@ -150,6 +151,15 @@ class ChessDisplay():
                         (x * self.width) // 8, (self.flipY(y) * self.height) // 8,
                         self.width // 8, self.height // 8], 5)
 
+                if self.last_move[0] >= 0: # If turn > 0
+                    x1, y1, x2, y2 = self.last_move
+                    pygame.draw.rect(self.screen, pygame.Color(0, 100, 0, 255), [
+                        (x1 * self.width) // 8, (self.flipY(y1) * self.height) // 8,
+                        self.width // 8, self.height // 8], 3)
+                    pygame.draw.rect(self.screen, pygame.Color(0, 180, 0, 255), [
+                        (x2 * self.width) // 8, (self.flipY(y2) * self.height) // 8,
+                        self.width // 8, self.height // 8], 3)
+
                 piece = lightBoard.getPiece(x, y)
                 if piece is not None:
                     isSelection = self.selectedBox is not None and self.selectedBox[0] == x and self.selectedBox[1] == self.flipY(y)
@@ -195,6 +205,9 @@ class ChessDisplay():
         """
         self.addMessage(reason)
         self.updatePane()
+
+    def setLastMove(self, x1, y1, x2, y2):
+        self.last_move = (x1, y1, x2, y2)
 
     def update(self):
         """ Updates the frame."""

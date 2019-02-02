@@ -27,6 +27,7 @@ class ChessServerProtocol(Protocol):
         self.state = "GREETING"
 
         self.player_id = self.factory.addWaitingPlayer(self)
+        print("Player {} connected".format(self.player_id))
 
         msg = {"type": "greetings"}
         msg["player_id"] = self.player_id
@@ -136,6 +137,7 @@ class ChessServerProtocol(Protocol):
             time.sleep(0.5)
             self.game.disconnectPlayers()
             self.factory.removeGame(self.game_id)
+        print("Player {} disconnected".format(self.player_id))
 
     def disconnect(self):
         """ Disconnect current player / protocol """
@@ -205,6 +207,7 @@ class ChessServer(Factory):
             blacks_client = self.waitingBlackPlayers[1].pop(blacks_id)
             game = Game(whites_client, blacks_client, self.gameIndex)
             self.games[self.gameIndex] = game
+            print("Matched player {} and {} into game {}".format(whites_id, blacks_id, self.gameIndex))
             self.gameIndex += 1
 
     def removePlayerFromWaitingList(self, player_id):
@@ -220,6 +223,7 @@ class ChessServer(Factory):
     def removeGame(self, game_id):
         try:
             del self.games[game_id]
+            print("Terminated game {}".format(game_id))
         except KeyError:
             # The other player already deleted the game
             pass
@@ -252,7 +256,7 @@ class Game:
         piece = self.chessBoard.grid[x1][y1]
         if piece is not None and piece.color is not color:
             raise IllegalMove("Trying to move a place that does not belong to the player.")
-        self.chessBoard.move(x1, y1, x2, y2)
+        self.chessBoard.move(x1, y1, x2, y2, disp=False)
         self.lightBoard.move(x1, y1, x2, y2)
         self.validMovesCounter += 1
 

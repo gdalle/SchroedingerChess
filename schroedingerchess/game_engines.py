@@ -18,7 +18,7 @@ CONNECTION_WAITING_TIME = 10  # seconds
 
 
 class GameEngine():
-
+    # TODO fix JSON encore / decode error
     def start(self):
         """ Starts the game engine. Create the window and initiate the reaction loop."""
         self.lightBoard = LightBoard()
@@ -128,10 +128,12 @@ class TwoPlayersOnOneBoard(GameEngine):
     def moveTask(self, mov):
         x1, y1, x2, y2 = mov[0], mov[1], mov[2], mov[3]
         try:
-            self.chessBoard.move(x1, y1, x2, y2)
+            self.chessBoard.move(x1, y1, x2, y2, disp=False)
             self.lightBoard.move(x1, y1, x2, y2)
+            color = "Whites" if (self.validMovesCounter % 2 == 0) else "Blacks"
+            self.display.addMessage(color + " move from ({},{}) to ({},{})".format(x1, y1, x2, y2))
             self.validMovesCounter += 1
-            self.display.addMessage("Move from ({},{}) to ({},{})".format(x1, y1, x2, y2))
+            self.display.setLastMove(x1, y1, x2, y2)
             self.makeDisplayDrawBoard()
             self.updateLightBoard()
         except IllegalMove as e:
@@ -213,10 +215,13 @@ class OnePlayerOnNetwork(GameEngine):
             self.protocol.sendMessage(msg)
 
     def handleMove(self, description):
+        """ Executes a move received from the server """
         self.turn = (self.turn + 1) % 2
         x1, y1, x2, y2 = description
         self.lightBoard.move(x1, y1, x2, y2)
-        self.display.addMessage("Move from ({},{}) to ({},{})".format(x1, y1, x2, y2))
+        color = "Whites" if (self.turn == 0) else "Blacks"
+        self.display.addMessage(color+" move from ({},{}) to ({},{})".format(x1, y1, x2, y2))
+        self.display.setLastMove(x1, y1, x2, y2)
         self.makeDisplayDrawBoard()
         # print("cb.move({},{},{},{})".format(x1, y1, x2, y2))
 
