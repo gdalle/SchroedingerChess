@@ -11,11 +11,11 @@ class ChessClientProtocol(Protocol):
         Constructor.
         :param client: Client to bind to the protocol
         """
-        self.client = client # reference to the client
+        self.client = client # reference to the client (a GameEngine object)
         self.state = "INITIALIZATION"
 
     def connectionMade(self):
-        self.sendMessage({"type" : "player-info", "player-name" : self.client.name})
+        self.sendMessage({"type" : "player-info", "player-name" : self.client.name, "color": self.client.color})
 
     def dataReceived(self, data):
 
@@ -23,26 +23,35 @@ class ChessClientProtocol(Protocol):
         Handles the reception of data from the server.
         :param data: A byte representing a JSON-encoded object (default encoding UTF-8)
         """
-        msg = json.loads(data.decode())
+        messages = self.split_messages(data)
 
-        if self.state == "INITIALIZATION":
-            if msg["type"] == "init":
-                self.client.handleInit(msg["description"])
-            self.state = "PLAYING"
-        elif self.state == "PLAYING":
-            if msg["type"] == "move":
-                self.client.handleMove(msg["description"])
-            elif msg["type"] == "illegal-move":
-                self.client.handleIllegalMove(msg["description"])
-            elif msg["type"] == "checks":
-                self.client.handleChecks(msg["description"])
-            elif msg["type"] == "checkmates":
-                self.client.CheckMates(msg["description"])
-            elif msg["type"] == "disconnection":
-                self.client.handleDisconnection(msg["description"])
-            else:
-                pass
-
+        for msg_json in messages:
+            msg = json.loads(msg_json)
+            
+            if self.state == "INITIALIZATION":
+                if msg["type"] == "greetings":
+                    self.client.handleInit()
+                self.state = "PLAYING"
+            elif self.state == "PLAYING":
+                if msg["type"] == "chat":
+                    self.client.display.addMessage(msg["content"])
+                if msg["type"] == "move":
+                    self.client.handleMove(msg["description"])
+                elif msg["type"] == "illegal-move":
+                    self.client.handleIllegalMove(msg["description"])
+                elif msg["type"] == "status":
+                    if msg["status"] == "ready":
+                        self.client.handleReady()
+                elif msg["type"] == "lightboard":
+                    self.client.handleUpdateBoard(msg["description"])
+                elif msg["type"] == "checks":
+                    self.client.handleChecks(msg["description"])
+                elif msg["type"] == "checkmates":
+                    self.client.CheckMates(msg["description"])
+                elif msg["type"] == "disconnection":
+                    self.client.handleDisconnection(msg["description"])
+                else:
+                    pass
 
     def connectionLost(self, reason):
         """
@@ -57,3 +66,17 @@ class ChessClientProtocol(Protocol):
         :param msg: A dictionary representing a message.
         """
         self.transport.write(json.dumps(msg).encode())
+
+    def split_messages(self, data):
+        messages = []
+        split = data.decode().split("}{")
+        if len(split) == 1:
+            return split
+        for i, sp in enumerate(split):
+            m = sp
+            if i > 0:
+                m = "{" + m
+            if i < len(split)-1:
+                m = m + "}"
+            messages.append(m)
+        return messages

@@ -98,9 +98,9 @@ class ChessDisplay():
         self.finishSelection = "NONE"
 
         self.name = InputBox(int(0.458 * self.width), int(0.6875 *
-                                                          self.height) - 40, int(self.width / 3), 32)
+                                                          self.height) - 40, int(self.width / 3), 32, text="lao")
         self.address = InputBox(int(0.458 * self.width), int(0.6875 *
-                                                             self.height) + 10, int(self.width / 3), 32)
+                                                             self.height) + 10, int(self.width / 3), 32, text="127.0.0.1:6000")
         self.input_boxes = [self.name, self.address]
         self.clock = pygame.time.Clock()
         self.selected_color = "W"
@@ -131,7 +131,6 @@ class ChessDisplay():
             self.mode = "ONLINE"
             self.gameEngine.setOnePlayerOnNetworkMode(name, address, color)
             self.gameEngine.makeDisplayDrawBoard()
-            self.addMessage("Starting online game")
 
     def drawBoard(self, lightBoard):
         """
@@ -509,18 +508,15 @@ class ChessDisplay():
                                 self.gameEngine.move(x1, y1, x2, y2)
                                 self.gameEngine.makeDisplayDrawBoard()
                             else: # Online mode
-                                self.addMessage("Auto-move is not available online")
+                                self.gameEngine.autoMove()
+                                # self.addMessage("Auto-move is not available online")
                             self.automoveSelection = "HOVER"
 
                     abs_w = int(self.width + 0.5 * self.pane_width + 10)
                     abs_h = int(0.195 * self.height)
                     if mouse[0] > abs_w and mouse[0] < abs_w + w and mouse[1] > abs_h and mouse[1] < abs_h + h:
                         if self.finishSelection == "DOWN":
-                            if self.mode == "LOCAL":
-                                outcome = self.gameEngine.checkEnd()
-                                self.addMessage(outcome)
-                            else: # Online mode
-                                self.addMessage("End check is not available online yet")
+                            self.gameEngine.checkEnd()
                             self.finishSelection = "HOVER"
 
         self.white_dead = self.gameEngine.lightBoard.getDeadPieces(0)
