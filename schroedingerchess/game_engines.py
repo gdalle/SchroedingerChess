@@ -145,11 +145,14 @@ class TwoPlayersOnOneBoard(GameEngine):
         reactor.callLater(0, d.callback, (x1, y1, x2, y2))
 
     def autoMove(self):
-        return self.chessBoard.auto_move()
+        try:
+            return self.chessBoard.auto_move()
+        except IllegalMove as e: # In case the game has ended
+            self.handleIllegalMove(str(e))
 
     def checkEndTask(self):
         outcome = self.chessBoard.end_game()
-        self.addMessage(outcome)
+        self.display.addMessage(outcome)
 
 
 class OnePlayerOnNetwork(GameEngine):
