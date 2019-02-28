@@ -17,33 +17,35 @@
   
 
   
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../_static/jquery.js"></script>
+        <script type="text/javascript" src="../_static/underscore.js"></script>
+        <script type="text/javascript" src="../_static/doctools.js"></script>
+        <script type="text/javascript" src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="prev" title="schroedingerchess" href="modules.html" /> 
-
-  
-  <script src="../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -182,6 +184,11 @@
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.all_legal_moves">
 <code class="descname">all_legal_moves</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.all_legal_moves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.all_legal_moves" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.chess.ChessBoard.all_legal_moves_gen">
+<code class="descname">all_legal_moves_gen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.all_legal_moves_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.all_legal_moves_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search all legal move at a given turn.</p>
 </dd></dl>
 
@@ -193,7 +200,7 @@
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.auto_move">
-<code class="descname">auto_move</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.auto_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.auto_move" title="Permalink to this definition">¶</a></dt>
+<code class="descname">auto_move</code><span class="sig-paren">(</span><em>intelligent=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.auto_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.auto_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform one of the legal moves at random.</p>
 </dd></dl>
 
@@ -265,12 +272,17 @@
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.legal_moves_from">
 <code class="descname">legal_moves_from</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.legal_moves_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.legal_moves_from" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.chess.ChessBoard.legal_moves_from_gen">
+<code class="descname">legal_moves_from_gen</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.legal_moves_from_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.legal_moves_from_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search all legal moves starting from a given square.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.move">
-<code class="descname">move</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.move" title="Permalink to this definition">¶</a></dt>
+<code class="descname">move</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em>, <em>disp=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test and perform a move.</p>
 <p>Will raise IllegalMove if the move is not valid.</p>
 </dd></dl>
@@ -292,6 +304,11 @@
 <code class="descname">on_board</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.on_board"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.on_board" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if a square is part of the board.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.chess.ChessBoard.one_player_game">
+<code class="descname">one_player_game</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.one_player_game"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.one_player_game" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.parse_variable">
@@ -340,6 +357,11 @@ the color, target and the previous moves.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="schroedingerchess.chess.ChessBoard.translate_move">
+<code class="descname">translate_move</code><span class="sig-paren">(</span><em>move</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.translate_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.translate_move" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.trivial_test_move">
 <code class="descname">trivial_test_move</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.trivial_test_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.trivial_test_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check obvious failures.</p>
@@ -358,12 +380,6 @@ the color, target and the previous moves.</p>
 <em class="property">class </em><code class="descclassname">schroedingerchess.chess.</code><code class="descname">ChessPiece</code><span class="sig-paren">(</span><em>c</em>, <em>i</em>, <em>n</em>, <em>p</em>, <em>b=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessPiece"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessPiece" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Chess piece manipulation.</p>
-<dl class="method">
-<dt id="schroedingerchess.chess.ChessPiece.initial_nature_guess">
-<code class="descname">initial_nature_guess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessPiece.initial_nature_guess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessPiece.initial_nature_guess" title="Permalink to this definition">¶</a></dt>
-<dd><p>Define standard initial configuration.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="exception">
@@ -378,13 +394,18 @@ the color, target and the previous moves.</p>
 <em class="property">class </em><code class="descclassname">schroedingerchess.chess.</code><code class="descname">LightBoard</code><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
-<dt id="schroedingerchess.chess.LightBoard.clean">
-<code class="descname">clean</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.clean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.clean" title="Permalink to this definition">¶</a></dt>
+<dt id="schroedingerchess.chess.LightBoard.getDeadPieces">
+<code class="descname">getDeadPieces</code><span class="sig-paren">(</span><em>color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.getDeadPieces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.getDeadPieces" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.LightBoard.getPiece">
 <code class="descname">getPiece</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.getPiece"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.getPiece" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.chess.LightBoard.getPieceIndex">
+<code class="descname">getPieceIndex</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.getPieceIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.getPieceIndex" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
@@ -399,8 +420,9 @@ the color, target and the previous moves.</p>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.LightBoard.setPiece">
-<code class="descname">setPiece</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>color</em>, <em>natures</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.setPiece"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.setPiece" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="descname">setPiece</code><span class="sig-paren">(</span><em>i</em>, <em>color</em>, <em>position</em>, <em>natures</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.setPiece"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.setPiece" title="Permalink to this definition">¶</a></dt>
+<dd><p>i is the index of the piece in self.pieces (same as ChessBoard.pieces)</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.LightBoard.unwrap">
@@ -517,9 +539,9 @@ send any greeting or initial message, do it here.</p>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="schroedingerchess.display.ChessDisplay.drawSelectedBox">
-<code class="descname">drawSelectedBox</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.drawSelectedBox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.drawSelectedBox" title="Permalink to this definition">¶</a></dt>
-<dd><p>Draws the selected box.</p>
+<dt id="schroedingerchess.display.ChessDisplay.draw_piece">
+<code class="descname">draw_piece</code><span class="sig-paren">(</span><em>color</em>, <em>natures</em>, <em>x</em>, <em>y</em>, <em>size</em>, <em>extended=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.draw_piece"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.draw_piece" title="Permalink to this definition">¶</a></dt>
+<dd><p>x, y are in pixels</p>
 </dd></dl>
 
 <dl class="method">
@@ -540,7 +562,7 @@ send any greeting or initial message, do it here.</p>
 <dt id="schroedingerchess.display.ChessDisplay.handleIllegalMove">
 <code class="descname">handleIllegalMove</code><span class="sig-paren">(</span><em>reason</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.handleIllegalMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.handleIllegalMove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handles illegal moves.
-:param reason: TOD0</p>
+:param reason: Reason of the illegal move</p>
 </dd></dl>
 
 <dl class="method">
@@ -567,12 +589,6 @@ send any greeting or initial message, do it here.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="schroedingerchess.display.ChessDisplay.undrawSelectedBox">
-<code class="descname">undrawSelectedBox</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.undrawSelectedBox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.undrawSelectedBox" title="Permalink to this definition">¶</a></dt>
-<dd><p>Undraws the selected box.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.update">
 <code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates the frame.</p>
@@ -593,7 +609,7 @@ send any greeting or initial message, do it here.</p>
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.updatePane">
 <code class="descname">updatePane</code><span class="sig-paren">(</span><em>events=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.updatePane"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.updatePane" title="Permalink to this definition">¶</a></dt>
-<dd><p>Update the right hand side plane</p>
+<dd><p>Update the right hand side pane</p>
 </dd></dl>
 
 </dd></dl>
@@ -708,6 +724,16 @@ send any greeting or initial message, do it here.</p>
 <dt id="schroedingerchess.game_engines.TwoPlayersOnOneBoard">
 <em class="property">class </em><code class="descclassname">schroedingerchess.game_engines.</code><code class="descname">TwoPlayersOnOneBoard</code><span class="sig-paren">(</span><em>gameEngine</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#schroedingerchess.game_engines.GameEngine" title="schroedingerchess.game_engines.GameEngine"><code class="xref py py-class docutils literal notranslate"><span class="pre">schroedingerchess.game_engines.GameEngine</span></code></a></p>
+<dl class="method">
+<dt id="schroedingerchess.game_engines.TwoPlayersOnOneBoard.autoMove">
+<code class="descname">autoMove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard.autoMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard.autoMove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.game_engines.TwoPlayersOnOneBoard.checkEnd">
+<code class="descname">checkEnd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard.checkEnd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard.checkEnd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="schroedingerchess.game_engines.TwoPlayersOnOneBoard.move">
 <code class="descname">move</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard.move" title="Permalink to this definition">¶</a></dt>
@@ -879,7 +905,7 @@ send any greeting or initial message, do it here.</p>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
       
-        <a href="modules.html" class="btn btn-neutral" title="schroedingerchess" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-left" title="schroedingerchess" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -888,7 +914,7 @@ send any greeting or initial message, do it here.</p>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, G. Dalle &amp; M. Godin &amp; C. Mantoux.
+        &copy; Copyright 2018, G. Dalle &amp; M. Godin &amp; C. Mantoux
 
     </p>
   </div>
@@ -905,33 +931,16 @@ send any greeting or initial message, do it here.</p>
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../',
-            VERSION:'',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../_static/jquery.js"></script>
-      <script type="text/javascript" src="../_static/underscore.js"></script>
-      <script type="text/javascript" src="../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  <script type="text/javascript" src="../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

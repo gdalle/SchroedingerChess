@@ -18,32 +18,34 @@
   
 
   
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" /> 
-
-  
-  <script src="_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -177,15 +179,19 @@
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServer.addWaitingPlayer">addWaitingPlayer() (schroedingerchess.server.ChessServer method)</a>
 </li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.all_legal_moves">all_legal_moves() (schroedingerchess.chess.ChessBoard method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.all_legal_moves">all_legal_moves() (schroedingerchess.chess.ChessBoard method)</a>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.all_legal_moves_gen">all_legal_moves_gen() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.all_legal_natures">all_legal_natures() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServer.assignColor">assignColor() (schroedingerchess.server.ChessServer method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.auto_move">auto_move() (schroedingerchess.chess.ChessBoard method)</a>
+</li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.autoMove">autoMove() (schroedingerchess.game_engines.TwoPlayersOnOneBoard method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -194,6 +200,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/schroedingerchess.html#schroedingerchess.display.ChessDisplay.check_address_format">check_address_format() (schroedingerchess.display.ChessDisplay method)</a>
+</li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.checkEnd">checkEnd() (schroedingerchess.game_engines.TwoPlayersOnOneBoard method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard">ChessBoard (class in schroedingerchess.chess)</a>
 </li>
@@ -205,11 +213,9 @@
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServer">ChessServer (class in schroedingerchess.server)</a>
 </li>
-      <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol">ChessServerProtocol (class in schroedingerchess.server)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/schroedingerchess.html#schroedingerchess.chess.LightBoard.clean">clean() (schroedingerchess.chess.LightBoard method)</a>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol">ChessServerProtocol (class in schroedingerchess.server)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.compute_attack">compute_attack() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
@@ -251,6 +257,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.display.ChessDisplay.draw_piece">draw_piece() (schroedingerchess.display.ChessDisplay method)</a>
+</li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.display.ChessDisplay.drawBoard">drawBoard() (schroedingerchess.display.ChessDisplay method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.display.ChessDisplay.drawCheckMates">drawCheckMates() (schroedingerchess.display.ChessDisplay method)</a>
@@ -260,8 +268,6 @@
       <li><a href="source/schroedingerchess.html#schroedingerchess.display.ChessDisplay.drawMenu">drawMenu() (schroedingerchess.display.ChessDisplay method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.display.ChessDisplay.drawPane">drawPane() (schroedingerchess.display.ChessDisplay method)</a>
-</li>
-      <li><a href="source/schroedingerchess.html#schroedingerchess.display.ChessDisplay.drawSelectedBox">drawSelectedBox() (schroedingerchess.display.ChessDisplay method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -295,13 +301,17 @@
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine">GameEngine (class in schroedingerchess.game_engines)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.get_coord">get_coord() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.get_square">get_square() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.chess.LightBoard.getDeadPieces">getDeadPieces() (schroedingerchess.chess.LightBoard method)</a>
+</li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.LightBoard.getPiece">getPiece() (schroedingerchess.chess.LightBoard method)</a>
+</li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.chess.LightBoard.getPieceIndex">getPieceIndex() (schroedingerchess.chess.LightBoard method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -331,8 +341,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.IllegalMove">IllegalMove</a>
 </li>
-      <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessPiece.initial_nature_guess">initial_nature_guess() (schroedingerchess.chess.ChessPiece method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/schroedingerchess.html#schroedingerchess.display.InputBox">InputBox (class in schroedingerchess.display)</a>
@@ -346,6 +354,8 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.legal_moves_from">legal_moves_from() (schroedingerchess.chess.ChessBoard method)</a>
+</li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.legal_moves_from_gen">legal_moves_from_gen() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
@@ -411,6 +421,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.one_player_game">one_player_game() (schroedingerchess.chess.ChessBoard method)</a>
+</li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork">OnePlayerOnNetwork (class in schroedingerchess.game_engines)</a>
 </li>
   </ul></td>
@@ -523,10 +535,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.test_move">test_move() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
-      <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.trivial_test_move">trivial_test_move() (schroedingerchess.chess.ChessBoard method)</a>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.translate_move">translate_move() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.trivial_test_move">trivial_test_move() (schroedingerchess.chess.ChessBoard method)</a>
+</li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServer.tryToMatchPlayers">tryToMatchPlayers() (schroedingerchess.server.ChessServer method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard">TwoPlayersOnOneBoard (class in schroedingerchess.game_engines)</a>
@@ -537,8 +551,6 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/schroedingerchess.html#schroedingerchess.display.ChessDisplay.undrawSelectedBox">undrawSelectedBox() (schroedingerchess.display.ChessDisplay method)</a>
-</li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.LightBoard.unwrap">unwrap() (schroedingerchess.chess.LightBoard method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.display.ChessDisplay.update">update() (schroedingerchess.display.ChessDisplay method)</a>
@@ -549,10 +561,10 @@
       </ul></li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.update_guess">update_guess() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/schroedingerchess.html#schroedingerchess.display.ChessDisplay.updateBoard">updateBoard() (schroedingerchess.display.ChessDisplay method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.updateLightBoard">updateLightBoard() (schroedingerchess.game_engines.TwoPlayersOnOneBoard method)</a>
 
       <ul>
@@ -588,7 +600,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, G. Dalle &amp; M. Godin &amp; C. Mantoux.
+        &copy; Copyright 2018, G. Dalle &amp; M. Godin &amp; C. Mantoux
 
     </p>
   </div>
@@ -605,33 +617,16 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'./',
-            VERSION:'',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="_static/jquery.js"></script>
-      <script type="text/javascript" src="_static/underscore.js"></script>
-      <script type="text/javascript" src="_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  <script type="text/javascript" src="_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

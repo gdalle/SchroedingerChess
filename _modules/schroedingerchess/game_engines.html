@@ -17,32 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -151,11 +153,11 @@
 
 <span class="kn">from</span> <span class="nn">twisted.python</span> <span class="k">import</span> <span class="n">log</span>
 
-<span class="kn">from</span> <span class="nn">.display</span> <span class="k">import</span> <span class="n">ChessDisplay</span>
+<span class="kn">from</span> <span class="nn">display</span> <span class="k">import</span> <span class="n">ChessDisplay</span>
 
-<span class="kn">from</span> <span class="nn">.chess</span> <span class="k">import</span> <span class="n">ChessBoard</span><span class="p">,</span> <span class="n">IllegalMove</span><span class="p">,</span> <span class="n">LightBoard</span>
+<span class="kn">from</span> <span class="nn">chess</span> <span class="k">import</span> <span class="n">ChessBoard</span><span class="p">,</span> <span class="n">IllegalMove</span><span class="p">,</span> <span class="n">LightBoard</span>
 
-<span class="kn">from</span> <span class="nn">.client</span> <span class="k">import</span> <span class="n">ChessClientProtocol</span>
+<span class="kn">from</span> <span class="nn">client</span> <span class="k">import</span> <span class="n">ChessClientProtocol</span>
 
 <span class="kn">from</span> <span class="nn">twisted.internet.endpoints</span> <span class="k">import</span> <span class="n">TCP4ClientEndpoint</span><span class="p">,</span> <span class="n">connectProtocol</span>
 
@@ -167,8 +169,8 @@
 
 <div class="viewcode-block" id="GameEngine.start"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Starts the game engine. Create the window and initiate the reaction loop.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="n">ChessDisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span> <span class="o">=</span> <span class="n">LightBoard</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="n">ChessDisplay</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loopingCall</span> <span class="o">=</span> <span class="n">LoopingCall</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">update</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">loopingCall</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">FRAME_PER_SECOND</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">err</span><span class="p">)</span>
         <span class="n">reactor</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
@@ -209,8 +211,7 @@
 
 <div class="viewcode-block" id="GameEngine.handleIllegalMove"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.handleIllegalMove">[docs]</a>    <span class="k">def</span> <span class="nf">handleIllegalMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Handles an illegal move.&quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">handleIllegalMove</span><span class="p">(</span>
-            <span class="n">reason</span><span class="p">)</span>  <span class="c1"># TODO see the implementation of this method in ChessDisplay</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">handleIllegalMove</span><span class="p">(</span><span class="n">reason</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GameEngine.makeDisplayDrawBoard"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.makeDisplayDrawBoard">[docs]</a>    <span class="k">def</span> <span class="nf">makeDisplayDrawBoard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Makes the display redraw the board.&quot;&quot;&quot;</span>
@@ -239,20 +240,23 @@
 <div class="viewcode-block" id="TwoPlayersOnOneBoard.updateLightBoard"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.updateLightBoard">[docs]</a>    <span class="nd">@inlineCallbacks</span>
     <span class="k">def</span> <span class="nf">updateLightBoard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">nb</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">validMovesCounter</span>
-        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">piece</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">col</span><span class="p">]):</span>
                 <span class="k">if</span> <span class="n">nb</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">validMovesCounter</span><span class="p">:</span>
-                    <span class="n">piece</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span>
-                    <span class="k">if</span> <span class="n">piece</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">updateDeferred</span> <span class="o">=</span> <span class="n">Deferred</span><span class="p">()</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">updateDeferred</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">all_legal_natures</span><span class="p">)</span>
-                        <span class="bp">self</span><span class="o">.</span><span class="n">updateDeferred</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">err</span><span class="p">)</span>  <span class="c1"># DEBUG</span>
-                        <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">updateDeferred</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span> <span class="n">piece</span><span class="p">)</span>
-                        <span class="n">natures</span> <span class="o">=</span> <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">updateDeferred</span>
-                        <span class="k">if</span> <span class="n">nb</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">validMovesCounter</span><span class="p">:</span>
-                            <span class="n">color</span> <span class="o">=</span> <span class="n">piece</span><span class="o">.</span><span class="n">color</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span><span class="o">.</span><span class="n">setPiece</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">natures</span><span class="p">)</span>
-                            <span class="bp">self</span><span class="o">.</span><span class="n">makeDisplayDrawBoard</span><span class="p">()</span></div>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">updateDeferred</span> <span class="o">=</span> <span class="n">Deferred</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">updateDeferred</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">all_legal_natures</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">updateDeferred</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">err</span><span class="p">)</span>  <span class="c1"># DEBUG</span>
+                    <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">updateDeferred</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span> <span class="n">piece</span><span class="p">)</span>
+                    <span class="n">natures</span> <span class="o">=</span> <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">updateDeferred</span>
+                    <span class="k">if</span> <span class="n">nb</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">validMovesCounter</span><span class="p">:</span>
+                        <span class="n">color</span> <span class="o">=</span> <span class="n">piece</span><span class="o">.</span><span class="n">color</span>
+                        <span class="n">position</span> <span class="o">=</span> <span class="n">piece</span><span class="o">.</span><span class="n">position</span>
+                        <span class="n">pieceIndex</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">col</span> <span class="o">*</span> <span class="mi">24</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span><span class="o">.</span><span class="n">setPiece</span><span class="p">(</span><span class="n">pieceIndex</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">natures</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="p">(</span><span class="n">piece</span><span class="o">.</span><span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">piece</span><span class="o">.</span><span class="n">position</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">makeDisplayDrawBoard</span><span class="p">()</span>
+                        <span class="k">elif</span> <span class="p">(</span><span class="n">piece</span><span class="o">.</span><span class="n">position</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">):</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">updatePane</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="TwoPlayersOnOneBoard.moveTask"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.moveTask">[docs]</a>    <span class="k">def</span> <span class="nf">moveTask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mov</span><span class="p">):</span>
         <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">mov</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mov</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">mov</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">mov</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
@@ -270,7 +274,13 @@
         <span class="n">d</span> <span class="o">=</span> <span class="n">Deferred</span><span class="p">()</span>
         <span class="c1"># d.addCallback(self.moveTask)</span>
         <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moveTask</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">err</span><span class="p">)</span>  <span class="c1"># DEBUG</span>
-        <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">))</span></div></div>
+        <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="TwoPlayersOnOneBoard.autoMove"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.autoMove">[docs]</a>    <span class="k">def</span> <span class="nf">autoMove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">auto_move</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="TwoPlayersOnOneBoard.checkEnd"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.checkEnd">[docs]</a>    <span class="k">def</span> <span class="nf">checkEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">end_game</span><span class="p">()</span></div></div>
 
     <span class="c1"># def moveTask(self, x1, y1, x2, y2):</span>
     <span class="c1">#     try:</span>
@@ -355,7 +365,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, G. Dalle &amp; M. Godin &amp; C. Mantoux.
+        &copy; Copyright 2018, G. Dalle &amp; M. Godin &amp; C. Mantoux
 
     </p>
   </div>
@@ -372,33 +382,16 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>

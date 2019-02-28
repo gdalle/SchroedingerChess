@@ -17,32 +17,34 @@
   
 
   
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
-  
-  
     
 
   
-
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
-
-  
-  <script src="../../_static/js/modernizr.min.js"></script>
-
 </head>
 
 <body class="wy-body-for-nav">
 
    
   <div class="wy-grid-for-nav">
-
     
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
-        <div class="wy-side-nav-search">
+        <div class="wy-side-nav-search" >
           
 
           
@@ -145,7 +147,7 @@
   <h1>Source code for schroedingerchess.chess</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;First test for chess implementation.&quot;&quot;&quot;</span>
 
-
+<span class="kn">import</span> <span class="nn">itertools</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pulp</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="k">import</span> <span class="n">defaultdict</span>
@@ -165,6 +167,25 @@
     <span class="s2">&quot;R&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
     <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
     <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="mi">2</span>
+<span class="p">}</span>
+
+<span class="n">color_nature_to_icon</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="mi">0</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;K&quot;</span><span class="p">:</span> <span class="s2">&quot;♔&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="s2">&quot;♕&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;R&quot;</span><span class="p">:</span> <span class="s2">&quot;♖&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="s2">&quot;♗&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="s2">&quot;♘&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="s2">&quot;♙&quot;</span><span class="p">,</span>
+    <span class="p">},</span>
+    <span class="mi">1</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s2">&quot;K&quot;</span><span class="p">:</span> <span class="s2">&quot;♚&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Q&quot;</span><span class="p">:</span> <span class="s2">&quot;♛&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;R&quot;</span><span class="p">:</span> <span class="s2">&quot;♜&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;B&quot;</span><span class="p">:</span> <span class="s2">&quot;♝&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;N&quot;</span><span class="p">:</span> <span class="s2">&quot;♞&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;P&quot;</span><span class="p">:</span> <span class="s2">&quot;♟&quot;</span><span class="p">,</span>
+    <span class="p">}</span>
 <span class="p">}</span>
 
 
@@ -187,10 +208,22 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">possible_natures</span> <span class="o">=</span> <span class="p">[</span><span class="n">n</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">legal_natures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">possible_natures</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">forbidden_natures</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nature_guess</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">initial_nature_guess</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">position</span> <span class="o">=</span> <span class="n">p</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">board</span> <span class="o">=</span> <span class="n">b</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">forbidden_natures</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">&gt;=</span> <span class="mi">8</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nature_guess</span> <span class="o">=</span> <span class="s2">&quot;P&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nature_guess</span> <span class="o">=</span> <span class="s2">&quot;R&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nature_guess</span> <span class="o">=</span> <span class="s2">&quot;N&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nature_guess</span> <span class="o">=</span> <span class="s2">&quot;B&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nature_guess</span> <span class="o">=</span> <span class="s2">&quot;Q&quot;</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">nature_guess</span> <span class="o">=</span> <span class="s2">&quot;K&quot;</span>
 
     <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">natures</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Display color and number or nature guess.&quot;&quot;&quot;</span>
@@ -205,6 +238,7 @@
                 <span class="s2">&quot; &quot;</span> <span class="o">*</span> <span class="p">(</span><span class="mi">2</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">number</span><span class="p">)))</span>
             <span class="p">)</span>
         <span class="k">elif</span> <span class="n">guess</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">color_nature_to_icon</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">nature_guess</span><span class="p">]</span>
             <span class="k">return</span> <span class="p">(</span>
                 <span class="n">color_name</span> <span class="o">+</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">nature_guess</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
@@ -213,22 +247,7 @@
             <span class="k">return</span> <span class="p">(</span>
                 <span class="n">color_name</span> <span class="o">+</span>
                 <span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">all_legal_natures</span><span class="p">(</span><span class="bp">self</span><span class="p">)))</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
-            <span class="p">)</span>
-
-<div class="viewcode-block" id="ChessPiece.initial_nature_guess"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.ChessPiece.initial_nature_guess">[docs]</a>    <span class="k">def</span> <span class="nf">initial_nature_guess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Define standard initial configuration.&quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">&gt;=</span> <span class="mi">8</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;P&quot;</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="s2">&quot;R&quot;</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="s2">&quot;N&quot;</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">]:</span>
-            <span class="k">return</span> <span class="s2">&quot;B&quot;</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;Q&quot;</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">number</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;K&quot;</span></div></div>
+            <span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="ChessBoard"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.ChessBoard">[docs]</a><span class="k">class</span> <span class="nc">ChessBoard</span><span class="p">():</span>
@@ -241,7 +260,7 @@
             <span class="n">ChessPiece</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">major_piece_numbers</span>
         <span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
-            <span class="n">ChessPiece</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">ChessPiece</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">pawn_numbers</span>
         <span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
             <span class="n">ChessPiece</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
@@ -252,7 +271,7 @@
             <span class="n">ChessPiece</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">major_piece_numbers</span>
         <span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
-            <span class="n">ChessPiece</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
+            <span class="n">ChessPiece</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="s2">&quot;P&quot;</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">pawn_numbers</span>
         <span class="p">]</span> <span class="o">+</span> <span class="p">[</span>
             <span class="n">ChessPiece</span><span class="p">(</span><span class="n">c</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">=</span><span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">b</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span>
@@ -277,28 +296,38 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">attacks</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_attack</span><span class="p">()]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pieces_alive</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">]]</span>
 
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">natures</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">guess</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">natures</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">letters</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Display the board in ASCII art.&quot;&quot;&quot;</span>
-        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;At time &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;At time &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">time</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;:</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)):</span>
-            <span class="n">s</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;  &quot;</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">guess</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">letters</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;  &quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;  &quot;</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
-                <span class="n">square_color</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
                 <span class="n">piece</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span>
                 <span class="k">if</span> <span class="n">piece</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">s</span> <span class="o">+=</span> <span class="n">piece</span><span class="o">.</span><span class="fm">__str__</span><span class="p">(</span><span class="n">guess</span><span class="o">=</span><span class="n">guess</span><span class="p">,</span> <span class="n">natures</span><span class="o">=</span><span class="n">natures</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
-                    <span class="k">if</span> <span class="n">square_color</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">square_color</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="n">guess</span><span class="p">:</span>
                         <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;-- &quot;</span>
-                    <span class="k">else</span><span class="p">:</span>
-                        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;-- &quot;</span>
+                    <span class="k">elif</span> <span class="n">guess</span><span class="p">:</span>
+                        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;· &quot;</span>
+                        <span class="c1"># s += &quot;\u2796&quot;</span>
                 <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot; &quot;</span>
             <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
-        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;   &quot;</span>
-        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
-            <span class="n">s</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;   &quot;</span>
-        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">guess</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;   &quot;</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">letters</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">+=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">97</span> <span class="o">+</span> <span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;   &quot;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">s</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;   &quot;</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span>
         <span class="k">return</span> <span class="n">s</span>
 
 <div class="viewcode-block" id="ChessBoard.display_guess"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.display_guess">[docs]</a>    <span class="k">def</span> <span class="nf">display_guess</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -488,8 +517,6 @@
                 <span class="k">if</span> <span class="n">piece</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="n">c</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">piece</span><span class="o">.</span><span class="n">color</span><span class="p">,</span> <span class="n">piece</span><span class="o">.</span><span class="n">number</span>
-                <span class="k">if</span> <span class="n">c</span> <span class="o">!=</span> <span class="n">cur_c</span><span class="p">:</span>
-                    <span class="k">continue</span>
                 <span class="k">if</span> <span class="p">(</span>
                     <span class="n">i</span> <span class="ow">in</span> <span class="n">major_piece_numbers</span> <span class="ow">or</span>
                     <span class="n">i</span> <span class="ow">in</span> <span class="n">promoted_numbers</span>
@@ -534,7 +561,7 @@
             <span class="n">cat</span><span class="o">=</span><span class="s2">&quot;Integer&quot;</span>
         <span class="p">)</span>
 
-        <span class="n">problem</span> <span class="o">=</span> <span class="n">pulp</span><span class="o">.</span><span class="n">LpProblem</span><span class="p">(</span><span class="s2">&quot;chess&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">problem</span> <span class="o">=</span> <span class="n">pulp</span><span class="o">.</span><span class="n">LpProblem</span><span class="p">(</span><span class="s2">&quot;Chess&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
         <span class="n">problem</span> <span class="o">+=</span> <span class="mi">1</span>
 
@@ -622,47 +649,49 @@
                     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">s</span><span class="p">,</span> <span class="n">prev_c</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
                 <span class="p">])</span>
 
-                <span class="n">max_dangers_king</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces_alive</span><span class="p">[</span><span class="n">t</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">cur_c</span><span class="p">]</span>
-
                 <span class="n">problem</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="n">max_dangers_king</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">king</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">dangers</span><span class="p">,</span>
+                    <span class="mi">16</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">king</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">dangers</span><span class="p">,</span>
                     <span class="s2">&quot;No king left in check &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">((</span><span class="n">t</span><span class="p">,</span> <span class="n">prev_c</span><span class="p">,</span> <span class="n">s</span><span class="p">))</span>
                 <span class="p">)</span>
 
-        <span class="n">cur_c</span> <span class="o">=</span> <span class="n">T</span> <span class="o">%</span> <span class="mi">2</span>
-        <span class="n">prev_c</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">cur_c</span>
+        <span class="k">if</span> <span class="n">check</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cur_c</span> <span class="o">=</span> <span class="n">T</span> <span class="o">%</span> <span class="mi">2</span>
+            <span class="n">prev_c</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">cur_c</span>
 
-        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">64</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">64</span><span class="p">):</span>
 
-            <span class="n">current_dangers</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">attacks</span><span class="p">[</span><span class="n">T</span><span class="p">][</span><span class="n">s</span><span class="p">,</span> <span class="n">prev_c</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">n_ind</span><span class="p">]</span> <span class="o">*</span> <span class="n">z</span><span class="p">[(</span><span class="n">prev_c</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">)]</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">major_piece_numbers</span> <span class="o">+</span> <span class="n">promoted_numbers</span>
-                <span class="k">for</span> <span class="p">(</span><span class="n">n_ind</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">major_piece_natures</span><span class="p">)</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attacks</span><span class="p">[</span><span class="n">T</span><span class="p">][</span><span class="n">s</span><span class="p">,</span> <span class="n">prev_c</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">n_ind</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
-            <span class="p">])</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">([</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">attacks</span><span class="p">[</span><span class="n">T</span><span class="p">][</span><span class="n">s</span><span class="p">,</span> <span class="n">prev_c</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">pawn_numbers</span>
-            <span class="p">])</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attacks</span><span class="p">[</span><span class="n">T</span><span class="p">][</span><span class="n">s</span><span class="p">,</span> <span class="n">prev_c</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">T</span><span class="p">][</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_c</span><span class="p">,</span> <span class="n">major_piece_numbers</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mf">0.5</span><span class="p">:</span>
+                    <span class="k">continue</span>
 
-            <span class="n">current_king</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">T</span><span class="p">][</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_c</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">z</span><span class="p">[(</span><span class="n">cur_c</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">)]</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">major_piece_numbers</span>
-                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">T</span><span class="p">][</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_c</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
-            <span class="p">])</span>
+                <span class="n">current_dangers</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attacks</span><span class="p">[</span><span class="n">T</span><span class="p">][</span><span class="n">s</span><span class="p">,</span> <span class="n">prev_c</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">n_ind</span><span class="p">]</span> <span class="o">*</span> <span class="n">z</span><span class="p">[(</span><span class="n">prev_c</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span><span class="p">)]</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">major_piece_numbers</span> <span class="o">+</span> <span class="n">promoted_numbers</span>
+                    <span class="k">for</span> <span class="p">(</span><span class="n">n_ind</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">major_piece_natures</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">attacks</span><span class="p">[</span><span class="n">T</span><span class="p">][</span><span class="n">s</span><span class="p">,</span> <span class="n">prev_c</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">n_ind</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
+                <span class="p">])</span> <span class="o">+</span> <span class="nb">sum</span><span class="p">([</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">attacks</span><span class="p">[</span><span class="n">T</span><span class="p">][</span><span class="n">s</span><span class="p">,</span> <span class="n">prev_c</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">pawn_numbers</span>
+                <span class="p">])</span>
 
-            <span class="k">if</span> <span class="n">check</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">current_king</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">([</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">T</span><span class="p">][</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_c</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="n">z</span><span class="p">[(</span><span class="n">cur_c</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s2">&quot;K&quot;</span><span class="p">)]</span>
+                    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">major_piece_numbers</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">positions</span><span class="p">[</span><span class="n">T</span><span class="p">][</span><span class="n">s</span><span class="p">,</span> <span class="n">cur_c</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.5</span>
+                <span class="p">])</span>
 
-                <span class="n">problem</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="n">king</span> <span class="o">&gt;=</span> <span class="n">dangers</span><span class="p">,</span>
-                    <span class="s2">&quot;Current king in check &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">cur_c</span><span class="p">))</span>
-                <span class="p">)</span>
+                <span class="k">if</span> <span class="n">check</span> <span class="o">==</span> <span class="kc">True</span><span class="p">:</span>
+                    <span class="n">problem</span> <span class="o">+=</span> <span class="p">(</span>
+                        <span class="n">current_king</span> <span class="o">&lt;=</span> <span class="n">current_dangers</span><span class="p">,</span>
+                        <span class="s2">&quot;Current king in check &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                    <span class="p">)</span>
 
-            <span class="k">elif</span> <span class="n">check</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
-
-                <span class="n">problem</span> <span class="o">+=</span> <span class="p">(</span>
-                    <span class="mi">16</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">current_king</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">current_dangers</span><span class="p">,</span>
-                    <span class="s2">&quot;Current king not in check &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">((</span><span class="n">T</span><span class="p">,</span> <span class="n">cur_c</span><span class="p">))</span>
-                <span class="p">)</span>
+                <span class="k">elif</span> <span class="n">check</span> <span class="o">==</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="n">problem</span> <span class="o">+=</span> <span class="p">(</span>
+                        <span class="mi">16</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">current_king</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">current_dangers</span><span class="p">,</span>
+                        <span class="s2">&quot;Current king not in check &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+                    <span class="p">)</span>
 
         <span class="n">status</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">solve</span><span class="p">()</span>
 
@@ -806,7 +835,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">delete_move_from_history</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">piece</span><span class="p">,</span> <span class="n">target_piece</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="n">status</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">status</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">error</span> <span class="o">=</span> <span class="p">(</span>
                 <span class="s2">&quot;Trying to perform a move that is illegal for any &quot;</span> <span class="o">+</span>
                 <span class="s2">&quot;initial piece configuration&quot;</span>
@@ -836,7 +865,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">update_guess</span><span class="p">(</span><span class="n">problem</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="ChessBoard.move"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.move">[docs]</a>    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">):</span>
+<div class="viewcode-block" id="ChessBoard.move"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.move">[docs]</a>    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">disp</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Test and perform a move.</span>
 
@@ -844,35 +873,49 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">problem</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">test_move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">full_result</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">perform_move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">problem</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">disp</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">(</span><span class="n">guess</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span>
         <span class="k">return</span> <span class="kc">True</span></div>
 
-<div class="viewcode-block" id="ChessBoard.legal_moves_from"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.legal_moves_from">[docs]</a>    <span class="k">def</span> <span class="nf">legal_moves_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">):</span>
+<div class="viewcode-block" id="ChessBoard.legal_moves_from_gen"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.legal_moves_from_gen">[docs]</a>    <span class="k">def</span> <span class="nf">legal_moves_from_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Search all legal moves starting from a given square.&quot;&quot;&quot;</span>
-        <span class="n">legal_arrivals</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">illegal_arrivals</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">x2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">y2</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
-                <span class="k">try</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">test_move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">full_result</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-                    <span class="n">legal_arrivals</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">))</span>
-                <span class="k">except</span> <span class="n">IllegalMove</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-                    <span class="n">illegal_arrivals</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">e</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">legal_arrivals</span></div>
+        <span class="n">X2</span><span class="p">,</span> <span class="n">Y2</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">couples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">X2</span><span class="p">,</span> <span class="n">Y2</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="ow">in</span> <span class="n">couples</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">test_move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">full_result</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">IllegalMove</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ChessBoard.all_legal_moves_gen"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.all_legal_moves_gen">[docs]</a>    <span class="k">def</span> <span class="nf">all_legal_moves_gen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Search all legal move at a given turn.&quot;&quot;&quot;</span>
+        <span class="n">X1</span><span class="p">,</span> <span class="n">Y1</span><span class="p">,</span> <span class="n">X2</span><span class="p">,</span> <span class="n">Y2</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">quadruples</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">permutation</span><span class="p">(</span>
+            <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="n">X1</span><span class="p">,</span> <span class="n">Y1</span><span class="p">,</span> <span class="n">X2</span><span class="p">,</span> <span class="n">Y2</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="ow">in</span> <span class="n">quadruples</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">test_move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">full_result</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">yield</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">IllegalMove</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="ChessBoard.legal_moves_from"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.legal_moves_from">[docs]</a>    <span class="k">def</span> <span class="nf">legal_moves_from</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">legal_moves_from_gen</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="ChessBoard.all_legal_moves"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.all_legal_moves">[docs]</a>    <span class="k">def</span> <span class="nf">all_legal_moves</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Search all legal move at a given turn.&quot;&quot;&quot;</span>
-        <span class="n">legal_moves</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">x1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">y1</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
-                <span class="k">for</span> <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">legal_moves_from</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">):</span>
-                    <span class="n">legal_moves</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">))</span>
-        <span class="k">return</span> <span class="n">legal_moves</span></div>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">all_legal_moves_gen</span><span class="p">()))</span></div>
 
-<div class="viewcode-block" id="ChessBoard.auto_move"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.auto_move">[docs]</a>    <span class="k">def</span> <span class="nf">auto_move</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ChessBoard.auto_move"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.auto_move">[docs]</a>    <span class="k">def</span> <span class="nf">auto_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">intelligent</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Perform one of the legal moves at random.&quot;&quot;&quot;</span>
-        <span class="n">legal_moves</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_legal_moves</span><span class="p">()</span>
-        <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">legal_moves</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_legal_moves_gen</span><span class="p">()</span><span class="o">.</span><span class="fm">__next__</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span>
+        <span class="k">except</span> <span class="ne">StopIteration</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Game over - &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_game</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="ChessBoard.is_legal_nature"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.is_legal_nature">[docs]</a>    <span class="k">def</span> <span class="nf">is_legal_nature</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">piece</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Check if, given the current history, piece could have nature n.&quot;&quot;&quot;</span>
@@ -904,45 +947,114 @@
             <span class="k">return</span> <span class="s2">&quot;Legal moves still exist&quot;</span>
         <span class="n">problem1</span><span class="p">,</span> <span class="n">status1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantum_explanation</span><span class="p">(</span><span class="n">check</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">problem2</span><span class="p">,</span> <span class="n">status2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantum_explanation</span><span class="p">(</span><span class="n">check</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">checkmate_possible</span> <span class="o">=</span> <span class="n">status1</span> <span class="o">==</span> <span class="mi">1</span>
-        <span class="n">stalemate_possible</span> <span class="o">=</span> <span class="n">status2</span> <span class="o">==</span> <span class="mi">2</span>
+        <span class="n">checkmate_possible</span> <span class="o">=</span> <span class="p">(</span><span class="n">status1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">stalemate_possible</span> <span class="o">=</span> <span class="p">(</span><span class="n">status2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">checkmate_possible</span> <span class="ow">and</span> <span class="n">stalemate_possible</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;Result unclear&quot;</span>
         <span class="k">elif</span> <span class="n">checkmate_possible</span><span class="p">:</span>
             <span class="k">return</span> <span class="s2">&quot;Current player checkmated&quot;</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="s2">&quot;Stalemate&quot;</span></div></div>
+            <span class="k">return</span> <span class="s2">&quot;Stalemate&quot;</span></div>
+
+<div class="viewcode-block" id="ChessBoard.translate_move"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.translate_move">[docs]</a>    <span class="k">def</span> <span class="nf">translate_move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">move</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">move</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">move</span>
+            <span class="n">a</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">97</span> <span class="o">+</span> <span class="n">x1</span><span class="p">)</span>
+            <span class="n">b</span> <span class="o">=</span> <span class="nb">chr</span><span class="p">(</span><span class="mi">97</span> <span class="o">+</span> <span class="n">x2</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">a</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span> <span class="n">b</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">y2</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">move</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="n">first_square</span><span class="p">,</span> <span class="n">last_square</span> <span class="o">=</span> <span class="n">move</span>
+            <span class="n">x1</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="n">first_square</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">97</span>
+            <span class="n">y1</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">first_square</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">x2</span> <span class="o">=</span> <span class="nb">ord</span><span class="p">(</span><span class="n">last_square</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">-</span> <span class="mi">97</span>
+            <span class="n">y2</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">last_square</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChessBoard.one_player_game"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.one_player_game">[docs]</a>    <span class="k">def</span> <span class="nf">one_player_game</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">())</span>
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">time</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The computer is playing&quot;</span><span class="p">)</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">auto_move</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">disp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">StopIteration</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+                    <span class="k">return</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">valid_player_move</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">while</span> <span class="ow">not</span> <span class="n">valid_player_move</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;You have not entered a valid move yet&quot;</span><span class="p">)</span>
+
+                    <span class="n">stop</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Stop? [y/n] &quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">stop</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+                        <span class="k">return</span>
+
+                    <span class="n">list_moves</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;List possible moves [y/n] &quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">list_moves</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+                        <span class="n">legal_moves</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">all_legal_moves</span><span class="p">()</span>
+                        <span class="nb">print</span><span class="p">([</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">translate_move</span><span class="p">(</span><span class="n">move</span><span class="p">)</span>
+                            <span class="k">for</span> <span class="n">move</span> <span class="ow">in</span> <span class="n">legal_moves</span>
+                        <span class="p">])</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">legal_moves</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_game</span><span class="p">())</span>
+                            <span class="k">return</span>
+
+                    <span class="n">first_square</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Go from &quot;</span><span class="p">)</span>
+                    <span class="n">last_square</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;...to &quot;</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">first_square</span> <span class="o">+</span> <span class="n">last_square</span><span class="p">)</span><span class="o">.</span><span class="n">isalnum</span><span class="p">():</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;This move is not a chess move&quot;</span><span class="p">)</span>
+                    <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">translate_move</span><span class="p">(</span>
+                        <span class="p">(</span><span class="n">first_square</span><span class="p">,</span> <span class="n">last_square</span><span class="p">)</span>
+                    <span class="p">)</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">disp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                        <span class="n">valid_player_move</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="k">except</span> <span class="n">IllegalMove</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="LightBoard"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.LightBoard">[docs]</a><span class="k">class</span> <span class="nc">LightBoard</span><span class="p">():</span>
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">major_piece_natures</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">6</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">7</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">major_piece_natures</span><span class="p">)</span>
-
-<div class="viewcode-block" id="LightBoard.clean"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.LightBoard.clean">[docs]</a>    <span class="k">def</span> <span class="nf">clean</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">board</span> <span class="o">=</span> <span class="p">[[</span><span class="kc">None</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">)]</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;natures&quot;</span><span class="p">:</span> <span class="n">major_piece_natures</span><span class="p">})</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;natures&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]})</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;natures&quot;</span><span class="p">:</span> <span class="n">major_piece_natures</span><span class="p">})</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;natures&quot;</span><span class="p">:</span> <span class="n">major_piece_natures</span><span class="p">})</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;natures&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;P&quot;</span><span class="p">]})</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;natures&quot;</span><span class="p">:</span> <span class="n">major_piece_natures</span><span class="p">})</span>
 
 <div class="viewcode-block" id="LightBoard.move"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.LightBoard.move">[docs]</a>    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">):</span>
-        <span class="n">piece</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPiece</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">piece</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">natures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">possibleNaturesFromMove</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">piece</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">piece</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPieceIndex</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">piece</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="n">natures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">possibleNaturesFromMove</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">piece</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">],</span> <span class="n">piece</span><span class="p">[</span><span class="s2">&quot;natures&quot;</span><span class="p">])</span>
             <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">natures</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setPiece</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">piece</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">natures</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">[</span><span class="n">x1</span><span class="p">][</span><span class="n">y1</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="c1"># Mark the target box as a dead piece if necessary</span>
+            <span class="n">j</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPieceIndex</span><span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">piece2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">setPiece</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">piece2</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">],</span> <span class="kc">False</span><span class="p">,</span> <span class="n">piece2</span><span class="p">[</span><span class="s2">&quot;natures&quot;</span><span class="p">])</span>
+            <span class="c1"># Move the main piece</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">setPiece</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">piece</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">],</span> <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">),</span> <span class="n">natures</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
                 <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
                     <span class="k">if</span> <span class="n">x</span> <span class="o">!=</span> <span class="n">x2</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">!=</span> <span class="n">y2</span><span class="p">:</span>
-                        <span class="n">piece</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPiece</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
-                        <span class="k">if</span> <span class="n">piece</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">piece</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                                <span class="bp">self</span><span class="o">.</span><span class="n">setPiece</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">piece</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;E&quot;</span><span class="p">)</span></div>
+                        <span class="n">k</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">getPieceIndex</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="n">k</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                            <span class="n">piece</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">k</span><span class="p">]</span>
+                            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">piece</span><span class="p">[</span><span class="s2">&quot;natures&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">setPiece</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">piece</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">],</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="s2">&quot;E&quot;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="LightBoard.possibleNaturesFromMove"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.LightBoard.possibleNaturesFromMove">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">possibleNaturesFromMove</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span>  <span class="n">natures</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">possibleNaturesFromMove</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">natures</span><span class="p">):</span>
         <span class="n">h</span> <span class="o">=</span> <span class="n">x2</span> <span class="o">-</span> <span class="n">x1</span>
         <span class="n">v</span> <span class="o">=</span> <span class="n">y2</span> <span class="o">-</span> <span class="n">y1</span>
         <span class="n">output_natures</span> <span class="o">=</span> <span class="p">[]</span>
@@ -974,74 +1086,69 @@
 
         <span class="k">return</span> <span class="n">output_natures</span></div>
 
-<div class="viewcode-block" id="LightBoard.setPiece"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.LightBoard.setPiece">[docs]</a>    <span class="k">def</span> <span class="nf">setPiece</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span>  <span class="n">natures</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">color</span><span class="p">,</span> <span class="n">natures</span><span class="p">)</span></div>
+<div class="viewcode-block" id="LightBoard.setPiece"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.LightBoard.setPiece">[docs]</a>    <span class="k">def</span> <span class="nf">setPiece</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">natures</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;i is the index of the piece in self.pieces (same as ChessBoard.pieces)&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;position&quot;</span><span class="p">:</span> <span class="n">position</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">color</span><span class="p">,</span> <span class="s2">&quot;natures&quot;</span><span class="p">:</span> <span class="n">natures</span><span class="p">}</span></div>
 
 <div class="viewcode-block" id="LightBoard.getPiece"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.LightBoard.getPiece">[docs]</a>    <span class="k">def</span> <span class="nf">getPiece</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span></div>
+        <span class="k">for</span> <span class="n">piece</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">:</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">piece</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">piece</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">piece</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">a</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">==</span> <span class="n">b</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">piece</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="LightBoard.getPieceIndex"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.LightBoard.getPieceIndex">[docs]</a>    <span class="k">def</span> <span class="nf">getPieceIndex</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">piece</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pieces</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">piece</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">piece</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">False</span><span class="p">):</span>
+                <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">piece</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span>
+                <span class="k">if</span> <span class="n">x</span> <span class="o">==</span> <span class="n">a</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">==</span> <span class="n">b</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="n">i</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+<div class="viewcode-block" id="LightBoard.getDeadPieces"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.LightBoard.getDeadPieces">[docs]</a>    <span class="k">def</span> <span class="nf">getDeadPieces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span> <span class="k">if</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">color</span> <span class="ow">and</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;position&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span><span class="p">]</span></div>
 
 <div class="viewcode-block" id="LightBoard.wrapUp"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.LightBoard.wrapUp">[docs]</a>    <span class="k">def</span> <span class="nf">wrapUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">wrap</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
-            <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">8</span><span class="p">):</span>
-                <span class="n">piece</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="n">y</span><span class="p">]</span>
-                <span class="n">color</span> <span class="o">=</span> <span class="n">piece</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-                <span class="n">natures</span> <span class="o">=</span> <span class="n">piece</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-                <span class="n">wrap</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">x</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">y</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="n">color</span><span class="p">,</span> <span class="s2">&quot;natures&quot;</span><span class="p">:</span> <span class="n">natures</span><span class="p">})</span>
-        <span class="k">return</span> <span class="n">wrap</span></div>
+        <span class="k">return</span> <span class="n">pieces</span></div>
 
 <div class="viewcode-block" id="LightBoard.unwrap"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.LightBoard.unwrap">[docs]</a>    <span class="k">def</span> <span class="nf">unwrap</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wrap</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">clean</span><span class="p">()</span>
-        <span class="k">for</span> <span class="n">piece</span> <span class="ow">in</span> <span class="n">wrap</span><span class="p">:</span>
-            <span class="n">x</span> <span class="o">=</span> <span class="n">piece</span><span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">]</span>
-            <span class="n">y</span> <span class="o">=</span> <span class="n">piece</span><span class="p">[</span><span class="s2">&quot;y&quot;</span><span class="p">]</span>
-            <span class="n">color</span> <span class="o">=</span> <span class="n">piece</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
-            <span class="n">natures</span> <span class="o">=</span> <span class="n">piece</span><span class="p">[</span><span class="s2">&quot;nature&quot;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">setPiece</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">natures</span><span class="p">)</span></div></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pieces</span> <span class="o">=</span> <span class="n">wrap</span></div></div>
 
 
 <div class="viewcode-block" id="main"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.chess.main">[docs]</a><span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Main.&quot;&quot;&quot;</span>
     <span class="n">cb</span> <span class="o">=</span> <span class="n">ChessBoard</span><span class="p">()</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
-
-    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
-
-    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
-
-    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
-
-    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
-
-    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">cb</span><span class="p">)</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="n">cb</span><span class="o">.</span><span class="n">all_legal_moves</span><span class="p">())</span></div>
+    <span class="n">cb</span><span class="o">.</span><span class="n">one_player_game</span><span class="p">()</span></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">cb</span> <span class="o">=</span> <span class="n">ChessBoard</span><span class="p">()</span>
     <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
     <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
-    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-
-    <span class="n">piece</span> <span class="o">=</span> <span class="n">cb</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="mi">3</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
-    <span class="n">piece</span><span class="o">.</span><span class="n">possible_natures</span>
-    <span class="n">cb</span><span class="o">.</span><span class="n">all_legal_natures</span><span class="p">(</span><span class="n">piece</span><span class="p">)</span>
-    <span class="c1"># import cProfile</span>
-    <span class="c1"># import pstats</span>
-    <span class="c1">#</span>
-    <span class="c1"># cProfile.run(&quot;main()&quot;, &quot;stats&quot;)</span>
-    <span class="c1"># p = pstats.Stats(&quot;stats&quot;)</span>
-    <span class="c1"># p.strip_dirs().sort_stats(&quot;cumtime&quot;).print_stats()</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+    <span class="n">cb</span><span class="o">.</span><span class="n">display_guess</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">cb</span><span class="o">.</span><span class="n">end_game</span><span class="p">())</span>
 </pre></div>
 
            </div>
@@ -1054,7 +1161,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2018, G. Dalle &amp; M. Godin &amp; C. Mantoux.
+        &copy; Copyright 2018, G. Dalle &amp; M. Godin &amp; C. Mantoux
 
     </p>
   </div>
@@ -1071,33 +1178,16 @@
   
 
 
-  
-
-    <script type="text/javascript">
-        var DOCUMENTATION_OPTIONS = {
-            URL_ROOT:'../../',
-            VERSION:'',
-            LANGUAGE:'None',
-            COLLAPSE_INDEX:false,
-            FILE_SUFFIX:'.html',
-            HAS_SOURCE:  true,
-            SOURCELINK_SUFFIX: '.txt'
-        };
-    </script>
-      <script type="text/javascript" src="../../_static/jquery.js"></script>
-      <script type="text/javascript" src="../../_static/underscore.js"></script>
-      <script type="text/javascript" src="../../_static/doctools.js"></script>
-      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-
-  
-
-  <script type="text/javascript" src="../../_static/js/theme.js"></script>
-
   <script type="text/javascript">
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
+
+  
+  
+    
+   
 
 </body>
 </html>
