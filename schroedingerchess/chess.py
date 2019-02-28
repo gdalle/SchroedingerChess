@@ -91,7 +91,7 @@ class ChessPiece():
                 " " * (2 - len(str(self.number)))
             )
         elif guess:
-            return color_nature_to_icon[self.color][self.nature_guess]
+            return color_nature_to_icon[self.color][self.nature_guess] + " "
             return (
                 color_name +
                 self.nature_guess + " "
@@ -768,7 +768,7 @@ class ChessBoard():
             x1, y1, x2, y2 = self.all_legal_moves_gen().__next__()
             return x1, y1, x2, y2
         except StopIteration:
-            raise ValueError("Game over - " + self.end_game())
+            raise IllegalMove("Game over - " + self.end_game())
 
     def is_legal_nature(self, piece, n):
         """Check if, given the current history, piece could have nature n."""
@@ -941,7 +941,13 @@ class LightBoard():
 
     def setPiece(self, i, color, position, natures):
         """i is the index of the piece in self.pieces (same as ChessBoard.pieces)"""
-        self.pieces[i] = {"position": position, "color": color, "natures": natures}
+        if position is not None and position is not False:
+            position = (int(position[0]), int(position[1]))
+        self.pieces[i] = {
+            "position": position,
+            "color": int(color),
+            "natures": natures
+        }
 
     def getPiece(self, x, y):
         for piece in self.pieces:
@@ -963,7 +969,7 @@ class LightBoard():
         return [p for p in self.pieces if p["color"] == color and p["position"] == False]
 
     def wrapUp(self):
-        return pieces
+        return self.pieces
 
     def unwrap(self, wrap):
         self.pieces = wrap

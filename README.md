@@ -10,8 +10,7 @@ To run the code, you first need to install a few dependencies:
 ```
 conda create -n chess python=3.6
 conda activate chess
-python3 -m pip install -U pygame --user
-pip install pulp twisted
+pip install numpy pulp twisted pygame
 ```
 
 Then, all it takes to play a game is to execute `python run.py`.

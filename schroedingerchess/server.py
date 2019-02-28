@@ -1,14 +1,18 @@
 from twisted.internet.protocol import Protocol, Factory
 from twisted.internet import reactor
 from twisted.internet.endpoints import TCP4ServerEndpoint
+from twisted.internet.defer import inlineCallbacks, Deferred
 
 from chess import ChessBoard, LightBoard, IllegalMove
 
 import json
+import time
 
 
 class ChessServerProtocol(Protocol):
-    """ Class to handles the communication protocol with a game client."""
+    """
+    Class to handles the communication protocol with a game client.
+    """
 
     def __init__(self):
         self.player_id = None
@@ -20,54 +24,17 @@ class ChessServerProtocol(Protocol):
         """
         Sends the game information when a new client is connected.
         """
-        self.status = "GREETING"
+        self.state = "GREETING"
+
+        self.player_id = self.factory.addWaitingPlayer(self)
+        print("Player {} connected".format(self.player_id))
 
         msg = {"type": "greetings"}
-
-        msg["player_id"] = player_id
-
+        msg["player_id"] = self.player_id
         msg["greetings"] = "looking forward hearing from you"
-
-        player_id = self.factory.addWaitingPlayer(self)
-
         self.sendMessage(msg)
 
-        # self.game_id = self.factory.currentIndex
-        # msg["game_id"] = self.game_id # game_id associated to the new client
-
-        # if self.factory.waitingGame == None: # if no game is waiting
-        #     self.factory.waitingGame = Game(self, self.factory.currentIndex) # create a new game
-        #     self.color = 0 # the connected client will be the whites
-        #     msg["color"] = self.color
-        #     self.game = self.factory.waitingGame
-        # else: # a game is waiting for the blacks
-        #     self.factory.waitingGame.black = self # set the second player
-        #     self.factory.waitingGame.player0.notifyReady() # notify the first player that the game is ready
-        #     self.factory.waitingGame.ready = True # set the game to be ready
-        #     self.game = self.factory.waitingGame
-        #     self.factory.games.append(self.factory.waitingGame) # append the game to the list of games
-        #     self.factory.waitingGame = None # flush the game just pushed in the list of games
-        #     self.factory.currentIndex += 1 # increment the game index
-        #     self.color = 1 # the connected player will be player 2
-        #     msg["color"] = self.player
-
-        # self.sendMessage(msg, self.color)
-        # if self.game.ready
-        #     msg_for_both = {"type" : "ready", "status" : True}
-        #     self.sendMessageToAll(msg_for_both)
-        # else:
-        #     msg = {"type" : "ready", "status" : False}
-        #     self.sendMessage(msg, self.color)
-
-        self.status = "WAITING_FOR_GREETINGS"
-
-    # def notifyReady(self):
-    #     """
-    #     Notifies the client that the game is ready.
-    #     """
-    #     self.state = "PLAYING"
-    #     msg = {"type" : "ready" , "status" : True}
-    #     self.sendMessage(msg)
+        self.state = "WAITING_FOR_GREETINGS"
 
     def sendMessage(self, msg):
         """
@@ -82,7 +49,7 @@ class ChessServerProtocol(Protocol):
         :param msg: A dictionary representing a message.
         """
         if self.game is not None:
-            self.game.sendMessageToAll(self)
+            self.game.sendMessageToAll(msg)
         else:
             raise RuntimeError("trying to send a message when the game is not created / over")
 
@@ -101,24 +68,34 @@ class ChessServerProtocol(Protocol):
         Handles the reception of data by the server
         :param data: A byte representing a JSON-encoded object (default encoding UTF-8)
         """
-        msg = json.loads(data.decode())
-        if self.state == "GREETING":
-            raise RuntimeError("Should no happen.")
-        elif self.state == "WAITING_FOR_GREETINGS":
-            if msg["type"] == "greetings":
-                self.handleGreetings[msg]
-        elif self.state == "PLAYING":
-            if msg["type"] == "move":
-                self.handleMove(msg)
-            elif msg["type"] == "chat":
-                self.sendMessageToOther({"type": "chat", "content": msg["content"]})
-        else:
-            self.refuseMessage(msg)
+        # msg = json.loads(data.decode())
+        messages = self.split_messages(data)
+        update = False
+
+        for msg_json in messages:
+            msg = json.loads(msg_json)
+
+            if self.state == "GREETING":
+                raise RuntimeError("Should no happen.")
+            elif self.state == "WAITING_FOR_GREETINGS":
+                if msg["type"] == "player-info":
+                    self.handleGreetings(msg)
+            elif self.state == "PLAYING":
+                if msg["type"] == "move":
+                    self.handleMove(msg)
+                if msg["type"] == "automove":
+                    self.handleMove(msg, auto=True)
+                elif msg["type"] == "chat":
+                    self.sendMessageToOther({"type": "chat", "content": msg["content"]})
+                elif msg["type"] == "endgame":
+                    self.handleEndGame(msg["color"])
+            else:
+                self.refuseMessage(msg)
+            # TODO : reduce lightboard update delay
 
     def handleGreetings(self, msg):
         self.color = msg["color"]
         self.factory.assignColor(self.player_id, self.color)
-        # if self.
 
     def refuseMessage(self, msg):
         """
@@ -127,27 +104,63 @@ class ChessServerProtocol(Protocol):
         """
         self.sendMessage({"type": "illegal-request", "request": msg})
 
-    def handleMove(self, msg):
+    def handleMove(self, msg, auto=False):
         try:
             player = msg["color"]
-            x1, y1, x2, y2 = msg["description"]
-            game.move(x1, y1, x2, y2, player)
+            if auto:
+                move = self.game.autoMove()
+            else:
+                move = msg["description"]
+            x1, y1, x2, y2 = [int(x) for x in move]
+            self.game.move(x1, y1, x2, y2, player)
+            msg = {"type": "move", "description": (x1, y1, x2, y2)}
+            self.sendMessageToAll(msg)
+            self.game.updateLightBoard()
         except IllegalMove as e:
             msg = {"type": "illegal-move", "description": str(e)}
+            self.sendMessage(msg)
+
+    def handleEndGame(self, color):
+        if self.game is not None:
+            reactor.callLater(0, self.game.checkEnd, color)
 
     def connectionLost(self, reason):
         """
-        Handles the connection lost with the client.
+        Handles the connection lost with the client (executes automatically).
         :param reason: Reason of the disconnection
         """
-        pass
-        # TODO
+        if self.game is None:
+            self.factory.removePlayerFromWaitingList(self.player_id)
+        else:
+            # Disconnect other player and remove the game
+            self.sendMessageToOther({"type": "chat", "content": "Other player disconnected"})
+            time.sleep(0.5)
+            self.game.disconnectPlayers()
+            self.factory.removeGame(self.game_id)
+        print("Player {} disconnected".format(self.player_id))
+
+    def disconnect(self):
+        """ Disconnect current player / protocol """
+        self.transport.loseConnection()
+
+    def split_messages(self, data):
+        messages = []
+        split = data.decode().split("}{")
+        if len(split) == 1:
+            return split
+        for i, sp in enumerate(split):
+            m = sp
+            if i > 0:
+                m = "{" + m
+            if i < len(split)-1:
+                m = m + "}"
+            messages.append(m)
+        return messages
 
 
 class ChessServer(Factory):
-
     """
-    Game server.
+    Game server : produces a new ChessServerProtocol each time a client arrives
     """
 
     # This will be used by the default buildProtocol to create new protocols:
@@ -157,12 +170,12 @@ class ChessServer(Factory):
         """
         Constructor.
         """
-        self.games = []  # list of games
+        self.games = {}  # list of games
         self.waitingBlackPlayers = ([], {})  # waiting white players
         self.waitingWhitePlayers = ([], {})  # waiting black players
         self.waitingPlayers = {}  # list of waiting players
-        self.currentIndex = 0  # number of games ever launched
-        self.playerIndex = 0  # number of players ever connected
+        self.gameIndex = 0  # total number of games ever launched
+        self.playerIndex = 0  # total number of players ever connected
 
     def addWaitingPlayer(self, client):
         self.waitingPlayers[self.playerIndex] = client
@@ -187,13 +200,33 @@ class ChessServer(Factory):
         self.tryToMatchPlayers()
 
     def tryToMatchPlayers(self):
-        if len(self.waitingBlackPlayers[0]) >= 1 and len(self.waitingWhitePlayers[0] >= 1):
+        while len(self.waitingBlackPlayers[0]) >= 1 and len(self.waitingWhitePlayers[0]) >= 1:
             whites_id = self.waitingWhitePlayers[0].pop(0)
             blacks_id = self.waitingBlackPlayers[0].pop(0)
             whites_client = self.waitingWhitePlayers[1].pop(whites_id)
             blacks_client = self.waitingBlackPlayers[1].pop(blacks_id)
-            game = Game(whites_client, blacks_client, self.currentIndex)
+            game = Game(whites_client, blacks_client, self.gameIndex)
+            self.games[self.gameIndex] = game
+            print("Matched player {} and {} into game {}".format(whites_id, blacks_id, self.gameIndex))
             self.gameIndex += 1
+
+    def removePlayerFromWaitingList(self, player_id):
+        if player_id in self.waitingPlayers:
+            del self.waitingPlayers[player_id]
+        elif player_id in self.waitingWhitePlayers[0]:
+            self.waitingWhitePlayers[0].remove(player_id)
+            del self.waitingWhitePlayers[1][player_id]
+        elif player_id in self.waitingBlackPlayers[0]:
+            self.waitingBlackPlayers[0].remove(player_id)
+            del self.waitingBlackPlayers[1][player_id]
+
+    def removeGame(self, game_id):
+        try:
+            del self.games[game_id]
+            print("Terminated game {}".format(game_id))
+        except KeyError:
+            # The other player already deleted the game
+            pass
 
 
 class Game:
@@ -201,9 +234,9 @@ class Game:
     Class to represent a game instance.
     """
 
-    def __init__(self, whites, blacks, currentIndex):
-        self.game_id = currentIndex
-        self.turn = 0
+    def __init__(self, whites, blacks, gameIndex):
+        self.game_id = gameIndex
+        self.validMovesCounter = 0
         self.white = whites
         self.white.game_id = self.game_id
         self.white.game = self
@@ -213,32 +246,43 @@ class Game:
         self.chessBoard = ChessBoard()
         self.lightBoard = LightBoard()
         self.notifyReady()
-        self.ready = True
 
     def notifyReady(self):
         self.sendMessageToAll({"type": "status", "status": "ready"})
-        self.ready = True
+        self.white.state = "PLAYING"
+        self.black.state = "PLAYING"
 
     def move(self, x1, y1, x2, y2, color):
-        piece = self.chessBoard[x1][y1]
+        piece = self.chessBoard.grid[x1][y1]
         if piece is not None and piece.color is not color:
             raise IllegalMove("Trying to move a place that does not belong to the player.")
-        self.chessBoard.move(x1, y1, x2, y2)
+        self.chessBoard.move(x1, y1, x2, y2, disp=False)
         self.lightBoard.move(x1, y1, x2, y2)
-        self.updateLightBoardTask()
+        self.validMovesCounter += 1
+
+    def autoMove(self):
+        return self.chessBoard.auto_move()
+
+    def checkEnd(self, color):
+        outcome = self.chessBoard.end_game()
+        msg = {"type": "chat", "content": outcome}
+        self.sendMessageTo(msg, color)
 
     def updateLightBoardTask(self):
-        for i, piece in enumerate(self.chessBoard.pieces):
-            if piece is not None:
-                natures = self.chessBoard.all_legal_natures(piece)
-                color = piece.color
-                position = piece.position
-                self.lightBoard.setPiece(i, color, position, natures)
-        self.sendMessage(self.lightBoard.wrapUp())
+        for col in [0, 1]:
+            for i, piece in enumerate(self.chessBoard.pieces[col]):
+                if piece is not None:
+                    color = piece.color
+                    position = piece.position
+                    natures = self.chessBoard.all_legal_natures(piece)
+                    pieceIndex = i + col * 24
+                    self.lightBoard.setPiece(pieceIndex, color, position, natures)
+        msg = {"type": "lightboard", "description": self.lightBoard.wrapUp()}
+        self.sendMessageToAll(msg)
 
     def updateLightBoard(self):
         """ Schedules an update board task. """
-        reactor.callLater(0, self.updateLightBoardTask)
+        reactor.callLater(0.5, self.updateLightBoardTask)
 
     def sendMessageToAll(self, msg):
         self.white.sendMessage(msg)
@@ -251,6 +295,10 @@ class Game:
             self.black.sendMessage(msg)
         else:
             pass
+
+    def disconnectPlayers(self):
+        self.white.disconnect()
+        self.black.disconnect()
 
 
 if __name__ == '__main__':

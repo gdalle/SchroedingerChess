@@ -78,6 +78,7 @@ class ChessDisplay():
         self.gameEngine = gameEngine
 
         self.selectedBox = None  # The box which has been clicked on
+        self.last_move = (-1,-1,-1,-1) # x1, y1, x2, y2 coordinates
 
         self.flip = False  # Should the ChessBoard be upside down
 
@@ -98,9 +99,9 @@ class ChessDisplay():
         self.finishSelection = "NONE"
 
         self.name = InputBox(int(0.458 * self.width), int(0.6875 *
-                                                          self.height) - 40, int(self.width / 3), 32)
+                                                          self.height) - 40, int(self.width / 3), 32, text="lao")
         self.address = InputBox(int(0.458 * self.width), int(0.6875 *
-                                                             self.height) + 10, int(self.width / 3), 32)
+                                                             self.height) + 10, int(self.width / 3), 32, text="127.0.0.1:6000")
         self.input_boxes = [self.name, self.address]
         self.clock = pygame.time.Clock()
         self.selected_color = "W"
@@ -131,7 +132,6 @@ class ChessDisplay():
             self.mode = "ONLINE"
             self.gameEngine.setOnePlayerOnNetworkMode(name, address, color)
             self.gameEngine.makeDisplayDrawBoard()
-            self.addMessage("Starting online game")
 
     def drawBoard(self, lightBoard):
         """
@@ -150,6 +150,15 @@ class ChessDisplay():
                     pygame.draw.rect(self.screen, pygame.Color(255, 0, 0, 255), [
                         (x * self.width) // 8, (self.flipY(y) * self.height) // 8,
                         self.width // 8, self.height // 8], 5)
+
+                if self.last_move[0] >= 0: # If turn > 0
+                    x1, y1, x2, y2 = self.last_move
+                    pygame.draw.rect(self.screen, pygame.Color(0, 100, 0, 255), [
+                        (x1 * self.width) // 8, (self.flipY(y1) * self.height) // 8,
+                        self.width // 8, self.height // 8], 3)
+                    pygame.draw.rect(self.screen, pygame.Color(0, 180, 0, 255), [
+                        (x2 * self.width) // 8, (self.flipY(y2) * self.height) // 8,
+                        self.width // 8, self.height // 8], 3)
 
                 piece = lightBoard.getPiece(x, y)
                 if piece is not None:
@@ -196,6 +205,9 @@ class ChessDisplay():
         """
         self.addMessage(reason)
         self.updatePane()
+
+    def setLastMove(self, x1, y1, x2, y2):
+        self.last_move = (x1, y1, x2, y2)
 
     def update(self):
         """ Updates the frame."""
@@ -509,18 +521,15 @@ class ChessDisplay():
                                 self.gameEngine.move(x1, y1, x2, y2)
                                 self.gameEngine.makeDisplayDrawBoard()
                             else: # Online mode
-                                self.addMessage("Auto-move is not available online")
+                                self.gameEngine.autoMove()
+                                # self.addMessage("Auto-move is not available online")
                             self.automoveSelection = "HOVER"
 
                     abs_w = int(self.width + 0.5 * self.pane_width + 10)
                     abs_h = int(0.195 * self.height)
                     if mouse[0] > abs_w and mouse[0] < abs_w + w and mouse[1] > abs_h and mouse[1] < abs_h + h:
                         if self.finishSelection == "DOWN":
-                            if self.mode == "LOCAL":
-                                outcome = self.gameEngine.checkEnd()
-                                self.addMessage(outcome)
-                            else: # Online mode
-                                self.addMessage("End check is not available online yet")
+                            self.gameEngine.checkEnd()
                             self.finishSelection = "HOVER"
 
         self.white_dead = self.gameEngine.lightBoard.getDeadPieces(0)
