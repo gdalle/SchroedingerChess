@@ -26,6 +26,7 @@
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
         <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -181,17 +182,25 @@
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.all_legal_moves">all_legal_moves() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.all_legal_moves_gen">all_legal_moves_gen() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.all_legal_natures">all_legal_natures() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServer.assignColor">assignColor() (schroedingerchess.server.ChessServer method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.auto_move">auto_move() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
-      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.autoMove">autoMove() (schroedingerchess.game_engines.TwoPlayersOnOneBoard method)</a>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.autoMove">autoMove() (schroedingerchess.game_engines.OnePlayerOnNetwork method)</a>
+
+      <ul>
+        <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.autoMove">(schroedingerchess.game_engines.TwoPlayersOnOneBoard method)</a>
+</li>
+        <li><a href="source/schroedingerchess.html#schroedingerchess.server.Game.autoMove">(schroedingerchess.server.Game method)</a>
+</li>
+      </ul></li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.autoMoveTask">autoMoveTask() (schroedingerchess.game_engines.OnePlayerOnNetwork method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -201,8 +210,20 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/schroedingerchess.html#schroedingerchess.display.ChessDisplay.check_address_format">check_address_format() (schroedingerchess.display.ChessDisplay method)</a>
 </li>
-      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.checkEnd">checkEnd() (schroedingerchess.game_engines.TwoPlayersOnOneBoard method)</a>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.checkEnd">checkEnd() (schroedingerchess.game_engines.GameEngine method)</a>
+
+      <ul>
+        <li><a href="source/schroedingerchess.html#schroedingerchess.server.Game.checkEnd">(schroedingerchess.server.Game method)</a>
 </li>
+      </ul></li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.checkEndTask">checkEndTask() (schroedingerchess.game_engines.GameEngine method)</a>
+
+      <ul>
+        <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.checkEndTask">(schroedingerchess.game_engines.OnePlayerOnNetwork method)</a>
+</li>
+        <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.checkEndTask">(schroedingerchess.game_engines.TwoPlayersOnOneBoard method)</a>
+</li>
+      </ul></li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard">ChessBoard (class in schroedingerchess.chess)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.client.ChessClientProtocol">ChessClientProtocol (class in schroedingerchess.client)</a>
@@ -211,15 +232,17 @@
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessPiece">ChessPiece (class in schroedingerchess.chess)</a>
 </li>
-      <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServer">ChessServer (class in schroedingerchess.server)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServer">ChessServer (class in schroedingerchess.server)</a>
+</li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol">ChessServerProtocol (class in schroedingerchess.server)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.compute_attack">compute_attack() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.compute_position">compute_position() (schroedingerchess.chess.ChessBoard method)</a>
+</li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.connectionFailed">connectionFailed() (schroedingerchess.game_engines.OnePlayerOnNetwork method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.client.ChessClientProtocol.connectionLost">connectionLost() (schroedingerchess.client.ChessClientProtocol method)</a>
 
@@ -249,14 +272,18 @@
       </ul></li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.delete_move_from_history">delete_move_from_history() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.disconnect">disconnect() (schroedingerchess.server.ChessServerProtocol method)</a>
+</li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.server.Game.disconnectPlayers">disconnectPlayers() (schroedingerchess.server.Game method)</a>
+</li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.display_guess">display_guess() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.chess.ChessBoard.display_natures">display_natures() (schroedingerchess.chess.ChessBoard method)</a>
 </li>
-      <li><a href="source/schroedingerchess.html#schroedingerchess.display.InputBox.draw">draw() (schroedingerchess.display.InputBox method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.display.InputBox.draw">draw() (schroedingerchess.display.InputBox method)</a>
+</li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.display.ChessDisplay.draw_piece">draw_piece() (schroedingerchess.display.ChessDisplay method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.display.ChessDisplay.drawBoard">drawBoard() (schroedingerchess.display.ChessDisplay method)</a>
@@ -321,6 +348,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/schroedingerchess.html#schroedingerchess.display.InputBox.handle_event">handle_event() (schroedingerchess.display.InputBox method)</a>
 </li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.handleCheckMates">handleCheckMates() (schroedingerchess.game_engines.OnePlayerOnNetwork method)</a>
+</li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.handleChecks">handleChecks() (schroedingerchess.game_engines.OnePlayerOnNetwork method)</a>
+</li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.handleDisconnection">handleDisconnection() (schroedingerchess.game_engines.OnePlayerOnNetwork method)</a>
+</li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.handleEndGame">handleEndGame() (schroedingerchess.server.ChessServerProtocol method)</a>
+</li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.handleGreetings">handleGreetings() (schroedingerchess.server.ChessServerProtocol method)</a>
 </li>
   </ul></td>
@@ -331,7 +366,17 @@
         <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.handleIllegalMove">(schroedingerchess.game_engines.GameEngine method)</a>
 </li>
       </ul></li>
-      <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.handleMove">handleMove() (schroedingerchess.server.ChessServerProtocol method)</a>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.handleInit">handleInit() (schroedingerchess.game_engines.OnePlayerOnNetwork method)</a>
+</li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.handleMove">handleMove() (schroedingerchess.game_engines.OnePlayerOnNetwork method)</a>
+
+      <ul>
+        <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.handleMove">(schroedingerchess.server.ChessServerProtocol method)</a>
+</li>
+      </ul></li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.handleReady">handleReady() (schroedingerchess.game_engines.OnePlayerOnNetwork method)</a>
+</li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.handleUpdateBoard">handleUpdateBoard() (schroedingerchess.game_engines.OnePlayerOnNetwork method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -396,6 +441,8 @@
       <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.moveTask">moveTask() (schroedingerchess.game_engines.GameEngine method)</a>
 
       <ul>
+        <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.moveTask">(schroedingerchess.game_engines.OnePlayerOnNetwork method)</a>
+</li>
         <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.moveTask">(schroedingerchess.game_engines.TwoPlayersOnOneBoard method)</a>
 </li>
       </ul></li>
@@ -463,8 +510,12 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.refuseMessage">refuseMessage() (schroedingerchess.server.ChessServerProtocol method)</a>
 </li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServer.removeGame">removeGame() (schroedingerchess.server.ChessServer method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServer.removePlayerFromWaitingList">removePlayerFromWaitingList() (schroedingerchess.server.ChessServer method)</a>
+</li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.resume">resume() (schroedingerchess.game_engines.GameEngine method)</a>
 </li>
   </ul></td>
@@ -501,9 +552,11 @@
         <li><a href="source/schroedingerchess.html#schroedingerchess.server.Game.sendMessageToAll">(schroedingerchess.server.Game method)</a>
 </li>
       </ul></li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.sendMessageToOther">sendMessageToOther() (schroedingerchess.server.ChessServerProtocol method)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.sendMessageToOther">sendMessageToOther() (schroedingerchess.server.ChessServerProtocol method)</a>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.display.ChessDisplay.setLastMove">setLastMove() (schroedingerchess.display.ChessDisplay method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.display.ChessDisplay.setMenuMode">setMenuMode() (schroedingerchess.display.ChessDisplay method)</a>
 </li>
@@ -521,7 +574,15 @@
         <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.setTwoPlayersOnOneBoardMode">(schroedingerchess.game_engines.GameEngine method)</a>
 </li>
       </ul></li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.client.ChessClientProtocol.split_messages">split_messages() (schroedingerchess.client.ChessClientProtocol method)</a>
+
+      <ul>
+        <li><a href="source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.split_messages">(schroedingerchess.server.ChessServerProtocol method)</a>
+</li>
+      </ul></li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.start">start() (schroedingerchess.game_engines.GameEngine method)</a>
+</li>
+      <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.startFromEngine">startFromEngine() (schroedingerchess.game_engines.GameEngine method)</a>
 </li>
       <li><a href="source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.stop">stop() (schroedingerchess.game_engines.GameEngine method)</a>
 </li>

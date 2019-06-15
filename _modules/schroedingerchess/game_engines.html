@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -146,11 +147,8 @@
             
   <h1>Source code for schroedingerchess.game_engines</h1><div class="highlight"><pre>
 <span></span><span class="kn">from</span> <span class="nn">twisted.internet.task</span> <span class="k">import</span> <span class="n">LoopingCall</span>
-
 <span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="k">import</span> <span class="n">inlineCallbacks</span><span class="p">,</span> <span class="n">Deferred</span>
-
 <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="n">reactor</span>
-
 <span class="kn">from</span> <span class="nn">twisted.python</span> <span class="k">import</span> <span class="n">log</span>
 
 <span class="kn">from</span> <span class="nn">display</span> <span class="k">import</span> <span class="n">ChessDisplay</span>
@@ -161,12 +159,14 @@
 
 <span class="kn">from</span> <span class="nn">twisted.internet.endpoints</span> <span class="k">import</span> <span class="n">TCP4ClientEndpoint</span><span class="p">,</span> <span class="n">connectProtocol</span>
 
+<span class="kn">import</span> <span class="nn">time</span>
+
 <span class="n">FRAME_PER_SECOND</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">CONNECTION_WAITING_TIME</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># seconds</span>
 
 
 <div class="viewcode-block" id="GameEngine"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine">[docs]</a><span class="k">class</span> <span class="nc">GameEngine</span><span class="p">():</span>
-
+    <span class="c1"># TODO fix JSON encore / decode error</span>
 <div class="viewcode-block" id="GameEngine.start"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.start">[docs]</a>    <span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Starts the game engine. Create the window and initiate the reaction loop.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span> <span class="o">=</span> <span class="n">LightBoard</span><span class="p">()</span>
@@ -175,10 +175,17 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">loopingCall</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">FRAME_PER_SECOND</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">err</span><span class="p">)</span>
         <span class="n">reactor</span><span class="o">.</span><span class="n">run</span><span class="p">()</span></div>
 
+<div class="viewcode-block" id="GameEngine.startFromEngine"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.startFromEngine">[docs]</a>    <span class="k">def</span> <span class="nf">startFromEngine</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">engine</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Starts the game engine. Create the window and initiate the reaction loop.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span> <span class="o">=</span> <span class="n">LightBoard</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">display</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">loopingCall</span> <span class="o">=</span> <span class="n">engine</span><span class="o">.</span><span class="n">loopingCall</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resume</span><span class="p">()</span></div>
+
 <div class="viewcode-block" id="GameEngine.stop"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.stop">[docs]</a>    <span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Stops the game engine.&quot;&quot;&quot;</span>
         <span class="c1"># self.loopingCall.stop() # causing an unhandled error and don&#39;t seem necessary</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># self.display = None</span>
         <span class="n">reactor</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GameEngine.suspend"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.suspend">[docs]</a>    <span class="k">def</span> <span class="nf">suspend</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -198,7 +205,7 @@
 <div class="viewcode-block" id="GameEngine.setOnePlayerOnNetworkMode"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.setOnePlayerOnNetworkMode">[docs]</a>    <span class="k">def</span> <span class="nf">setOnePlayerOnNetworkMode</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Sets the engine on the one-player-on-network mode.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">suspend</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">gameEngine</span> <span class="o">=</span> <span class="n">OnePlayerOnNetwork</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">address</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">gameEngine</span> <span class="o">=</span> <span class="n">OnePlayerOnNetwork</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">address</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">gameEngine</span><span class="o">.</span><span class="n">resume</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="GameEngine.moveTask"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.moveTask">[docs]</a>    <span class="k">def</span> <span class="nf">moveTask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">):</span>
@@ -208,6 +215,14 @@
 <div class="viewcode-block" id="GameEngine.move"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.move">[docs]</a>    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Schedules a move task. &quot;&quot;&quot;</span>
         <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">moveTask</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GameEngine.checkEndTask"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.checkEndTask">[docs]</a>    <span class="k">def</span> <span class="nf">checkEndTask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Task to perform to check whether the game has ended.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+<div class="viewcode-block" id="GameEngine.checkEnd"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.checkEnd">[docs]</a>    <span class="k">def</span> <span class="nf">checkEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Schedules an end check &quot;&quot;&quot;</span>
+        <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">checkEndTask</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="GameEngine.handleIllegalMove"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.GameEngine.handleIllegalMove">[docs]</a>    <span class="k">def</span> <span class="nf">handleIllegalMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Handles an illegal move.&quot;&quot;&quot;</span>
@@ -261,10 +276,12 @@
 <div class="viewcode-block" id="TwoPlayersOnOneBoard.moveTask"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.moveTask">[docs]</a>    <span class="k">def</span> <span class="nf">moveTask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mov</span><span class="p">):</span>
         <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">mov</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mov</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">mov</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">mov</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">disp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;Whites&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validMovesCounter</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;Blacks&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="n">color</span> <span class="o">+</span> <span class="s2">&quot; move from (</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">) to (</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">validMovesCounter</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="s2">&quot;Move from (</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">) to (</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">setLastMove</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">makeDisplayDrawBoard</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">updateLightBoard</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">IllegalMove</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
@@ -272,87 +289,119 @@
 
 <div class="viewcode-block" id="TwoPlayersOnOneBoard.move"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.move">[docs]</a>    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">):</span>
         <span class="n">d</span> <span class="o">=</span> <span class="n">Deferred</span><span class="p">()</span>
-        <span class="c1"># d.addCallback(self.moveTask)</span>
         <span class="n">d</span><span class="o">.</span><span class="n">addCallback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">moveTask</span><span class="p">)</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="n">log</span><span class="o">.</span><span class="n">err</span><span class="p">)</span>  <span class="c1"># DEBUG</span>
         <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">callback</span><span class="p">,</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="TwoPlayersOnOneBoard.autoMove"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.autoMove">[docs]</a>    <span class="k">def</span> <span class="nf">autoMove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">auto_move</span><span class="p">()</span></div>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">auto_move</span><span class="p">()</span>
+        <span class="k">except</span> <span class="n">IllegalMove</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span> <span class="c1"># In case the game has ended</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">handleIllegalMove</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">))</span></div>
 
-<div class="viewcode-block" id="TwoPlayersOnOneBoard.checkEnd"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.checkEnd">[docs]</a>    <span class="k">def</span> <span class="nf">checkEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">end_game</span><span class="p">()</span></div></div>
-
-    <span class="c1"># def moveTask(self, x1, y1, x2, y2):</span>
-    <span class="c1">#     try:</span>
-    <span class="c1">#         self.chessBoard.move(x1, y1, x2, y2)</span>
-    <span class="c1">#         self.lightBoard.move(x1, y1, x2, y2)</span>
-    <span class="c1">#         self.makeDisplayDrawBoard()</span>
-    <span class="c1">#         print(&quot;cb.move({},{},{},{})&quot;.format(x1,y1,x2,y2))</span>
-    <span class="c1">#         self.updateLightBoard()</span>
-    <span class="c1">#     except IllegalMove as e:</span>
-    <span class="c1">#         self.handleIllegalMove(str(e))</span>
+<div class="viewcode-block" id="TwoPlayersOnOneBoard.checkEndTask"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.TwoPlayersOnOneBoard.checkEndTask">[docs]</a>    <span class="k">def</span> <span class="nf">checkEndTask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">outcome</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">end_game</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="n">outcome</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="OnePlayerOnNetwork"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork">[docs]</a><span class="k">class</span> <span class="nc">OnePlayerOnNetwork</span><span class="p">(</span><span class="n">GameEngine</span><span class="p">):</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">gameEngine</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">address</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Server not yet implemented&quot;</span><span class="p">)</span>
+        <span class="c1"># raise NotImplementedError(&quot;Server not yet implemented&quot;)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">address</span><span class="p">:</span>
             <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span> <span class="mi">6000</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">host</span><span class="p">,</span> <span class="n">port</span> <span class="o">=</span> <span class="n">address</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;:&quot;</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">color</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="c1"># 0 = White is playing, 1 = Black is playing</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span> <span class="o">=</span> <span class="n">gameEngine</span><span class="o">.</span><span class="n">lightBoard</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">display</span> <span class="o">=</span> <span class="n">gameEngine</span><span class="o">.</span><span class="n">display</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="c1"># 1 = black</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flipDisplay</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">loopingCall</span> <span class="o">=</span> <span class="n">gameEngine</span><span class="o">.</span><span class="n">loopingCall</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span> <span class="o">=</span> <span class="n">ChessClientProtocol</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
 
         <span class="n">point</span> <span class="o">=</span> <span class="n">TCP4ClientEndpoint</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">host</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">port</span><span class="p">))</span>  <span class="c1"># connection point</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">attempt</span> <span class="o">=</span> <span class="n">connectProtocol</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="p">)</span>
-            <span class="n">attempt</span><span class="o">.</span><span class="n">addTimeout</span><span class="p">(</span><span class="n">CONNECTION_WAITING_TIME</span><span class="p">,</span> <span class="n">reactor</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="s2">&quot;Connection established&quot;</span><span class="p">)</span>
+            <span class="n">attempt</span><span class="o">.</span><span class="n">addErrback</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connectionFailed</span><span class="p">)</span>
+            <span class="n">attempt</span><span class="o">.</span><span class="n">addTimeout</span><span class="p">(</span><span class="n">CONNECTION_WAITING_TIME</span><span class="p">,</span> <span class="n">reactor</span><span class="p">,</span>
+                               <span class="n">onTimeoutCancel</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">connectionFailed</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="s2">&quot;Connecting to remote server...&quot;</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">connectionFailed</span><span class="p">()</span>
 
-        <span class="k">def</span> <span class="nf">handleInit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">description</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">==</span> <span class="s2">&quot;black&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flipDisplay</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">gameid</span> <span class="o">==</span> <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;&quot;</span><span class="p">]:</span>
-                <span class="k">pass</span>
+<div class="viewcode-block" id="OnePlayerOnNetwork.handleInit"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.handleInit">[docs]</a>    <span class="k">def</span> <span class="nf">handleInit</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="s2">&quot;Connection established.&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="s2">&quot;Waiting for an opponent...&quot;</span><span class="p">)</span></div>
 
-        <span class="k">def</span> <span class="nf">moveTask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">):</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="s2">&quot;player&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+<div class="viewcode-block" id="OnePlayerOnNetwork.handleReady"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.handleReady">[docs]</a>    <span class="k">def</span> <span class="nf">handleReady</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="s2">&quot;Found an opponent. White begins...&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">=</span> <span class="mi">0</span></div>
 
-        <span class="k">def</span> <span class="nf">handleMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
-            <span class="n">move</span> <span class="o">=</span> <span class="n">description</span><span class="p">[</span><span class="s2">&quot;move&quot;</span><span class="p">]</span>
-            <span class="n">x1</span> <span class="o">=</span> <span class="n">move</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">y1</span> <span class="o">=</span> <span class="n">move</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="n">x2</span> <span class="o">=</span> <span class="n">move</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-            <span class="n">y2</span> <span class="o">=</span> <span class="n">move</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">makeDisplayDrawBoard</span><span class="p">()</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;cb.move(</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">))</span>
+<div class="viewcode-block" id="OnePlayerOnNetwork.moveTask"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.moveTask">[docs]</a>    <span class="k">def</span> <span class="nf">moveTask</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="s2">&quot;Trying to move out of turn&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
-        <span class="k">def</span> <span class="nf">handleUpdateBoard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span><span class="o">.</span><span class="n">unWrap</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">makeDisplayDrawBoard</span><span class="p">()</span>
+<div class="viewcode-block" id="OnePlayerOnNetwork.autoMove"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.autoMove">[docs]</a>    <span class="k">def</span> <span class="nf">autoMove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">autoMoveTask</span><span class="p">)</span></div>
 
-        <span class="k">def</span> <span class="nf">handleChecks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">makeDisplayDrawChecks</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+<div class="viewcode-block" id="OnePlayerOnNetwork.autoMoveTask"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.autoMoveTask">[docs]</a>    <span class="k">def</span> <span class="nf">autoMoveTask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="s2">&quot;Trying to move out of turn&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;automove&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
-        <span class="k">def</span> <span class="nf">handleCheckMates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">makeDisplayDrawCheckMates</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+<div class="viewcode-block" id="OnePlayerOnNetwork.checkEndTask"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.checkEndTask">[docs]</a>    <span class="k">def</span> <span class="nf">checkEndTask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="s2">&quot;The game has not started yet&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;endgame&quot;</span><span class="p">,</span> <span class="s2">&quot;color&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">protocol</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
-        <span class="k">def</span> <span class="nf">connectionFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">setMenuMode</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="s2">&quot;The server could not be reached.&quot;</span><span class="p">)</span>
+<div class="viewcode-block" id="OnePlayerOnNetwork.handleMove"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.handleMove">[docs]</a>    <span class="k">def</span> <span class="nf">handleMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Executes a move received from the server &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span>
+        <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="s2">&quot;Whites&quot;</span> <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;Blacks&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="n">color</span><span class="o">+</span><span class="s2">&quot; move from (</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">) to (</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">)&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">setLastMove</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">makeDisplayDrawBoard</span><span class="p">()</span></div>
+        <span class="c1"># print(&quot;cb.move({},{},{},{})&quot;.format(x1, y1, x2, y2))</span>
 
-        <span class="k">def</span> <span class="nf">handleDisconnection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
-            <span class="c1"># TODO implement disconnection screen</span>
+<div class="viewcode-block" id="OnePlayerOnNetwork.handleUpdateBoard"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.handleUpdateBoard">[docs]</a>    <span class="k">def</span> <span class="nf">handleUpdateBoard</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span><span class="o">.</span><span class="n">unwrap</span><span class="p">(</span><span class="n">description</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">makeDisplayDrawBoard</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="OnePlayerOnNetwork.handleChecks"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.handleChecks">[docs]</a>    <span class="k">def</span> <span class="nf">handleChecks</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">makeDisplayDrawChecks</span><span class="p">(</span><span class="n">description</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OnePlayerOnNetwork.handleCheckMates"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.handleCheckMates">[docs]</a>    <span class="k">def</span> <span class="nf">handleCheckMates</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">makeDisplayDrawCheckMates</span><span class="p">(</span><span class="n">description</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OnePlayerOnNetwork.connectionFailed"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.connectionFailed">[docs]</a>    <span class="k">def</span> <span class="nf">connectionFailed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">setMenuMode</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="s2">&quot;The server could not be reached.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="OnePlayerOnNetwork.handleDisconnection"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.game_engines.OnePlayerOnNetwork.handleDisconnection">[docs]</a>    <span class="k">def</span> <span class="nf">handleDisconnection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">description</span><span class="p">):</span>
+        <span class="c1"># if self.display is None:</span>
+            <span class="c1"># return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="s2">&quot;Disconnected from server&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">addMessage</span><span class="p">(</span><span class="n">description</span><span class="o">.</span><span class="fm">__str__</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">suspend</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">gameEngine</span> <span class="o">=</span> <span class="n">GameEngine</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">gameEngine</span><span class="o">.</span><span class="n">startFromEngine</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">setMenuMode</span><span class="p">()</span></div></div>
+        <span class="c1"># raise NotImplementedError</span>
+        <span class="c1"># TODO implement disconnection screen</span>
+        <span class="c1"># reactor.stop()</span>
 </pre></div>
 
            </div>

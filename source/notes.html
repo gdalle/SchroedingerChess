@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -181,18 +182,17 @@
 <p>The nature of the major pieces is unknown at first, and is determined by the moves they make.</p>
 <p>The goal is, for a given series of moves, to check whether there exists an initial choice of piece natures so that:</p>
 <ol class="arabic simple">
-<li>There is no more than 1 king, 1 queen, 2 rooks, 2 bishops, 2 knights in each color</li>
-<li>Every move played is consistent with these piece natures</li>
-<li>No move played by a given color left their king in check</li>
+<li><p>There is no more than 1 king, 1 queen, 2 rooks, 2 bishops, 2 knights in each color</p></li>
+<li><p>Every move played is consistent with these piece natures</p></li>
+<li><p>No move played by a given color left their king in check</p></li>
 </ol>
 </div>
 <div class="section" id="forgotten-chess-rules">
 <h3>Forgotten chess rules<a class="headerlink" href="#forgotten-chess-rules" title="Permalink to this headline">¶</a></h3>
 <p>We discard the following rules:</p>
 <ul class="simple">
-<li>pawn promotion</li>
-<li>castling</li>
-<li>en passant</li>
+<li><p>castling</p></li>
+<li><p>en passant</p></li>
 </ul>
 </div>
 </div>
@@ -201,14 +201,14 @@
 <div class="section" id="nomenclature">
 <h3>Nomenclature<a class="headerlink" href="#nomenclature" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>\(s \in \mathcal{S} = [1, 64]\): square of the chess board</li>
-<li>\(c \in \mathcal{C} = {0, 1}\): color</li>
-<li>\(i \in \mathcal{I} = [1, 16]\): index of a piece for a given color.
+<li><p><span class="math notranslate nohighlight">\(s \in \mathcal{S} = [1, 64]\)</span>: square of the chess board</p></li>
+<li><p>\(c \in \mathcal{C} = {0, 1}\): color</p></li>
+<li><p>\(i \in \mathcal{I} = [1, 16]\): index of a piece for a given color.
 Belongs to \(\mathcal{J} = [1, 8]\) for the major pieces depending on
 their initial position on the first row,
-and to \(\mathcal{K} = [9, 16]\) for the pawns.</li>
-<li>\(n \in \mathcal{N} = {K, Q, R, B, N}\): nature of a piece</li>
-<li>\(t \in [1, T]\): time, ie. number of turns played</li>
+and to \(\mathcal{K} = [9, 16]\) for the pawns.</p></li>
+<li><p>\(n \in \mathcal{N} = {K, Q, R, B, N}\): nature of a piece</p></li>
+<li><p>\(t \in [1, T]\): time, ie. number of turns played</p></li>
 </ul>
 </div>
 <div class="section" id="variables-and-their-relations">
@@ -220,25 +220,25 @@ and to \(\mathcal{K} = [9, 16]\) for the pawns.</li>
 <div class="section" id="unknown-variables">
 <h4>Unknown variables<a class="headerlink" href="#unknown-variables" title="Permalink to this headline">¶</a></h4>
 <ul class="simple">
-<li>\(x(c, i, n) = 1\) if piece \(i\) of color \(c\) has nature \(n\)</li>
+<li><p>\(x(c, i, n) = 1\) if piece \(i\) of color \(c\) has nature \(n\)</p></li>
 </ul>
 </div>
 <div class="section" id="known-variables">
 <h4>Known variables<a class="headerlink" href="#known-variables" title="Permalink to this headline">¶</a></h4>
 <p>These variables can be calculated at any time without knowing the actual nature of the pieces.</p>
 <ul class="simple">
-<li>\(p_t(s, c, i) = 1\) if square \(s\) of the board contains piece \(i\) of color \(c\) at time \(t\)</li>
-<li>\(a_t(s, c, i, n) = 1\) if square \(s\) of the board would be threatened by piece \(i\) of color \(c\) at time \(t\), assuming its nature was \(n\)</li>
-<li>\(f_T(c, i, n) = 1\) if until time \(T\), piece $(c, i)$ has performed a move forbidden for nature \(n\)</li>
+<li><p>\(p_t(s, c, i) = 1\) if square \(s\) of the board contains piece \(i\) of color \(c\) at time \(t\)</p></li>
+<li><p>\(a_t(s, c, i, n) = 1\) if square \(s\) of the board would be threatened by piece \(i\) of color \(c\) at time \(t\), assuming its nature was \(n\)</p></li>
+<li><p>\(f_T(c, i, n) = 1\) if until time \(T\), piece \((c, i)\) has performed a move forbidden for nature \(n\)</p></li>
 </ul>
 </div>
 <div class="section" id="variables-deduced-from-x">
 <h4>Variables deduced from x<a class="headerlink" href="#variables-deduced-from-x" title="Permalink to this headline">¶</a></h4>
 <ul>
-<li><p class="first">\(d_t(c, s)\) is the number of pieces from color \(c\) attacking square \(s\) (number of dangers)</p>
+<li><p>\(d_t(c, s)\) is the number of pieces from color \(c\) attacking square \(s\) (number of dangers)</p>
 <p>$$ d_t(c, s) = \sum_i \sum_n a_{t}(s, c, i, n) \cdot x(c, i, n)$$</p>
 </li>
-<li><p class="first">\(k_t(c, s) = 1\) if the king from color \(c\) is located on \(s\)</p>
+<li><p>\(k_t(c, s) = 1\) if the king from color \(c\) is located on \(s\)</p>
 <p>$$ k_t(c, s) = \sum_i p_t (s, c, i) \cdot x(c, i, K)$$</p>
 </li>
 </ul>
@@ -247,19 +247,19 @@ and to \(\mathcal{K} = [9, 16]\) for the pawns.</li>
 <div class="section" id="constraints">
 <h3>Constraints<a class="headerlink" href="#constraints" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic">
-<li><p class="first">Variable domain</p>
+<li><p>Variable domain</p>
 <p>$$\forall (c, i, n), ~x(c, i, n) \in {0, 1}$$</p>
 </li>
-<li><p class="first">Variable interpretation: exactly one nature per piece</p>
+<li><p>Variable interpretation: exactly one nature per piece</p>
 <p>$$\forall (c, i), ~\sum_n x(c, i, n) = 1$$</p>
 </li>
-<li><p class="first">Right number of pieces of each nature</p>
+<li><p>Right number of pieces of each nature</p>
 <p>$$ \forall (c, n), ~\sum_i x(c, i, n) \leq x_{max} (n)$$</p>
 </li>
-<li><p class="first">Feasible moves: no piece can perform forbidden moves</p>
+<li><p>Feasible moves: no piece can perform forbidden moves</p>
 <p>$$\forall (c, i, n), ~x(c, i, n) \leq 1 - f_T(c, i, n)$$</p>
 </li>
-<li><p class="first">Check rules: no player can leave its king in check</p>
+<li><p>Check rules: no player can leave its king in check</p>
 <p>$$ \forall t, ~ \forall s, ~ d_t(c_t, s) \leq 16 (1 - k_t(c_{t-1}, s))$$</p>
 </li>
 </ol>
@@ -270,11 +270,11 @@ and to \(\mathcal{K} = [9, 16]\) for the pawns.</li>
 <div class="section" id="python-libraries">
 <h3>Python libraries<a class="headerlink" href="#python-libraries" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li><a class="reference external" href="http://labix.org/python-constraint">http://labix.org/python-constraint</a></li>
-<li><a class="reference external" href="http://simpleai.readthedocs.io/en/latest/constraint_satisfaction_problems.html">http://simpleai.readthedocs.io/en/latest/constraint_satisfaction_problems.html</a></li>
-<li><a class="reference external" href="http://www.cvxpy.org/tutorial/advanced/index.html#mixed-integer-programs">http://www.cvxpy.org/tutorial/advanced/index.html#mixed-integer-programs</a></li>
-<li><a class="reference external" href="http://mpy.github.io/CyLPdoc/">http://mpy.github.io/CyLPdoc/</a></li>
-<li><a class="reference external" href="https://pythonhosted.org/PuLP/">https://pythonhosted.org/PuLP/</a></li>
+<li><p><a class="reference external" href="http://labix.org/python-constraint">http://labix.org/python-constraint</a></p></li>
+<li><p><a class="reference external" href="http://simpleai.readthedocs.io/en/latest/constraint_satisfaction_problems.html">http://simpleai.readthedocs.io/en/latest/constraint_satisfaction_problems.html</a></p></li>
+<li><p><a class="reference external" href="http://www.cvxpy.org/tutorial/advanced/index.html#mixed-integer-programs">http://www.cvxpy.org/tutorial/advanced/index.html#mixed-integer-programs</a></p></li>
+<li><p><a class="reference external" href="http://mpy.github.io/CyLPdoc/">http://mpy.github.io/CyLPdoc/</a></p></li>
+<li><p><a class="reference external" href="https://pythonhosted.org/PuLP/">https://pythonhosted.org/PuLP/</a></p></li>
 </ul>
 </div>
 </div>

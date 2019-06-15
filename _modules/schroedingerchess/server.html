@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../../_static/underscore.js"></script>
         <script type="text/javascript" src="../../_static/doctools.js"></script>
         <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -148,14 +149,18 @@
 <span></span><span class="kn">from</span> <span class="nn">twisted.internet.protocol</span> <span class="k">import</span> <span class="n">Protocol</span><span class="p">,</span> <span class="n">Factory</span>
 <span class="kn">from</span> <span class="nn">twisted.internet</span> <span class="k">import</span> <span class="n">reactor</span>
 <span class="kn">from</span> <span class="nn">twisted.internet.endpoints</span> <span class="k">import</span> <span class="n">TCP4ServerEndpoint</span>
+<span class="kn">from</span> <span class="nn">twisted.internet.defer</span> <span class="k">import</span> <span class="n">inlineCallbacks</span><span class="p">,</span> <span class="n">Deferred</span>
 
 <span class="kn">from</span> <span class="nn">chess</span> <span class="k">import</span> <span class="n">ChessBoard</span><span class="p">,</span> <span class="n">LightBoard</span><span class="p">,</span> <span class="n">IllegalMove</span>
 
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">time</span>
 
 
 <div class="viewcode-block" id="ChessServerProtocol"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol">[docs]</a><span class="k">class</span> <span class="nc">ChessServerProtocol</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot; Class to handles the communication protocol with a game client.&quot;&quot;&quot;</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to handles the communication protocol with a game client.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">player_id</span> <span class="o">=</span> <span class="kc">None</span>
@@ -167,54 +172,17 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Sends the game information when a new client is connected.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;GREETING&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;GREETING&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">player_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">addWaitingPlayer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Player </span><span class="si">{}</span><span class="s2"> connected&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player_id</span><span class="p">))</span>
 
         <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;greetings&quot;</span><span class="p">}</span>
-
-        <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;player_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">player_id</span>
-
+        <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;player_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_id</span>
         <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;greetings&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;looking forward hearing from you&quot;</span>
-
-        <span class="n">player_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">addWaitingPlayer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
-        <span class="c1"># self.game_id = self.factory.currentIndex</span>
-        <span class="c1"># msg[&quot;game_id&quot;] = self.game_id # game_id associated to the new client</span>
-
-        <span class="c1"># if self.factory.waitingGame == None: # if no game is waiting</span>
-        <span class="c1">#     self.factory.waitingGame = Game(self, self.factory.currentIndex) # create a new game</span>
-        <span class="c1">#     self.color = 0 # the connected client will be the whites</span>
-        <span class="c1">#     msg[&quot;color&quot;] = self.color</span>
-        <span class="c1">#     self.game = self.factory.waitingGame</span>
-        <span class="c1"># else: # a game is waiting for the blacks</span>
-        <span class="c1">#     self.factory.waitingGame.black = self # set the second player</span>
-        <span class="c1">#     self.factory.waitingGame.player0.notifyReady() # notify the first player that the game is ready</span>
-        <span class="c1">#     self.factory.waitingGame.ready = True # set the game to be ready</span>
-        <span class="c1">#     self.game = self.factory.waitingGame</span>
-        <span class="c1">#     self.factory.games.append(self.factory.waitingGame) # append the game to the list of games</span>
-        <span class="c1">#     self.factory.waitingGame = None # flush the game just pushed in the list of games</span>
-        <span class="c1">#     self.factory.currentIndex += 1 # increment the game index</span>
-        <span class="c1">#     self.color = 1 # the connected player will be player 2</span>
-        <span class="c1">#     msg[&quot;color&quot;] = self.player</span>
-
-        <span class="c1"># self.sendMessage(msg, self.color)</span>
-        <span class="c1"># if self.game.ready</span>
-        <span class="c1">#     msg_for_both = {&quot;type&quot; : &quot;ready&quot;, &quot;status&quot; : True}</span>
-        <span class="c1">#     self.sendMessageToAll(msg_for_both)</span>
-        <span class="c1"># else:</span>
-        <span class="c1">#     msg = {&quot;type&quot; : &quot;ready&quot;, &quot;status&quot; : False}</span>
-        <span class="c1">#     self.sendMessage(msg, self.color)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">status</span> <span class="o">=</span> <span class="s2">&quot;WAITING_FOR_GREETINGS&quot;</span></div>
-
-    <span class="c1"># def notifyReady(self):</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     Notifies the client that the game is ready.</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     self.state = &quot;PLAYING&quot;</span>
-    <span class="c1">#     msg = {&quot;type&quot; : &quot;ready&quot; , &quot;status&quot; : True}</span>
-    <span class="c1">#     self.sendMessage(msg)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;WAITING_FOR_GREETINGS&quot;</span></div>
 
 <div class="viewcode-block" id="ChessServerProtocol.sendMessage"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.sendMessage">[docs]</a>    <span class="k">def</span> <span class="nf">sendMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -229,7 +197,7 @@
 <span class="sd">        :param msg: A dictionary representing a message.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">sendMessageToAll</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">sendMessageToAll</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;trying to send a message when the game is not created / over&quot;</span><span class="p">)</span></div>
 
@@ -248,24 +216,34 @@
 <span class="sd">        Handles the reception of data by the server</span>
 <span class="sd">        :param data: A byte representing a JSON-encoded object (default encoding UTF-8)</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;GREETING&quot;</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Should no happen.&quot;</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;WAITING_FOR_GREETINGS&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;greetings&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">handleGreetings</span><span class="p">[</span><span class="n">msg</span><span class="p">]</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;PLAYING&quot;</span><span class="p">:</span>
-            <span class="k">if</span> <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;move&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">handleMove</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
-            <span class="k">elif</span> <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;chat&quot;</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sendMessageToOther</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]})</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">refuseMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+        <span class="c1"># msg = json.loads(data.decode())</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">split_messages</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">update</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">for</span> <span class="n">msg_json</span> <span class="ow">in</span> <span class="n">messages</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">msg_json</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;GREETING&quot;</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Should no happen.&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;WAITING_FOR_GREETINGS&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;player-info&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">handleGreetings</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s2">&quot;PLAYING&quot;</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;move&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">handleMove</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;automove&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">handleMove</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">auto</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;chat&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">sendMessageToOther</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;content&quot;</span><span class="p">]})</span>
+                <span class="k">elif</span> <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;endgame&quot;</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">handleEndGame</span><span class="p">(</span><span class="n">msg</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">refuseMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+            <span class="c1"># TODO : reduce lightboard update delay</span>
 
 <div class="viewcode-block" id="ChessServerProtocol.handleGreetings"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.handleGreetings">[docs]</a>    <span class="k">def</span> <span class="nf">handleGreetings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">color</span> <span class="o">=</span> <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">assignColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">)</span></div>
-        <span class="c1"># if self.</span>
 
 <div class="viewcode-block" id="ChessServerProtocol.refuseMessage"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.refuseMessage">[docs]</a>    <span class="k">def</span> <span class="nf">refuseMessage</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -274,27 +252,63 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;illegal-request&quot;</span><span class="p">,</span> <span class="s2">&quot;request&quot;</span><span class="p">:</span> <span class="n">msg</span><span class="p">})</span></div>
 
-<div class="viewcode-block" id="ChessServerProtocol.handleMove"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.handleMove">[docs]</a>    <span class="k">def</span> <span class="nf">handleMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
+<div class="viewcode-block" id="ChessServerProtocol.handleMove"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.handleMove">[docs]</a>    <span class="k">def</span> <span class="nf">handleMove</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">auto</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">player</span> <span class="o">=</span> <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">]</span>
-            <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
-            <span class="n">game</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">player</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">auto</span><span class="p">:</span>
+                <span class="n">move</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">autoMove</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">move</span> <span class="o">=</span> <span class="n">msg</span><span class="p">[</span><span class="s2">&quot;description&quot;</span><span class="p">]</span>
+            <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">move</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">player</span><span class="p">)</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;move&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendMessageToAll</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">updateLightBoard</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">IllegalMove</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-            <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;illegal-move&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}</span></div>
+            <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;illegal-move&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">e</span><span class="p">)}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ChessServerProtocol.handleEndGame"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.handleEndGame">[docs]</a>    <span class="k">def</span> <span class="nf">handleEndGame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">checkEnd</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="ChessServerProtocol.connectionLost"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.connectionLost">[docs]</a>    <span class="k">def</span> <span class="nf">connectionLost</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reason</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Handles the connection lost with the client.</span>
+<span class="sd">        Handles the connection lost with the client (executes automatically).</span>
 <span class="sd">        :param reason: Reason of the disconnection</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div></div>
-        <span class="c1"># TODO</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">removePlayerFromWaitingList</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player_id</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Disconnect other player and remove the game</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sendMessageToOther</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="s2">&quot;Other player disconnected&quot;</span><span class="p">})</span>
+            <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game</span><span class="o">.</span><span class="n">disconnectPlayers</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">factory</span><span class="o">.</span><span class="n">removeGame</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_id</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Player </span><span class="si">{}</span><span class="s2"> disconnected&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player_id</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="ChessServerProtocol.disconnect"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot; Disconnect current player / protocol &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transport</span><span class="o">.</span><span class="n">loseConnection</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ChessServerProtocol.split_messages"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.ChessServerProtocol.split_messages">[docs]</a>    <span class="k">def</span> <span class="nf">split_messages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">split</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;}{&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">split</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">split</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">sp</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">split</span><span class="p">):</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">sp</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="n">m</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">split</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="n">m</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span>
+            <span class="n">messages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">messages</span></div></div>
 
 
 <div class="viewcode-block" id="ChessServer"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.ChessServer">[docs]</a><span class="k">class</span> <span class="nc">ChessServer</span><span class="p">(</span><span class="n">Factory</span><span class="p">):</span>
-
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Game server.</span>
+<span class="sd">    Game server : produces a new ChessServerProtocol each time a client arrives</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="c1"># This will be used by the default buildProtocol to create new protocols:</span>
@@ -304,12 +318,12 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Constructor.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">games</span> <span class="o">=</span> <span class="p">[]</span>  <span class="c1"># list of games</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">games</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># list of games</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">waitingBlackPlayers</span> <span class="o">=</span> <span class="p">([],</span> <span class="p">{})</span>  <span class="c1"># waiting white players</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">waitingWhitePlayers</span> <span class="o">=</span> <span class="p">([],</span> <span class="p">{})</span>  <span class="c1"># waiting black players</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">waitingPlayers</span> <span class="o">=</span> <span class="p">{}</span>  <span class="c1"># list of waiting players</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">currentIndex</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># number of games ever launched</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">playerIndex</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># number of players ever connected</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gameIndex</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># total number of games ever launched</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">playerIndex</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># total number of players ever connected</span>
 
 <div class="viewcode-block" id="ChessServer.addWaitingPlayer"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.ChessServer.addWaitingPlayer">[docs]</a>    <span class="k">def</span> <span class="nf">addWaitingPlayer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">client</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">waitingPlayers</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">playerIndex</span><span class="p">]</span> <span class="o">=</span> <span class="n">client</span>
@@ -334,13 +348,33 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">tryToMatchPlayers</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="ChessServer.tryToMatchPlayers"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.ChessServer.tryToMatchPlayers">[docs]</a>    <span class="k">def</span> <span class="nf">tryToMatchPlayers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waitingBlackPlayers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waitingWhitePlayers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waitingBlackPlayers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">waitingWhitePlayers</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
             <span class="n">whites_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">waitingWhitePlayers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">blacks_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">waitingBlackPlayers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
             <span class="n">whites_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">waitingWhitePlayers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">whites_id</span><span class="p">)</span>
             <span class="n">blacks_client</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">waitingBlackPlayers</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">blacks_id</span><span class="p">)</span>
-            <span class="n">game</span> <span class="o">=</span> <span class="n">Game</span><span class="p">(</span><span class="n">whites_client</span><span class="p">,</span> <span class="n">blacks_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">currentIndex</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">gameIndex</span> <span class="o">+=</span> <span class="mi">1</span></div></div>
+            <span class="n">game</span> <span class="o">=</span> <span class="n">Game</span><span class="p">(</span><span class="n">whites_client</span><span class="p">,</span> <span class="n">blacks_client</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gameIndex</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">games</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">gameIndex</span><span class="p">]</span> <span class="o">=</span> <span class="n">game</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Matched player </span><span class="si">{}</span><span class="s2"> and </span><span class="si">{}</span><span class="s2"> into game </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">whites_id</span><span class="p">,</span> <span class="n">blacks_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gameIndex</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">gameIndex</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="ChessServer.removePlayerFromWaitingList"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.ChessServer.removePlayerFromWaitingList">[docs]</a>    <span class="k">def</span> <span class="nf">removePlayerFromWaitingList</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">player_id</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">player_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">waitingPlayers</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">waitingPlayers</span><span class="p">[</span><span class="n">player_id</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">player_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">waitingWhitePlayers</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">waitingWhitePlayers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">player_id</span><span class="p">)</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">waitingWhitePlayers</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">player_id</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">player_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">waitingBlackPlayers</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">waitingBlackPlayers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">player_id</span><span class="p">)</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">waitingBlackPlayers</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">player_id</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ChessServer.removeGame"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.ChessServer.removeGame">[docs]</a>    <span class="k">def</span> <span class="nf">removeGame</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">game_id</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">games</span><span class="p">[</span><span class="n">game_id</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Terminated game </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">game_id</span><span class="p">))</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="c1"># The other player already deleted the game</span>
+            <span class="k">pass</span></div></div>
 
 
 <div class="viewcode-block" id="Game"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.Game">[docs]</a><span class="k">class</span> <span class="nc">Game</span><span class="p">:</span>
@@ -348,9 +382,9 @@
 <span class="sd">    Class to represent a game instance.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">whites</span><span class="p">,</span> <span class="n">blacks</span><span class="p">,</span> <span class="n">currentIndex</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">game_id</span> <span class="o">=</span> <span class="n">currentIndex</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">turn</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">whites</span><span class="p">,</span> <span class="n">blacks</span><span class="p">,</span> <span class="n">gameIndex</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_id</span> <span class="o">=</span> <span class="n">gameIndex</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validMovesCounter</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">white</span> <span class="o">=</span> <span class="n">whites</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">white</span><span class="o">.</span><span class="n">game_id</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_id</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">white</span><span class="o">.</span><span class="n">game</span> <span class="o">=</span> <span class="bp">self</span>
@@ -360,32 +394,43 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span> <span class="o">=</span> <span class="n">ChessBoard</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span> <span class="o">=</span> <span class="n">LightBoard</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">notifyReady</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ready</span> <span class="o">=</span> <span class="kc">True</span>
 
 <div class="viewcode-block" id="Game.notifyReady"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.Game.notifyReady">[docs]</a>    <span class="k">def</span> <span class="nf">notifyReady</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">sendMessageToAll</span><span class="p">({</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;status&quot;</span><span class="p">,</span> <span class="s2">&quot;status&quot;</span><span class="p">:</span> <span class="s2">&quot;ready&quot;</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ready</span> <span class="o">=</span> <span class="kc">True</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">white</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;PLAYING&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">black</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s2">&quot;PLAYING&quot;</span></div>
 
 <div class="viewcode-block" id="Game.move"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.Game.move">[docs]</a>    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
-        <span class="n">piece</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="p">[</span><span class="n">x1</span><span class="p">][</span><span class="n">y1</span><span class="p">]</span>
+        <span class="n">piece</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">grid</span><span class="p">[</span><span class="n">x1</span><span class="p">][</span><span class="n">y1</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">piece</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">piece</span><span class="o">.</span><span class="n">color</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">color</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">IllegalMove</span><span class="p">(</span><span class="s2">&quot;Trying to move a place that does not belong to the player.&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">disp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">updateLightBoardTask</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">validMovesCounter</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="Game.autoMove"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.Game.autoMove">[docs]</a>    <span class="k">def</span> <span class="nf">autoMove</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">auto_move</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Game.checkEnd"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.Game.checkEnd">[docs]</a>    <span class="k">def</span> <span class="nf">checkEnd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">color</span><span class="p">):</span>
+        <span class="n">outcome</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">end_game</span><span class="p">()</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;chat&quot;</span><span class="p">,</span> <span class="s2">&quot;content&quot;</span><span class="p">:</span> <span class="n">outcome</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendMessageTo</span><span class="p">(</span><span class="n">msg</span><span class="p">,</span> <span class="n">color</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Game.updateLightBoardTask"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.Game.updateLightBoardTask">[docs]</a>    <span class="k">def</span> <span class="nf">updateLightBoardTask</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">piece</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">pieces</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">piece</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">natures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">all_legal_natures</span><span class="p">(</span><span class="n">piece</span><span class="p">)</span>
-                <span class="n">color</span> <span class="o">=</span> <span class="n">piece</span><span class="o">.</span><span class="n">color</span>
-                <span class="n">position</span> <span class="o">=</span> <span class="n">piece</span><span class="o">.</span><span class="n">position</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span><span class="o">.</span><span class="n">setPiece</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">natures</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span><span class="o">.</span><span class="n">wrapUp</span><span class="p">())</span></div>
+        <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">piece</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">pieces</span><span class="p">[</span><span class="n">col</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">piece</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="n">piece</span><span class="o">.</span><span class="n">color</span>
+                    <span class="n">position</span> <span class="o">=</span> <span class="n">piece</span><span class="o">.</span><span class="n">position</span>
+                    <span class="n">natures</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chessBoard</span><span class="o">.</span><span class="n">all_legal_natures</span><span class="p">(</span><span class="n">piece</span><span class="p">)</span>
+                    <span class="n">pieceIndex</span> <span class="o">=</span> <span class="n">i</span> <span class="o">+</span> <span class="n">col</span> <span class="o">*</span> <span class="mi">24</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span><span class="o">.</span><span class="n">setPiece</span><span class="p">(</span><span class="n">pieceIndex</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">position</span><span class="p">,</span> <span class="n">natures</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;lightboard&quot;</span><span class="p">,</span> <span class="s2">&quot;description&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">lightBoard</span><span class="o">.</span><span class="n">wrapUp</span><span class="p">()}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sendMessageToAll</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Game.updateLightBoard"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.Game.updateLightBoard">[docs]</a>    <span class="k">def</span> <span class="nf">updateLightBoard</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot; Schedules an update board task. &quot;&quot;&quot;</span>
-        <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">updateLightBoardTask</span><span class="p">)</span></div>
+        <span class="n">reactor</span><span class="o">.</span><span class="n">callLater</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">updateLightBoardTask</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="Game.sendMessageToAll"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.Game.sendMessageToAll">[docs]</a>    <span class="k">def</span> <span class="nf">sendMessageToAll</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">msg</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">white</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
@@ -397,7 +442,11 @@
         <span class="k">elif</span> <span class="n">color</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">black</span><span class="o">.</span><span class="n">sendMessage</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">pass</span></div></div>
+            <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Game.disconnectPlayers"><a class="viewcode-back" href="../../source/schroedingerchess.html#schroedingerchess.server.Game.disconnectPlayers">[docs]</a>    <span class="k">def</span> <span class="nf">disconnectPlayers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">white</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">black</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span></div></div>
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>

@@ -25,7 +25,6 @@ Forgotten chess rules
 We discard the following rules:
 
 
-* pawn promotion
 * castling
 * en passant
 
@@ -36,7 +35,7 @@ Nomenclature
 ^^^^^^^^^^^^
 
 
-* \\(s \\in \\mathcal{S} = [1, 64]\\): square of the chess board
+* :math:`s \in \mathcal{S} = [1, 64]`: square of the chess board
 * \\(c \\in \\mathcal{C} = {0, 1}\\): color
 * \\(i \\in \\mathcal{I} = [1, 16]\\): index of a piece for a given color.
   Belongs to \\(\\mathcal{J} = [1, 8]\\) for the major pieces depending on
@@ -72,7 +71,7 @@ These variables can be calculated at any time without knowing the actual nature 
   \\(a_t(s, c, i, n) = 1\\) if square \\(s\\) of the board would be threatened by piece \\(i\\) of color \\(c\\) at time \\(t\\), assuming its nature was \\(n\\)
 
 *
-  \\(f_T(c, i, n) = 1\\) if until time \\(T\\), piece $(c, i)$ has performed a move forbidden for nature \\(n\\)
+  \\(f_T(c, i, n) = 1\\) if until time \\(T\\), piece \\((c, i)\\) has performed a move forbidden for nature \\(n\\)
 
 Variables deduced from x
 ~~~~~~~~~~~~~~~~~~~~~~~~

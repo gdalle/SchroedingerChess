@@ -25,6 +25,7 @@
         <script type="text/javascript" src="../_static/underscore.js"></script>
         <script type="text/javascript" src="../_static/doctools.js"></script>
         <script type="text/javascript" src="../_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -172,171 +173,171 @@
 <p>First test for chess implementation.</p>
 <dl class="class">
 <dt id="schroedingerchess.chess.ChessBoard">
-<em class="property">class </em><code class="descclassname">schroedingerchess.chess.</code><code class="descname">ChessBoard</code><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">schroedingerchess.chess.</code><code class="sig-name descname">ChessBoard</code><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Chess board manipulation.</p>
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.add_move_to_history">
-<code class="descname">add_move_to_history</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em>, <em>piece</em>, <em>target_piece</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.add_move_to_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.add_move_to_history" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">add_move_to_history</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em>, <em class="sig-param">piece</em>, <em class="sig-param">target_piece</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.add_move_to_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.add_move_to_history" title="Permalink to this definition">¶</a></dt>
 <dd><p>Add move to history (temporarily or not).</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.all_legal_moves">
-<code class="descname">all_legal_moves</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.all_legal_moves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.all_legal_moves" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">all_legal_moves</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.all_legal_moves"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.all_legal_moves" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.all_legal_moves_gen">
-<code class="descname">all_legal_moves_gen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.all_legal_moves_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.all_legal_moves_gen" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">all_legal_moves_gen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.all_legal_moves_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.all_legal_moves_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search all legal move at a given turn.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.all_legal_natures">
-<code class="descname">all_legal_natures</code><span class="sig-paren">(</span><em>piece</em>, <em>update=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.all_legal_natures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.all_legal_natures" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">all_legal_natures</code><span class="sig-paren">(</span><em class="sig-param">piece</em>, <em class="sig-param">update=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.all_legal_natures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.all_legal_natures" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search all legal natures a piece could have.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.auto_move">
-<code class="descname">auto_move</code><span class="sig-paren">(</span><em>intelligent=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.auto_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.auto_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">auto_move</code><span class="sig-paren">(</span><em class="sig-param">intelligent=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.auto_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.auto_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform one of the legal moves at random.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.compute_attack">
-<code class="descname">compute_attack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.compute_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.compute_attack" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">compute_attack</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.compute_attack"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.compute_attack" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encode attack as a binary table.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.compute_position">
-<code class="descname">compute_position</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.compute_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.compute_position" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">compute_position</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.compute_position"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.compute_position" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encode position as a binary table.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.create_standard_board">
-<code class="descname">create_standard_board</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.create_standard_board"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.create_standard_board" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">create_standard_board</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.create_standard_board"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.create_standard_board" title="Permalink to this definition">¶</a></dt>
 <dd><p>Define standard board for test purposes.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.delete_move_from_history">
-<code class="descname">delete_move_from_history</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em>, <em>piece</em>, <em>target_piece</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.delete_move_from_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.delete_move_from_history" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">delete_move_from_history</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em>, <em class="sig-param">piece</em>, <em class="sig-param">target_piece</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.delete_move_from_history"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.delete_move_from_history" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reverse the last move.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.display_guess">
-<code class="descname">display_guess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.display_guess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.display_guess" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">display_guess</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.display_guess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.display_guess" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display a possible guess.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.display_natures">
-<code class="descname">display_natures</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.display_natures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.display_natures" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">display_natures</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.display_natures"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.display_natures" title="Permalink to this definition">¶</a></dt>
 <dd><p>Display the number of legal natures.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.end_game">
-<code class="descname">end_game</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.end_game"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.end_game" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">end_game</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.end_game"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.end_game" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.free_trajectory">
-<code class="descname">free_trajectory</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.free_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.free_trajectory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">free_trajectory</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.free_trajectory"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.free_trajectory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decide if a move is prevented by other pieces in the way.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.get_coord">
-<code class="descname">get_coord</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.get_coord"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.get_coord" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_coord</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.get_coord"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.get_coord" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get coordinates from square number.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.get_square">
-<code class="descname">get_square</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.get_square"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.get_square" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_square</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.get_square"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.get_square" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get square number from coordinates.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.is_legal_nature">
-<code class="descname">is_legal_nature</code><span class="sig-paren">(</span><em>piece</em>, <em>n</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.is_legal_nature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.is_legal_nature" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">is_legal_nature</code><span class="sig-paren">(</span><em class="sig-param">piece</em>, <em class="sig-param">n</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.is_legal_nature"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.is_legal_nature" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if, given the current history, piece could have nature n.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.legal_moves_from">
-<code class="descname">legal_moves_from</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.legal_moves_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.legal_moves_from" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">legal_moves_from</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.legal_moves_from"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.legal_moves_from" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.legal_moves_from_gen">
-<code class="descname">legal_moves_from_gen</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.legal_moves_from_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.legal_moves_from_gen" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">legal_moves_from_gen</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.legal_moves_from_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.legal_moves_from_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Search all legal moves starting from a given square.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.move">
-<code class="descname">move</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em>, <em>disp=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">move</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em>, <em class="sig-param">disp=True</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test and perform a move.</p>
 <p>Will raise IllegalMove if the move is not valid.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.move_exists">
-<code class="descname">move_exists</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.move_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.move_exists" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">move_exists</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.move_exists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.move_exists" title="Permalink to this definition">¶</a></dt>
 <dd><p>Verify that a move exists in chess.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.nature_elimination">
-<code class="descname">nature_elimination</code><span class="sig-paren">(</span><em>piece</em>, <em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.nature_elimination"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.nature_elimination" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">nature_elimination</code><span class="sig-paren">(</span><em class="sig-param">piece</em>, <em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.nature_elimination"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.nature_elimination" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find which natures got impossible for the piece that just moved.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.on_board">
-<code class="descname">on_board</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.on_board"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.on_board" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">on_board</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.on_board"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.on_board" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if a square is part of the board.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.one_player_game">
-<code class="descname">one_player_game</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.one_player_game"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.one_player_game" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">one_player_game</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.one_player_game"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.one_player_game" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.parse_variable">
-<code class="descname">parse_variable</code><span class="sig-paren">(</span><em>var</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.parse_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.parse_variable" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">parse_variable</code><span class="sig-paren">(</span><em class="sig-param">var</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.parse_variable"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.parse_variable" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse pulp variable name.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.pawn_could_reach">
-<code class="descname">pawn_could_reach</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em>, <em>c</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.pawn_could_reach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.pawn_could_reach" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">pawn_could_reach</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em>, <em class="sig-param">c</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.pawn_could_reach"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.pawn_could_reach" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check whether a pawn on (x1, y1) can go to (x2, y2).</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.pawn_could_take">
-<code class="descname">pawn_could_take</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em>, <em>c</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.pawn_could_take"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.pawn_could_take" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">pawn_could_take</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em>, <em class="sig-param">c</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.pawn_could_take"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.pawn_could_take" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check whether a pawn on (x1, y1) threatens (x2, y2).</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.perform_move">
-<code class="descname">perform_move</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em>, <em>problem</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.perform_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.perform_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">perform_move</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em>, <em class="sig-param">problem</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.perform_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.perform_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform a move, assuming it is valid.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.possible_move">
-<code class="descname">possible_move</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em>, <em>n</em>, <em>c</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.possible_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.possible_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">possible_move</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em>, <em class="sig-param">n</em>, <em class="sig-param">c</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.possible_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.possible_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Decide if a move belongs to the abilities of a piece nature.</p>
 <p>Special case for pawns where it depends upon
 the color, target and the previous moves.</p>
@@ -344,32 +345,32 @@ the color, target and the previous moves.</p>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.quantum_explanation">
-<code class="descname">quantum_explanation</code><span class="sig-paren">(</span><em>check=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.quantum_explanation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.quantum_explanation" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">quantum_explanation</code><span class="sig-paren">(</span><em class="sig-param">check=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.quantum_explanation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.quantum_explanation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform consistency check with MIP.</p>
 <p>Returns the solved linear problem.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.test_move">
-<code class="descname">test_move</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em>, <em>full_result=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.test_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.test_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">test_move</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em>, <em class="sig-param">full_result=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.test_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.test_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test whether a move is possible.</p>
 <p>Raise IllegalMove exceptions detailing the various move invalidities.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.translate_move">
-<code class="descname">translate_move</code><span class="sig-paren">(</span><em>move</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.translate_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.translate_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">translate_move</code><span class="sig-paren">(</span><em class="sig-param">move</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.translate_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.translate_move" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.trivial_test_move">
-<code class="descname">trivial_test_move</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.trivial_test_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.trivial_test_move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">trivial_test_move</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.trivial_test_move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.trivial_test_move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check obvious failures.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.ChessBoard.update_guess">
-<code class="descname">update_guess</code><span class="sig-paren">(</span><em>problem</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.update_guess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.update_guess" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update_guess</code><span class="sig-paren">(</span><em class="sig-param">problem</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessBoard.update_guess"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessBoard.update_guess" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update guess with MIP solution.</p>
 </dd></dl>
 
@@ -377,68 +378,68 @@ the color, target and the previous moves.</p>
 
 <dl class="class">
 <dt id="schroedingerchess.chess.ChessPiece">
-<em class="property">class </em><code class="descclassname">schroedingerchess.chess.</code><code class="descname">ChessPiece</code><span class="sig-paren">(</span><em>c</em>, <em>i</em>, <em>n</em>, <em>p</em>, <em>b=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessPiece"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessPiece" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">schroedingerchess.chess.</code><code class="sig-name descname">ChessPiece</code><span class="sig-paren">(</span><em class="sig-param">c</em>, <em class="sig-param">i</em>, <em class="sig-param">n</em>, <em class="sig-param">p</em>, <em class="sig-param">b=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#ChessPiece"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.ChessPiece" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Chess piece manipulation.</p>
 </dd></dl>
 
 <dl class="exception">
 <dt id="schroedingerchess.chess.IllegalMove">
-<em class="property">exception </em><code class="descclassname">schroedingerchess.chess.</code><code class="descname">IllegalMove</code><a class="reference internal" href="../_modules/schroedingerchess/chess.html#IllegalMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.IllegalMove" title="Permalink to this definition">¶</a></dt>
+<em class="property">exception </em><code class="sig-prename descclassname">schroedingerchess.chess.</code><code class="sig-name descname">IllegalMove</code><a class="reference internal" href="../_modules/schroedingerchess/chess.html#IllegalMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.IllegalMove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
 <p>Illegal move.</p>
 </dd></dl>
 
 <dl class="class">
 <dt id="schroedingerchess.chess.LightBoard">
-<em class="property">class </em><code class="descclassname">schroedingerchess.chess.</code><code class="descname">LightBoard</code><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">schroedingerchess.chess.</code><code class="sig-name descname">LightBoard</code><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="schroedingerchess.chess.LightBoard.getDeadPieces">
-<code class="descname">getDeadPieces</code><span class="sig-paren">(</span><em>color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.getDeadPieces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.getDeadPieces" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getDeadPieces</code><span class="sig-paren">(</span><em class="sig-param">color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.getDeadPieces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.getDeadPieces" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.LightBoard.getPiece">
-<code class="descname">getPiece</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.getPiece"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.getPiece" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getPiece</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.getPiece"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.getPiece" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.LightBoard.getPieceIndex">
-<code class="descname">getPieceIndex</code><span class="sig-paren">(</span><em>x</em>, <em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.getPieceIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.getPieceIndex" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">getPieceIndex</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.getPieceIndex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.getPieceIndex" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.LightBoard.move">
-<code class="descname">move</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">move</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.move" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="staticmethod">
+<dl class="method">
 <dt id="schroedingerchess.chess.LightBoard.possibleNaturesFromMove">
-<em class="property">static </em><code class="descname">possibleNaturesFromMove</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em>, <em>color</em>, <em>natures</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.possibleNaturesFromMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.possibleNaturesFromMove" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="sig-name descname">possibleNaturesFromMove</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em>, <em class="sig-param">color</em>, <em class="sig-param">natures</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.possibleNaturesFromMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.possibleNaturesFromMove" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.LightBoard.setPiece">
-<code class="descname">setPiece</code><span class="sig-paren">(</span><em>i</em>, <em>color</em>, <em>position</em>, <em>natures</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.setPiece"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.setPiece" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">setPiece</code><span class="sig-paren">(</span><em class="sig-param">i</em>, <em class="sig-param">color</em>, <em class="sig-param">position</em>, <em class="sig-param">natures</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.setPiece"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.setPiece" title="Permalink to this definition">¶</a></dt>
 <dd><p>i is the index of the piece in self.pieces (same as ChessBoard.pieces)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.LightBoard.unwrap">
-<code class="descname">unwrap</code><span class="sig-paren">(</span><em>wrap</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.unwrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.unwrap" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">unwrap</code><span class="sig-paren">(</span><em class="sig-param">wrap</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.unwrap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.unwrap" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.chess.LightBoard.wrapUp">
-<code class="descname">wrapUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.wrapUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.wrapUp" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">wrapUp</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#LightBoard.wrapUp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.LightBoard.wrapUp" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="function">
 <dt id="schroedingerchess.chess.main">
-<code class="descclassname">schroedingerchess.chess.</code><code class="descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.main" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">schroedingerchess.chess.</code><code class="sig-name descname">main</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/chess.html#main"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.chess.main" title="Permalink to this definition">¶</a></dt>
 <dd><p>Main.</p>
 </dd></dl>
 
@@ -447,19 +448,19 @@ the color, target and the previous moves.</p>
 <span id="schroedingerchess-client-module"></span><h2>schroedingerchess.client module<a class="headerlink" href="#module-schroedingerchess.client" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="schroedingerchess.client.ChessClientProtocol">
-<em class="property">class </em><code class="descclassname">schroedingerchess.client.</code><code class="descname">ChessClientProtocol</code><span class="sig-paren">(</span><em>client</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/client.html#ChessClientProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.client.ChessClientProtocol" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">schroedingerchess.client.</code><code class="sig-name descname">ChessClientProtocol</code><span class="sig-paren">(</span><em class="sig-param">client</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/client.html#ChessClientProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.client.ChessClientProtocol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.internet.protocol.Protocol</span></code></p>
 <p>Class which handles the communication protocol between the game client and the game server.</p>
 <dl class="method">
 <dt id="schroedingerchess.client.ChessClientProtocol.connectionLost">
-<code class="descname">connectionLost</code><span class="sig-paren">(</span><em>reason</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/client.html#ChessClientProtocol.connectionLost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.client.ChessClientProtocol.connectionLost" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">connectionLost</code><span class="sig-paren">(</span><em class="sig-param">reason</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/client.html#ChessClientProtocol.connectionLost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.client.ChessClientProtocol.connectionLost" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handles the connection lost with the server.
 :param reason: Reason of the disconnection</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.client.ChessClientProtocol.connectionMade">
-<code class="descname">connectionMade</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/client.html#ChessClientProtocol.connectionMade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.client.ChessClientProtocol.connectionMade" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">connectionMade</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/client.html#ChessClientProtocol.connectionMade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.client.ChessClientProtocol.connectionMade" title="Permalink to this definition">¶</a></dt>
 <dd><p>Called when a connection is made.</p>
 <p>This may be considered the initializer of the protocol, because
 it is called when the connection is completed.  For clients,
@@ -471,17 +472,22 @@ send any greeting or initial message, do it here.</p>
 
 <dl class="method">
 <dt id="schroedingerchess.client.ChessClientProtocol.dataReceived">
-<code class="descname">dataReceived</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/client.html#ChessClientProtocol.dataReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.client.ChessClientProtocol.dataReceived" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">dataReceived</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/client.html#ChessClientProtocol.dataReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.client.ChessClientProtocol.dataReceived" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handles the reception of data from the server.
 :param data: A byte representing a JSON-encoded object (default encoding UTF-8)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.client.ChessClientProtocol.sendMessage">
-<code class="descname">sendMessage</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/client.html#ChessClientProtocol.sendMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.client.ChessClientProtocol.sendMessage" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sendMessage</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/client.html#ChessClientProtocol.sendMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.client.ChessClientProtocol.sendMessage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends a message to the server using the protocol.
 :param msg: A dictionary representing a message.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.client.ChessClientProtocol.split_messages">
+<code class="sig-name descname">split_messages</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/client.html#ChessClientProtocol.split_messages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.client.ChessClientProtocol.split_messages" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -491,124 +497,129 @@ send any greeting or initial message, do it here.</p>
 <p>Display chess board.</p>
 <dl class="class">
 <dt id="schroedingerchess.display.ChessDisplay">
-<em class="property">class </em><code class="descclassname">schroedingerchess.display.</code><code class="descname">ChessDisplay</code><span class="sig-paren">(</span><em>gameEngine</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">schroedingerchess.display.</code><code class="sig-name descname">ChessDisplay</code><span class="sig-paren">(</span><em class="sig-param">gameEngine</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Display of the chess board.</p>
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.addMessage">
-<code class="descname">addMessage</code><span class="sig-paren">(</span><em>message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.addMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.addMessage" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">addMessage</code><span class="sig-paren">(</span><em class="sig-param">message</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.addMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.addMessage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Split the incoming text message according to the screen size and add it to the message history
 :param message: A string message</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.check_address_format">
-<code class="descname">check_address_format</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.check_address_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.check_address_format" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">check_address_format</code><span class="sig-paren">(</span><em class="sig-param">s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.check_address_format"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.check_address_format" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.drawBoard">
-<code class="descname">drawBoard</code><span class="sig-paren">(</span><em>lightBoard</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.drawBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.drawBoard" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">drawBoard</code><span class="sig-paren">(</span><em class="sig-param">lightBoard</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.drawBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.drawBoard" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draws the board.
 :param lightBoard: The light board to draw. :see LightBoard</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.drawCheckMates">
-<code class="descname">drawCheckMates</code><span class="sig-paren">(</span><em>checkmate_positions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.drawCheckMates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.drawCheckMates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">drawCheckMates</code><span class="sig-paren">(</span><em class="sig-param">checkmate_positions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.drawCheckMates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.drawCheckMates" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draws the checkmates created by the last move.
 :param checkmates_positions: List of the checkmate positions.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.drawChecks">
-<code class="descname">drawChecks</code><span class="sig-paren">(</span><em>check_positions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.drawChecks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.drawChecks" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">drawChecks</code><span class="sig-paren">(</span><em class="sig-param">check_positions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.drawChecks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.drawChecks" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draws the checks created by the last move.
 :param check_positions: List of the check positions.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.drawMenu">
-<code class="descname">drawMenu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.drawMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.drawMenu" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">drawMenu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.drawMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.drawMenu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draws the start menu.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.drawPane">
-<code class="descname">drawPane</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.drawPane"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.drawPane" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">drawPane</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.drawPane"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.drawPane" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.draw_piece">
-<code class="descname">draw_piece</code><span class="sig-paren">(</span><em>color</em>, <em>natures</em>, <em>x</em>, <em>y</em>, <em>size</em>, <em>extended=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.draw_piece"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.draw_piece" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">draw_piece</code><span class="sig-paren">(</span><em class="sig-param">color</em>, <em class="sig-param">natures</em>, <em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">size</em>, <em class="sig-param">extended=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.draw_piece"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.draw_piece" title="Permalink to this definition">¶</a></dt>
 <dd><p>x, y are in pixels</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.flipDisplay">
-<code class="descname">flipDisplay</code><span class="sig-paren">(</span><em>newState</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.flipDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.flipDisplay" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">flipDisplay</code><span class="sig-paren">(</span><em class="sig-param">newState</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.flipDisplay"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.flipDisplay" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the display orientation
 :param newState: Is True if and only if the display has to be upside down (Black in the lower part)</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.flipY">
-<code class="descname">flipY</code><span class="sig-paren">(</span><em>y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.flipY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.flipY" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">flipY</code><span class="sig-paren">(</span><em class="sig-param">y</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.flipY"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.flipY" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flip the y coordinate depending on the flip parameter
 :param y: The y coordinate</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.handleIllegalMove">
-<code class="descname">handleIllegalMove</code><span class="sig-paren">(</span><em>reason</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.handleIllegalMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.handleIllegalMove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">handleIllegalMove</code><span class="sig-paren">(</span><em class="sig-param">reason</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.handleIllegalMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.handleIllegalMove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handles illegal moves.
 :param reason: Reason of the illegal move</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.load_images">
-<code class="descname">load_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.load_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.load_images" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">load_images</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.load_images"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.load_images" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve images from memory.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="schroedingerchess.display.ChessDisplay.setLastMove">
+<code class="sig-name descname">setLastMove</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.setLastMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.setLastMove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.setMenuMode">
-<code class="descname">setMenuMode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.setMenuMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.setMenuMode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">setMenuMode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.setMenuMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.setMenuMode" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.setOnePlayerOnNetworkMode">
-<code class="descname">setOnePlayerOnNetworkMode</code><span class="sig-paren">(</span><em>name</em>, <em>address</em>, <em>color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.setOnePlayerOnNetworkMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.setOnePlayerOnNetworkMode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">setOnePlayerOnNetworkMode</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">address</em>, <em class="sig-param">color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.setOnePlayerOnNetworkMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.setOnePlayerOnNetworkMode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the game engine on the one-player on network mode.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.setTwoPlayersOnOneBoardMode">
-<code class="descname">setTwoPlayersOnOneBoardMode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.setTwoPlayersOnOneBoardMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.setTwoPlayersOnOneBoardMode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">setTwoPlayersOnOneBoardMode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.setTwoPlayersOnOneBoardMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.setTwoPlayersOnOneBoardMode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the game engine on the two-players-on-one-board mode.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.update">
-<code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.update" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates the frame.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.updateBoard">
-<code class="descname">updateBoard</code><span class="sig-paren">(</span><em>events</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.updateBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.updateBoard" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">updateBoard</code><span class="sig-paren">(</span><em class="sig-param">events</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.updateBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.updateBoard" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handles piece selection and move attempts.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.updateMenu">
-<code class="descname">updateMenu</code><span class="sig-paren">(</span><em>events</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.updateMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.updateMenu" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">updateMenu</code><span class="sig-paren">(</span><em class="sig-param">events</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.updateMenu"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.updateMenu" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates the start menu.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.ChessDisplay.updatePane">
-<code class="descname">updatePane</code><span class="sig-paren">(</span><em>events=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.updatePane"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.updatePane" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">updatePane</code><span class="sig-paren">(</span><em class="sig-param">events=[]</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#ChessDisplay.updatePane"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.ChessDisplay.updatePane" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the right hand side pane</p>
 </dd></dl>
 
@@ -616,21 +627,21 @@ send any greeting or initial message, do it here.</p>
 
 <dl class="class">
 <dt id="schroedingerchess.display.InputBox">
-<em class="property">class </em><code class="descclassname">schroedingerchess.display.</code><code class="descname">InputBox</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>w</em>, <em>h</em>, <em>text=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#InputBox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.InputBox" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">schroedingerchess.display.</code><code class="sig-name descname">InputBox</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">w</em>, <em class="sig-param">h</em>, <em class="sig-param">text=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#InputBox"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.InputBox" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
 <dt id="schroedingerchess.display.InputBox.draw">
-<code class="descname">draw</code><span class="sig-paren">(</span><em>screen</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#InputBox.draw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.InputBox.draw" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">draw</code><span class="sig-paren">(</span><em class="sig-param">screen</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#InputBox.draw"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.InputBox.draw" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.InputBox.handle_event">
-<code class="descname">handle_event</code><span class="sig-paren">(</span><em>event</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#InputBox.handle_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.InputBox.handle_event" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">handle_event</code><span class="sig-paren">(</span><em class="sig-param">event</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#InputBox.handle_event"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.InputBox.handle_event" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.display.InputBox.update">
-<code class="descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#InputBox.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.InputBox.update" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">update</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/display.html#InputBox.update"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.display.InputBox.update" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -640,75 +651,93 @@ send any greeting or initial message, do it here.</p>
 <span id="schroedingerchess-game-engines-module"></span><h2>schroedingerchess.game_engines module<a class="headerlink" href="#module-schroedingerchess.game_engines" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="schroedingerchess.game_engines.GameEngine">
-<em class="property">class </em><code class="descclassname">schroedingerchess.game_engines.</code><code class="descname">GameEngine</code><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">schroedingerchess.game_engines.</code><code class="sig-name descname">GameEngine</code><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <dl class="method">
+<dt id="schroedingerchess.game_engines.GameEngine.checkEnd">
+<code class="sig-name descname">checkEnd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.checkEnd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.checkEnd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Schedules an end check</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.game_engines.GameEngine.checkEndTask">
+<code class="sig-name descname">checkEndTask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.checkEndTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.checkEndTask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Task to perform to check whether the game has ended.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="schroedingerchess.game_engines.GameEngine.handleIllegalMove">
-<code class="descname">handleIllegalMove</code><span class="sig-paren">(</span><em>reason</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.handleIllegalMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.handleIllegalMove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">handleIllegalMove</code><span class="sig-paren">(</span><em class="sig-param">reason</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.handleIllegalMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.handleIllegalMove" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handles an illegal move.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.game_engines.GameEngine.makeDisplayDrawBoard">
-<code class="descname">makeDisplayDrawBoard</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.makeDisplayDrawBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.makeDisplayDrawBoard" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">makeDisplayDrawBoard</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.makeDisplayDrawBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.makeDisplayDrawBoard" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes the display redraw the board.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.game_engines.GameEngine.makeDisplayDrawChecks">
-<code class="descname">makeDisplayDrawChecks</code><span class="sig-paren">(</span><em>check_positions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.makeDisplayDrawChecks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.makeDisplayDrawChecks" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">makeDisplayDrawChecks</code><span class="sig-paren">(</span><em class="sig-param">check_positions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.makeDisplayDrawChecks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.makeDisplayDrawChecks" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.game_engines.GameEngine.makeDisplayDrawChecksMates">
-<code class="descname">makeDisplayDrawChecksMates</code><span class="sig-paren">(</span><em>checkmate_positions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.makeDisplayDrawChecksMates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.makeDisplayDrawChecksMates" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">makeDisplayDrawChecksMates</code><span class="sig-paren">(</span><em class="sig-param">checkmate_positions</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.makeDisplayDrawChecksMates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.makeDisplayDrawChecksMates" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.game_engines.GameEngine.move">
-<code class="descname">move</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">move</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Schedules a move task.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.game_engines.GameEngine.moveTask">
-<code class="descname">moveTask</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.moveTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.moveTask" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">moveTask</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.moveTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.moveTask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Task to perform when the display detects a move.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.game_engines.GameEngine.resume">
-<code class="descname">resume</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.resume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.resume" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">resume</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.resume"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.resume" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resumes the reaction loop of the window.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.game_engines.GameEngine.setOnePlayerOnNetworkMode">
-<code class="descname">setOnePlayerOnNetworkMode</code><span class="sig-paren">(</span><em>name</em>, <em>address</em>, <em>color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.setOnePlayerOnNetworkMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.setOnePlayerOnNetworkMode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">setOnePlayerOnNetworkMode</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">address</em>, <em class="sig-param">color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.setOnePlayerOnNetworkMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.setOnePlayerOnNetworkMode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the engine on the one-player-on-network mode.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.game_engines.GameEngine.setTwoPlayersOnOneBoardMode">
-<code class="descname">setTwoPlayersOnOneBoardMode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.setTwoPlayersOnOneBoardMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.setTwoPlayersOnOneBoardMode" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">setTwoPlayersOnOneBoardMode</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.setTwoPlayersOnOneBoardMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.setTwoPlayersOnOneBoardMode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the engine on the two-players-on-one-board mode.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.game_engines.GameEngine.start">
-<code class="descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.start" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">start</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.start"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.start" title="Permalink to this definition">¶</a></dt>
+<dd><p>Starts the game engine. Create the window and initiate the reaction loop.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.game_engines.GameEngine.startFromEngine">
+<code class="sig-name descname">startFromEngine</code><span class="sig-paren">(</span><em class="sig-param">engine</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.startFromEngine"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.startFromEngine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Starts the game engine. Create the window and initiate the reaction loop.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.game_engines.GameEngine.stop">
-<code class="descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.stop" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">stop</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.stop"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.stop" title="Permalink to this definition">¶</a></dt>
 <dd><p>Stops the game engine.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.game_engines.GameEngine.suspend">
-<code class="descname">suspend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.suspend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.suspend" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">suspend</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#GameEngine.suspend"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.GameEngine.suspend" title="Permalink to this definition">¶</a></dt>
 <dd><p>Suspends the reaction loop of the window.</p>
 </dd></dl>
 
@@ -716,39 +745,103 @@ send any greeting or initial message, do it here.</p>
 
 <dl class="class">
 <dt id="schroedingerchess.game_engines.OnePlayerOnNetwork">
-<em class="property">class </em><code class="descclassname">schroedingerchess.game_engines.</code><code class="descname">OnePlayerOnNetwork</code><span class="sig-paren">(</span><em>gameEngine</em>, <em>name</em>, <em>address=None</em>, <em>color=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#OnePlayerOnNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.OnePlayerOnNetwork" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">schroedingerchess.game_engines.</code><code class="sig-name descname">OnePlayerOnNetwork</code><span class="sig-paren">(</span><em class="sig-param">gameEngine</em>, <em class="sig-param">name</em>, <em class="sig-param">address=None</em>, <em class="sig-param">color=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#OnePlayerOnNetwork"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.OnePlayerOnNetwork" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#schroedingerchess.game_engines.GameEngine" title="schroedingerchess.game_engines.GameEngine"><code class="xref py py-class docutils literal notranslate"><span class="pre">schroedingerchess.game_engines.GameEngine</span></code></a></p>
+<dl class="method">
+<dt id="schroedingerchess.game_engines.OnePlayerOnNetwork.autoMove">
+<code class="sig-name descname">autoMove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#OnePlayerOnNetwork.autoMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.OnePlayerOnNetwork.autoMove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.game_engines.OnePlayerOnNetwork.autoMoveTask">
+<code class="sig-name descname">autoMoveTask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#OnePlayerOnNetwork.autoMoveTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.OnePlayerOnNetwork.autoMoveTask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.game_engines.OnePlayerOnNetwork.checkEndTask">
+<code class="sig-name descname">checkEndTask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#OnePlayerOnNetwork.checkEndTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.OnePlayerOnNetwork.checkEndTask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Task to perform to check whether the game has ended.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.game_engines.OnePlayerOnNetwork.connectionFailed">
+<code class="sig-name descname">connectionFailed</code><span class="sig-paren">(</span><em class="sig-param">*kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#OnePlayerOnNetwork.connectionFailed"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.OnePlayerOnNetwork.connectionFailed" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.game_engines.OnePlayerOnNetwork.handleCheckMates">
+<code class="sig-name descname">handleCheckMates</code><span class="sig-paren">(</span><em class="sig-param">description</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#OnePlayerOnNetwork.handleCheckMates"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.OnePlayerOnNetwork.handleCheckMates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.game_engines.OnePlayerOnNetwork.handleChecks">
+<code class="sig-name descname">handleChecks</code><span class="sig-paren">(</span><em class="sig-param">description</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#OnePlayerOnNetwork.handleChecks"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.OnePlayerOnNetwork.handleChecks" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.game_engines.OnePlayerOnNetwork.handleDisconnection">
+<code class="sig-name descname">handleDisconnection</code><span class="sig-paren">(</span><em class="sig-param">description</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#OnePlayerOnNetwork.handleDisconnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.OnePlayerOnNetwork.handleDisconnection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.game_engines.OnePlayerOnNetwork.handleInit">
+<code class="sig-name descname">handleInit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#OnePlayerOnNetwork.handleInit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.OnePlayerOnNetwork.handleInit" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.game_engines.OnePlayerOnNetwork.handleMove">
+<code class="sig-name descname">handleMove</code><span class="sig-paren">(</span><em class="sig-param">description</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#OnePlayerOnNetwork.handleMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.OnePlayerOnNetwork.handleMove" title="Permalink to this definition">¶</a></dt>
+<dd><p>Executes a move received from the server</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.game_engines.OnePlayerOnNetwork.handleReady">
+<code class="sig-name descname">handleReady</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#OnePlayerOnNetwork.handleReady"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.OnePlayerOnNetwork.handleReady" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.game_engines.OnePlayerOnNetwork.handleUpdateBoard">
+<code class="sig-name descname">handleUpdateBoard</code><span class="sig-paren">(</span><em class="sig-param">description</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#OnePlayerOnNetwork.handleUpdateBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.OnePlayerOnNetwork.handleUpdateBoard" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.game_engines.OnePlayerOnNetwork.moveTask">
+<code class="sig-name descname">moveTask</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#OnePlayerOnNetwork.moveTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.OnePlayerOnNetwork.moveTask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Task to perform when the display detects a move.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt id="schroedingerchess.game_engines.TwoPlayersOnOneBoard">
-<em class="property">class </em><code class="descclassname">schroedingerchess.game_engines.</code><code class="descname">TwoPlayersOnOneBoard</code><span class="sig-paren">(</span><em>gameEngine</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">schroedingerchess.game_engines.</code><code class="sig-name descname">TwoPlayersOnOneBoard</code><span class="sig-paren">(</span><em class="sig-param">gameEngine</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#schroedingerchess.game_engines.GameEngine" title="schroedingerchess.game_engines.GameEngine"><code class="xref py py-class docutils literal notranslate"><span class="pre">schroedingerchess.game_engines.GameEngine</span></code></a></p>
 <dl class="method">
 <dt id="schroedingerchess.game_engines.TwoPlayersOnOneBoard.autoMove">
-<code class="descname">autoMove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard.autoMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard.autoMove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">autoMove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard.autoMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard.autoMove" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
-<dt id="schroedingerchess.game_engines.TwoPlayersOnOneBoard.checkEnd">
-<code class="descname">checkEnd</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard.checkEnd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard.checkEnd" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="schroedingerchess.game_engines.TwoPlayersOnOneBoard.checkEndTask">
+<code class="sig-name descname">checkEndTask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard.checkEndTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard.checkEndTask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Task to perform to check whether the game has ended.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.game_engines.TwoPlayersOnOneBoard.move">
-<code class="descname">move</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard.move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">move</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard.move" title="Permalink to this definition">¶</a></dt>
 <dd><p>Schedules a move task.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.game_engines.TwoPlayersOnOneBoard.moveTask">
-<code class="descname">moveTask</code><span class="sig-paren">(</span><em>mov</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard.moveTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard.moveTask" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">moveTask</code><span class="sig-paren">(</span><em class="sig-param">mov</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard.moveTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard.moveTask" title="Permalink to this definition">¶</a></dt>
 <dd><p>Task to perform when the display detects a move.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.game_engines.TwoPlayersOnOneBoard.updateLightBoard">
-<code class="descname">updateLightBoard</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard.updateLightBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard.updateLightBoard" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">updateLightBoard</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/game_engines.html#TwoPlayersOnOneBoard.updateLightBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.game_engines.TwoPlayersOnOneBoard.updateLightBoard" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -761,131 +854,172 @@ send any greeting or initial message, do it here.</p>
 <span id="schroedingerchess-server-module"></span><h2>schroedingerchess.server module<a class="headerlink" href="#module-schroedingerchess.server" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="schroedingerchess.server.ChessServer">
-<em class="property">class </em><code class="descclassname">schroedingerchess.server.</code><code class="descname">ChessServer</code><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">schroedingerchess.server.</code><code class="sig-name descname">ChessServer</code><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.internet.protocol.Factory</span></code></p>
-<p>Game server.</p>
+<p>Game server : produces a new ChessServerProtocol each time a client arrives</p>
 <dl class="method">
 <dt id="schroedingerchess.server.ChessServer.addWaitingPlayer">
-<code class="descname">addWaitingPlayer</code><span class="sig-paren">(</span><em>client</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServer.addWaitingPlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServer.addWaitingPlayer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">addWaitingPlayer</code><span class="sig-paren">(</span><em class="sig-param">client</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServer.addWaitingPlayer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServer.addWaitingPlayer" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.server.ChessServer.assignColor">
-<code class="descname">assignColor</code><span class="sig-paren">(</span><em>player_id</em>, <em>color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServer.assignColor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServer.assignColor" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">assignColor</code><span class="sig-paren">(</span><em class="sig-param">player_id</em>, <em class="sig-param">color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServer.assignColor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServer.assignColor" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
 <dt id="schroedingerchess.server.ChessServer.protocol">
-<code class="descname">protocol</code><a class="headerlink" href="#schroedingerchess.server.ChessServer.protocol" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">protocol</code><a class="headerlink" href="#schroedingerchess.server.ChessServer.protocol" title="Permalink to this definition">¶</a></dt>
 <dd><p>alias of <a class="reference internal" href="#schroedingerchess.server.ChessServerProtocol" title="schroedingerchess.server.ChessServerProtocol"><code class="xref py py-class docutils literal notranslate"><span class="pre">ChessServerProtocol</span></code></a></p>
 </dd></dl>
 
 <dl class="method">
+<dt id="schroedingerchess.server.ChessServer.removeGame">
+<code class="sig-name descname">removeGame</code><span class="sig-paren">(</span><em class="sig-param">game_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServer.removeGame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServer.removeGame" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.server.ChessServer.removePlayerFromWaitingList">
+<code class="sig-name descname">removePlayerFromWaitingList</code><span class="sig-paren">(</span><em class="sig-param">player_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServer.removePlayerFromWaitingList"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServer.removePlayerFromWaitingList" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="schroedingerchess.server.ChessServer.tryToMatchPlayers">
-<code class="descname">tryToMatchPlayers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServer.tryToMatchPlayers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServer.tryToMatchPlayers" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">tryToMatchPlayers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServer.tryToMatchPlayers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServer.tryToMatchPlayers" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="schroedingerchess.server.ChessServerProtocol">
-<em class="property">class </em><code class="descclassname">schroedingerchess.server.</code><code class="descname">ChessServerProtocol</code><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">schroedingerchess.server.</code><code class="sig-name descname">ChessServerProtocol</code><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">twisted.internet.protocol.Protocol</span></code></p>
 <p>Class to handles the communication protocol with a game client.</p>
 <dl class="method">
 <dt id="schroedingerchess.server.ChessServerProtocol.connectionLost">
-<code class="descname">connectionLost</code><span class="sig-paren">(</span><em>reason</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.connectionLost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.connectionLost" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handles the connection lost with the client.
+<code class="sig-name descname">connectionLost</code><span class="sig-paren">(</span><em class="sig-param">reason</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.connectionLost"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.connectionLost" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handles the connection lost with the client (executes automatically).
 :param reason: Reason of the disconnection</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.server.ChessServerProtocol.connectionMade">
-<code class="descname">connectionMade</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.connectionMade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.connectionMade" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">connectionMade</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.connectionMade"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.connectionMade" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends the game information when a new client is connected.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.server.ChessServerProtocol.dataReceived">
-<code class="descname">dataReceived</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.dataReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.dataReceived" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">dataReceived</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.dataReceived"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.dataReceived" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handles the reception of data by the server
 :param data: A byte representing a JSON-encoded object (default encoding UTF-8)</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="schroedingerchess.server.ChessServerProtocol.disconnect">
+<code class="sig-name descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disconnect current player / protocol</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.server.ChessServerProtocol.handleEndGame">
+<code class="sig-name descname">handleEndGame</code><span class="sig-paren">(</span><em class="sig-param">color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.handleEndGame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.handleEndGame" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="schroedingerchess.server.ChessServerProtocol.handleGreetings">
-<code class="descname">handleGreetings</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.handleGreetings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.handleGreetings" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">handleGreetings</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.handleGreetings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.handleGreetings" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.server.ChessServerProtocol.handleMove">
-<code class="descname">handleMove</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.handleMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.handleMove" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">handleMove</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">auto=False</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.handleMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.handleMove" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.server.ChessServerProtocol.refuseMessage">
-<code class="descname">refuseMessage</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.refuseMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.refuseMessage" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">refuseMessage</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.refuseMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.refuseMessage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Handles the reception of messages when waiting for second player. All instructions are illegal.
 :param msg: A dictionary representing a message.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.server.ChessServerProtocol.sendMessage">
-<code class="descname">sendMessage</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.sendMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.sendMessage" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sendMessage</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.sendMessage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.sendMessage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends a message to the client.
 :param msg: A dictionary representing a message.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.server.ChessServerProtocol.sendMessageToAll">
-<code class="descname">sendMessageToAll</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.sendMessageToAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.sendMessageToAll" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sendMessageToAll</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.sendMessageToAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.sendMessageToAll" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends a message to the client and the other player’s client.
 :param msg: A dictionary representing a message.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.server.ChessServerProtocol.sendMessageToOther">
-<code class="descname">sendMessageToOther</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.sendMessageToOther"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.sendMessageToOther" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sendMessageToOther</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.sendMessageToOther"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.sendMessageToOther" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends a message to the client and the other player’s client.
 :param msg: A dictionary representing a message.</p>
 </dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.server.ChessServerProtocol.split_messages">
+<code class="sig-name descname">split_messages</code><span class="sig-paren">(</span><em class="sig-param">data</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#ChessServerProtocol.split_messages"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.ChessServerProtocol.split_messages" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
 <dl class="class">
 <dt id="schroedingerchess.server.Game">
-<em class="property">class </em><code class="descclassname">schroedingerchess.server.</code><code class="descname">Game</code><span class="sig-paren">(</span><em>whites</em>, <em>blacks</em>, <em>currentIndex</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">schroedingerchess.server.</code><code class="sig-name descname">Game</code><span class="sig-paren">(</span><em class="sig-param">whites</em>, <em class="sig-param">blacks</em>, <em class="sig-param">gameIndex</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.7)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Class to represent a game instance.</p>
 <dl class="method">
+<dt id="schroedingerchess.server.Game.autoMove">
+<code class="sig-name descname">autoMove</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game.autoMove"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game.autoMove" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.server.Game.checkEnd">
+<code class="sig-name descname">checkEnd</code><span class="sig-paren">(</span><em class="sig-param">color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game.checkEnd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game.checkEnd" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="schroedingerchess.server.Game.disconnectPlayers">
+<code class="sig-name descname">disconnectPlayers</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game.disconnectPlayers"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game.disconnectPlayers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
 <dt id="schroedingerchess.server.Game.move">
-<code class="descname">move</code><span class="sig-paren">(</span><em>x1</em>, <em>y1</em>, <em>x2</em>, <em>y2</em>, <em>color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game.move" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">move</code><span class="sig-paren">(</span><em class="sig-param">x1</em>, <em class="sig-param">y1</em>, <em class="sig-param">x2</em>, <em class="sig-param">y2</em>, <em class="sig-param">color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game.move" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.server.Game.notifyReady">
-<code class="descname">notifyReady</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game.notifyReady"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game.notifyReady" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">notifyReady</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game.notifyReady"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game.notifyReady" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.server.Game.sendMessageTo">
-<code class="descname">sendMessageTo</code><span class="sig-paren">(</span><em>msg</em>, <em>color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game.sendMessageTo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game.sendMessageTo" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sendMessageTo</code><span class="sig-paren">(</span><em class="sig-param">msg</em>, <em class="sig-param">color</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game.sendMessageTo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game.sendMessageTo" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.server.Game.sendMessageToAll">
-<code class="descname">sendMessageToAll</code><span class="sig-paren">(</span><em>msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game.sendMessageToAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game.sendMessageToAll" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">sendMessageToAll</code><span class="sig-paren">(</span><em class="sig-param">msg</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game.sendMessageToAll"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game.sendMessageToAll" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.server.Game.updateLightBoard">
-<code class="descname">updateLightBoard</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game.updateLightBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game.updateLightBoard" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">updateLightBoard</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game.updateLightBoard"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game.updateLightBoard" title="Permalink to this definition">¶</a></dt>
 <dd><p>Schedules an update board task.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="schroedingerchess.server.Game.updateLightBoardTask">
-<code class="descname">updateLightBoardTask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game.updateLightBoardTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game.updateLightBoardTask" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">updateLightBoardTask</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/schroedingerchess/server.html#Game.updateLightBoardTask"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#schroedingerchess.server.Game.updateLightBoardTask" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
