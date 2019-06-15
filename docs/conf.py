@@ -17,7 +17,6 @@ import sys
 sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('..'))
 sys.path.insert(0, os.path.abspath('../schroedingerchess/'))
-print(sys.path)
 
 # -- Project information -----------------------------------------------------
 
@@ -57,9 +56,6 @@ templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-source_parsers = {
-    '.md': 'recommonmark.parser.CommonMarkParser',
-}
 source_suffix = ['.rst', '.md']
 # source_suffix = '.rst'
 
