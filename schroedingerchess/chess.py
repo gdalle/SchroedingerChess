@@ -5,6 +5,8 @@ import numpy as np
 import pulp
 from collections import defaultdict
 
+import sunfish
+
 colors = list(range(2))
 piece_numbers = list(range(16))
 major_piece_numbers = list(range(8))
@@ -60,7 +62,7 @@ class ChessPiece():
             self.possible_natures = ["K", "Q", "R", "B", "N"]
         else:
             self.possible_natures = [n]
-        self.legal_natures = self.possible_natures
+        self.legal_natures = self.possible_natures[:]
         self.position = p
         self.board = b
         self.forbidden_natures = []
@@ -138,8 +140,8 @@ class ChessBoard():
         for x in range(8):
             self.grid[x][0] = self.pieces[0][x]
             self.grid[x][1] = self.pieces[0][x + 8]
-            self.grid[x][7] = self.pieces[1][x]
             self.grid[x][6] = self.pieces[1][x + 8]
+            self.grid[x][7] = self.pieces[1][x]
 
         # Game history
         self.time = 0
@@ -165,7 +167,7 @@ class ChessBoard():
                 if piece is not None:
                     s += piece.__str__(guess=guess, natures=natures)
                 else:
-                    square_color = (x + y) % 2
+                    # square_color = (x + y) % 2
                     if not guess:
                         s += "-- "
                     elif guess:
@@ -363,7 +365,6 @@ class ChessBoard():
     def compute_attack(self):
         """Encode attack as a binary table."""
         attack = np.zeros((64, 2, 24, 5))
-        cur_c = self.time % 2
         for x in range(8):
             for y in range(8):
                 piece = self.grid[x][y]
@@ -740,7 +741,7 @@ class ChessBoard():
             try:
                 self.test_move(x1, y1, x2, y2, full_result=False)
                 yield (x2, y2)
-            except IllegalMove as e:
+            except IllegalMove:
                 pass
 
     def all_legal_moves_gen(self):
@@ -753,7 +754,7 @@ class ChessBoard():
             try:
                 self.test_move(x1, y1, x2, y2, full_result=False)
                 yield (x1, y1, x2, y2)
-            except IllegalMove as e:
+            except IllegalMove:
                 pass
 
     def legal_moves_from(self, x1, y1):
@@ -762,13 +763,55 @@ class ChessBoard():
     def all_legal_moves(self):
         return sorted(list(self.all_legal_moves_gen()))
 
-    def auto_move(self, intelligent=False):
+    def sunfish_move_suggestion(self, secs):
+        board = (
+            "         \n"
+            "         \n"
+        )
+        for y in reversed(range(8)):
+            board += ' '
+            for x in range(8):
+                if self.grid[x][y] is None:
+                    board += '.'
+                elif self.grid[x][y].color_name == "W":
+                    board += self.grid[x][y].nature_guess
+                else:
+                    board += self.grid[x][y].nature_guess.lower()
+            board += '\n'
+        board += (
+            "         \n"
+            "         \n"
+        )
+        pos = sunfish.Position(
+            board, 0, (False, False), (False, False), 0, 0
+        )
+        if self.time % 2 == 1:
+            pos = pos.rotate()
+
+        searcher = sunfish.Searcher()
+        move, score = searcher.search(pos, secs=secs)
+        if move is None:
+            raise IllegalMove("Sunfish didn't find a feasible move")
+        if self.time % 2 == 1:
+            move = (119-move[0], 119-move[1])
+        first_square, last_square = sunfish.render(move[0]), sunfish.render(move[1])
+        x1, y1, x2, y2 = self.translate_move((first_square, last_square))
+        return x1, y1, x2, y2
+
+    def auto_move(self, intelligent=True, secs=1):
         """Perform one of the legal moves at random."""
-        try:
-            x1, y1, x2, y2 = self.all_legal_moves_gen().__next__()
-            return x1, y1, x2, y2
-        except StopIteration:
-            raise IllegalMove("Game over - " + self.end_game())
+        if intelligent:
+            try:
+                x1, y1, x2, y2 = self.sunfish_move_suggestion(secs=secs)
+                self.test_move(x1, y1, x2, y2)
+            except IllegalMove:
+                self.auto_move(intelligent=False)
+        else:
+            try:
+                x1, y1, x2, y2 = self.all_legal_moves_gen().__next__()
+            except StopIteration:
+                raise IllegalMove("Game over - " + self.end_game())
+        return x1, y1, x2, y2
 
     def is_legal_nature(self, piece, n):
         """Check if, given the current history, piece could have nature n."""
@@ -792,7 +835,7 @@ class ChessBoard():
             if self.is_legal_nature(piece, n):
                 legal_natures.append(n)
         if update:
-            piece.possible_natures = legal_natures
+            piece.possible_natures = legal_natures[:]
         return legal_natures
 
     def end_game(self):
@@ -818,9 +861,9 @@ class ChessBoard():
         elif len(move) == 2:
             first_square, last_square = move
             x1 = ord(first_square[0]) - 97
-            y1 = int(first_square[1])
+            y1 = int(first_square[1]) - 1
             x2 = ord(last_square[0]) - 97
-            y2 = int(last_square[1])
+            y2 = int(last_square[1]) - 1
             return (x1, y1, x2, y2)
 
     def one_player_game(self):
@@ -1007,4 +1050,4 @@ if __name__ == "__main__":
     cb.move(5, 5, 5, 4)
     cb.move(5, 7, 6, 7)
     cb.display_guess()
-    print(cb.end_game())
+    cb.auto_move(intelligent=True)
